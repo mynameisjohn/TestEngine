@@ -1,1 +1,4 @@
-make clean; clear; make -j2
+mkdir -p obj;
+make clean; 
+clear; 
+make -j2
