@@ -12,6 +12,7 @@ ActiveEnt::ActiveEnt(vec3 translate, vec3 scale) : Entity(translate, scale){
    mSpeed = vec3(40.f, 40.f, 20.12241f);
    speedOsc=0.f;
    grounded=false;
+	mCollider.addSub(BoundRect(vec2(scale)));
 }
 
 ActiveEnt::ActiveEnt(Collider c) : Entity(c){
@@ -19,10 +20,12 @@ ActiveEnt::ActiveEnt(Collider c) : Entity(c){
 }
 
 void ActiveEnt::update(){
-	mVel.x = (float)mSpeed.x*sin(speedOsc);
-	//printf("%lf\n",mVel.x);
-	speedOsc+=0.1f;	
-//NYI
+	vec3 target(5000, 0, -3000);
+
+	if (grounded)
+		mVel.y=0;
+	else
+		mVel.y -= 2.f;
 }
 
 void ActiveEnt::moveWRT_walls(){
@@ -40,7 +43,7 @@ vec3 ActiveEnt::getVel(){
 /* The goal here is to find the direction in which the last collision
 (bounding box violation) occurred, so that the entity can translate
 right up against it.*/
-void ActiveEnt::moveWRT_ent(Entity& e){
+void ActiveEnt::moveWRT_ent(Entity * e){
 	char last = collidesWith(e);
 
 	switch (last){

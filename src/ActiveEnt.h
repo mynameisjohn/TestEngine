@@ -11,8 +11,8 @@ class ActiveEnt: public Entity{
 		ActiveEnt(Collider c);
 		void update();//NYI
 		void moveWRT_walls();
-		void moveWRT_ent(Entity& e);
-		void moveToEdge(int, Entity&);
+		void moveWRT_ent(Entity * e);
+		void moveToEdge(int, Entity *);
 		//virtual void move();//Make this pure asap
 		vec3 getVel();
 	protected:

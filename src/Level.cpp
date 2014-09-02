@@ -28,7 +28,7 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 				  }, shader));
 	
 	pop->addActiveEnt(initAe(
-				  {vec3(1000, -600, -3500),   //translate
+				  {vec3(1000, 999, -3500),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
 					vec3(400, 400, -400),  //scale
 					vec3(0.2f, 0.4f, 0.8f) //color

@@ -6,13 +6,13 @@ CFLAGS = -O1 -std=gnu++11 -MMD -g
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
-all: aiTest
+all: testExe
 
-aiTest: $(OBJ_FILES)
+testExe: $(OBJ_FILES)
 	$(CXX) -o $@ $^ $(LIBS)
 
 obj/%.o: src/%.cpp
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm obj/* aiTest
+	rm obj/* testExe
