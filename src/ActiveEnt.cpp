@@ -30,8 +30,6 @@ void ActiveEnt::update(vec3 target){
 	mVel += dt * target;
 	mVel = glm::clamp(mVel, -mSpeed, mSpeed);
 
-	std::cout << mVel << std::endl;
-	
 	if (grounded)
 		mVel.y=0;
 	else
