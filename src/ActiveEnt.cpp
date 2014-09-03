@@ -19,9 +19,19 @@ ActiveEnt::ActiveEnt(Collider c) : Entity(c){
 	//NYI
 }
 
-void ActiveEnt::update(){
-	vec3 target(5000, 0, -3000);
+void ActiveEnt::update(vec3 target){
+	float s = 5000.f, A = 10000.f;
+	float y = mVel.y;
+	vec3 dt;
+	s = pow(s,2);
+	target = getPos() - target;
+	target = A * -2.f * (target/s) * glm::exp((-glm::pow(target, vec3(2,2,2)))/s);
+	dt = vec3(mVel.x * target.x < 0.f ? 5.f : 0.5f, 0.f, mVel.z * target.z < 0.f ? 5.f : 0.5f);
+	mVel += dt * target;
+	mVel = glm::clamp(mVel, -mSpeed, mSpeed);
 
+	std::cout << mVel << std::endl;
+	
 	if (grounded)
 		mVel.y=0;
 	else

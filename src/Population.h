@@ -15,19 +15,19 @@ class Population{
 		Population();
 		Population(std::unique_ptr<Player> p);
 		~Population();
+		void setPlayer(std::unique_ptr<Player> p);
 		void handleKey(int k);
 		void update();
 		void draw(int, int);
+		void addObs(std::unique_ptr<Obstacle> obs);
+		void addActiveEnt(std::unique_ptr<ActiveEnt> aE);
 		vec4 move();
 		vec3 getPlayerCenter();
 		Player * getPlayer();
-		void addObs(std::unique_ptr<Obstacle> obs);
-		void addActiveEnt(std::unique_ptr<ActiveEnt> aE);
 	private:
-		std::unique_ptr<Player> player;
+		Player * player;
 		ObsPtrVec obsVec;
 		AePtrVec aeVec;
-		//int obsIdx, aeIdx;
 };
 
 #endif

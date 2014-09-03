@@ -9,7 +9,8 @@ TODO
 */
 
 Population::Population(){
-//NYI
+	obsVec.clear();
+	aeVec.clear();
 }
 
 Population::~Population(){
@@ -17,11 +18,19 @@ Population::~Population(){
 }
 
 Population::Population(std::unique_ptr<Player> p){
-	player = std::move(p);
+	obsVec.clear();
+	aeVec.clear();
+	aeVec.push_back(std::move(p));
+	player = (Player *)aeVec[0].get();
+	//player = std::move(p);
+}
+
+void Population::setPlayer(std::unique_ptr<Player> p){
+	aeVec[0] = std::move(p);
 }
 
 void Population::draw(int MVHandle, int ColorHandle){
-	player.get()->draw(MVHandle, ColorHandle);
+//	player.get()->draw(MVHandle, ColorHandle);
 
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt;
@@ -34,7 +43,7 @@ void Population::draw(int MVHandle, int ColorHandle){
 }
 
 vec3 Population::getPlayerCenter(){
-	return player.get()->center();
+	return player->center();//player.get()->center();
 }
 
 //These two vectors are held by smart pointers so I can polymorphize
@@ -48,19 +57,19 @@ void Population::addActiveEnt(std::unique_ptr<ActiveEnt> aE){
 }
 
 void Population::handleKey(int k){
-	player.get()->handleKey(k);
+	player->handleKey(k);
 }
 
 glm::vec4 Population::move(){
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt;
-
+/*
 	//move with respect to (WRT) walls and obstacles	
 	player.get()->moveWRT_walls();
 	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
 		player.get()->moveWRT_ent(obsIt->get());
 	}
-
+*/
 	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++){
 		aeIt->get()->moveWRT_walls();
 		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
@@ -68,37 +77,26 @@ glm::vec4 Population::move(){
 		}
 	}
 	
-	return vec4(player.get()->center(), fabs(player.get()->getVel().x));
+	return vec4(getPlayerCenter(), fabs(player->getVel().x));
 }
 
 void Population::update(){
 	ObsPtrVec::iterator obsIt;
-	AePtrVec::iterator aeIt;
+	AePtrVec::iterator aeIt_i, aeIt_j;
 
-	bool x;
-	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++)
-		x=player.get()->overlapsWith(aeIt->get());
-	if (x) printf("hit\n");
-
-	player.get()->update();
+	bool hit;
+	for (aeIt_i=aeVec.begin(); aeIt_i!=aeVec.end(); aeIt_i++)
+		for (aeIt_j=aeVec.begin(); aeIt_j!=aeVec.end(); aeIt_j++)
+			if (aeIt_i != aeIt_j)
+				if (aeIt_i->get()->overlapsWith(aeIt_j->get()))
+					hit=true;//printf("hit\n");
 	
-	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++)
-		aeIt->get()->update();
+	player->update();
+	for (aeIt_i=aeVec.begin()+1; aeIt_i!=aeVec.end(); aeIt_i++)
+		aeIt_i->get()->update(player->getPos());
 	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)
 		obsIt->get()->update();
 }
-/*
-void Population::initObs(int n){
-	clearObs();
-	obsVec.resize(n);
-}
-
-void Population::initAe(int n){
-	clearAe();
-	aeVec.resize(n);
-}
-*/
-
 Player * Population::getPlayer(){
-	return player.get();
+	return player;
 }
