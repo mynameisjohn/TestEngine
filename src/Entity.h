@@ -24,11 +24,13 @@ class Entity{
 		float toFar(Entity *);
 		vec3 getPos();
 		vec3 center();
+		virtual vec3 getPotential(vec3 pos);
 		virtual void update(){}
 	protected:
 		Collider mCollider;
 		std::vector<Drawable> mDrawables;
 		vec3 mTrans;
+		float sigmaSq, A;
 	/* These will be inlined when the time comes
 	public:
 		inline void translate(vec3 trans){

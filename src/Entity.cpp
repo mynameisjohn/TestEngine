@@ -2,7 +2,7 @@
 #include <glm/gtx/transform.hpp>
 
 Entity::Entity(){
-	//NYI
+	sigmaSq=1.f;
 };
 
 Entity::Entity(vec3 translate, vec3 scale){
@@ -51,7 +51,19 @@ void Entity::translate(vec3 trans){
 } 
 vec3 Entity::getPos(){ 
 	return mCollider.getPos(); 
-} 
+}
+
+vec3 Entity::getPotential(vec3 pos){
+	vec3 diff, a;
+	float distSq;
+	
+	diff = pos - getPos();
+	distSq = glm::dot(diff, diff);
+	a = (float)(2.f*A*exp(-distSq/sigmaSq)/sigmaSq) * diff;
+
+	return a;
+}
+
 float Entity::toLeft(Entity * e){ 
 	return mCollider.toLeft(e->mCollider); 
 } 

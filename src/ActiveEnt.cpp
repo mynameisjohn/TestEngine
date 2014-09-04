@@ -2,7 +2,7 @@
 
 ActiveEnt::ActiveEnt() : Entity(){
 	mVel = vec3();
-	mSpeed = vec3(40.f, 40.f, 20.12241f);
+	mSpeed = vec3(50.f, 40.f, 30.f);
 	speedOsc=0.f;
 	grounded=false;
 }
@@ -19,17 +19,10 @@ ActiveEnt::ActiveEnt(Collider c) : Entity(c){
 	//NYI
 }
 
-void ActiveEnt::update(vec3 target){
-	float s = 5000.f, A = 10000.f;
-	float y = mVel.y;
-	vec3 dt;
-	s = pow(s,2);
-	target = getPos() - target;
-	target = A * -2.f * (target/s) * glm::exp((-glm::pow(target, vec3(2,2,2)))/s);
-	dt = vec3(mVel.x * target.x < 0.f ? 5.f : 0.5f, 0.f, mVel.z * target.z < 0.f ? 5.f : 0.5f);
-	mVel += dt * target;
-	mVel = glm::clamp(mVel, -mSpeed, mSpeed);
-
+void ActiveEnt::update(vec3 a){
+	vec3 dt(mVel.x*a.x < 0.f ? 7.5f : 0.75f, 0.f, mVel.z*a.z < 0.f ? 7.5f : 0.75f);
+	mVel = glm::clamp(mVel+dt*a, -mSpeed, mSpeed);
+	
 	if (grounded)
 		mVel.y=0;
 	else

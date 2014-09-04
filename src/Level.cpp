@@ -21,7 +21,7 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 				  }, shader));
 	
 	pop->addObs(initObstacle(
-				  {vec3(500, -600, -2500),   //translate
+				  {vec3(4500, -600, -2500),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
 					vec3(400, 400, -400),  //scale
 					vec3(0.2, 0.4f, 0.8f) //color

@@ -2,11 +2,17 @@
 
 Obstacle::Obstacle(){
 	colorOsc = 0.f;
+	A = 50000.f;	
+	sigmaSq = 200.f;
+	sigmaSq *= sigmaSq;
 }
 
 Obstacle::Obstacle(vec3 translate, vec3 scale)
 : Entity(translate,scale){
 	colorOsc = 0.f;
+	A = 50000.f;	
+	sigmaSq = 200.f;
+	sigmaSq *= sigmaSq;
 }
 void Obstacle::update(){
 	float color = 0.5f + 0.5f*sin(colorOsc);

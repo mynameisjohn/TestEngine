@@ -80,6 +80,8 @@ glm::vec4 Population::move(){
 	return vec4(getPlayerCenter(), fabs(player->getVel().x));
 }
 
+
+
 void Population::update(){
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt_i, aeIt_j;
@@ -92,8 +94,15 @@ void Population::update(){
 					hit=true;//printf("hit\n");
 	
 	player->update();
-	for (aeIt_i=aeVec.begin()+1; aeIt_i!=aeVec.end(); aeIt_i++)
-		aeIt_i->get()->update(player->getPos());
+
+	for (aeIt_i=aeVec.begin()+1; aeIt_i!=aeVec.end(); aeIt_i++){
+		vec3 pos = aeIt_i->get()->getPos(), a;
+		a = -player->getPotential(pos);
+		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)//begin()+2; obsIt++)
+			a += obsIt->get()->getPotential(pos);
+		aeIt_i->get()->update(a);
+	}
+
 	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)
 		obsIt->get()->update();
 }
