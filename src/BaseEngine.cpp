@@ -2,12 +2,10 @@
 TODO
 	-- comment code properly
 	-- create library/character libraries
-	-- test some sort of update with more entitities
-	-- AI (potential map)
-	-- 3D motion :
-		-> create camera + generate proper viewing volume/walls
-		-> change the move function to move in z rather than y
-		-> redo collision in this way
+	-- projectiles
+	-- art
+	-- sound
+	-- skinning
 **/
 
 #include "Level.h"

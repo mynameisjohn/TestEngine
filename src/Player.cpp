@@ -16,6 +16,7 @@ Player::Player(Collider c) : ActiveEnt(c){
 
 Player::Player(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale){
+	mSpeed = vec3(40.f, 40.f, 20.12241f);
 	mDash=1.5f;
 	A = 10000.f;	
 	sigmaSq = 5000.f;

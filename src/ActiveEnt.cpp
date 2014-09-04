@@ -6,14 +6,20 @@ ActiveEnt::ActiveEnt() : Entity(){
 	mSpeed = vec3(50.f, 40.f, 30.f);
 	speedOsc=0.f;
 	grounded=false;
+	A = 50000.f;
+   sigmaSq = 100.f;
+   sigmaSq *= sigmaSq;
 }
 
 ActiveEnt::ActiveEnt(vec3 translate, vec3 scale) : Entity(translate, scale){
    mVel = vec3();
-   mSpeed = vec3(40.f, 40.f, 20.12241f);
+	mSpeed = vec3(50.f, 40.f, 30.f);
    speedOsc=0.f;
    grounded=false;
 	mCollider.addSub(BoundRect(vec2(scale)));
+	A = 50000.f;
+   sigmaSq = 200.f;
+   sigmaSq *= sigmaSq;
 }
 
 ActiveEnt::ActiveEnt(Collider c) : Entity(c){
@@ -21,23 +27,23 @@ ActiveEnt::ActiveEnt(Collider c) : Entity(c){
 }
 
 void ActiveEnt::update(vec3 a){
-	//a += glm::linearRand(-vec3(.25f,.25f,.25f), vec3(.25f,.25f,.25f));
-
-	vec3 dt(mVel.x*a.x < 0.f ? 7.5f : 0.75f, 0.f, mVel.z*a.z < 0.f ? 7.5f : 0.75f);
-	mVel = glm::clamp(mVel+dt*a, -mSpeed, mSpeed);
-	
 	if (grounded)
 		mVel.y=0;
 	else
 		mVel.y -= 2.f;
+	
+	//a += glm::linearRand(-vec3(.25f,.25f,.25f), vec3(.25f,.25f,.25f));
+	vec3 dt(mVel.x*a.x < 0.f ? 7.5f : 0.75f, 0.f, mVel.z*a.z < 0.f ? 7.5f : 0.75f);
+	mVel = glm::clamp(mVel+dt*a, -mSpeed, mSpeed);
+
+	if (grounded && fabs(a.y) > 0.25f)
+		mVel.y += mSpeed.y;
+	
 }
 
-void ActiveEnt::moveWRT_walls(){
+void ActiveEnt::move(){
 	grounded=false;
-	translate(mVel);/*
-	grounded=false;
-	mTrans = mCollider.move(mVel);
-*/
+	translate(mVel);
 }
 
 vec3 ActiveEnt::getVel(){

@@ -71,7 +71,7 @@ glm::vec4 Population::move(){
 	}
 */
 	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++){
-		aeIt->get()->moveWRT_walls();
+		aeIt->get()->move();
 		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
 			aeIt->get()->moveWRT_ent(obsIt->get());
 		}
@@ -100,6 +100,9 @@ void Population::update(){
 		a = -player->getPotential(pos);
 		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)//begin()+2; obsIt++)
 			a += obsIt->get()->getPotential(pos);
+		for (aeIt_j=aeVec.begin()+1; aeIt_j!=aeVec.end(); aeIt_j++)//begin()+2; obsIt++)
+			if (aeIt_i != aeIt_j)
+				a += aeIt_j->get()->getPotential(pos);
 		aeIt_i->get()->update(a);
 	}
 

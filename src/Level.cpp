@@ -6,7 +6,7 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 	const vec3 wallMax(7000, 2000, -4000);
 
 	std::unique_ptr<Population> pop(new Population(
-	initPlayer({vec3(00, 999, -2000),   //translate
+	initPlayer({vec3(0, 999, -2000),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
 					vec3(400, 400, -400),  //scale
 					vec3(0.2, 0.4f, 0.8f) //color
@@ -29,6 +29,13 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 	
 	pop->addActiveEnt(initAe(
 				  {vec3(6000, 999, -3500),   //translate
+					vec4(1, 0, 0, 0.f),    //rotate
+					vec3(400, 400, -400),  //scale
+					vec3(0.8f, 0.2f, 0.4f) //color
+				  }, shader));
+	
+	pop->addActiveEnt(initAe(
+				  {vec3(4000, 999, -2500),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
 					vec3(400, 400, -400),  //scale
 					vec3(0.8f, 0.2f, 0.4f) //color

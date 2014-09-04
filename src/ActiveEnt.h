@@ -10,10 +10,9 @@ class ActiveEnt: public Entity{
 		ActiveEnt(vec3 translate, vec3 scale);
 		ActiveEnt(Collider c);
 		void update(vec3 a);//NYI
-		void moveWRT_walls();
 		void moveWRT_ent(Entity * e);
 		void moveToEdge(int, Entity *);
-		//virtual void move();//Make this pure asap
+		virtual void move();//Make this pure asap
 		vec3 getVel();
 	protected:
 		vec3 mVel; //Active velocity
