@@ -1,4 +1,5 @@
 #include "ActiveEnt.h"
+#include <glm/gtc/random.hpp>
 
 ActiveEnt::ActiveEnt() : Entity(){
 	mVel = vec3();
@@ -20,6 +21,8 @@ ActiveEnt::ActiveEnt(Collider c) : Entity(c){
 }
 
 void ActiveEnt::update(vec3 a){
+	//a += glm::linearRand(-vec3(.25f,.25f,.25f), vec3(.25f,.25f,.25f));
+
 	vec3 dt(mVel.x*a.x < 0.f ? 7.5f : 0.75f, 0.f, mVel.z*a.z < 0.f ? 7.5f : 0.75f);
 	mVel = glm::clamp(mVel+dt*a, -mSpeed, mSpeed);
 	
