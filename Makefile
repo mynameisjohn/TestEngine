@@ -1,6 +1,7 @@
 CXX = g++
-LIBS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm -lGL -lGLU -lGLEW -lstdc++
+LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer -lm -lGL -lGLU -lGLEW -lstdc++ -ltinyxml
 CFLAGS = -O1 -std=gnu++11 -MMD -g
+INCLUDES = -I include
 
 #thanks to bobah on SO
 CPP_FILES := $(wildcard src/*.cpp)
@@ -12,7 +13,7 @@ testExe: $(OBJ_FILES)
 	$(CXX) -o $@ $^ $(LIBS)
 
 obj/%.o: src/%.cpp
-	$(CXX) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 clean:
 	rm obj/* testExe

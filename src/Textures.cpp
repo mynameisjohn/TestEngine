@@ -1,6 +1,32 @@
-#include <GL/gl.h>
-
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_image.h>
 #include "Textures.h"
+
+unsigned int fromImage(std::string fileName){
+	GLuint tex;
+	SDL_Surface * s = nullptr;
+	s = IMG_Load(fileName.c_str());
+	if (!s)
+		return 0;//This is bad
+
+	//Generate the device texture and bind it
+   glGenTextures(1, &tex);
+   glBindTexture(GL_TEXTURE_2D, tex);
+
+   //Upload host texture to device
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, s->w, s->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, s->pixels);
+
+   // Set filtering
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+   //Unbind, Delete the host texture, return handle to device texture
+	glBindTexture(GL_TEXTURE_2D, 0);
+   SDL_FreeSurface(s);
+   return (unsigned int)tex;
+}
 
 int * outline(int DIM, int th){
 	int * PXA = new int[DIM*DIM];

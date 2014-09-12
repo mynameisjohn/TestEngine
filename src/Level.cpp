@@ -49,7 +49,7 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 
 std::unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	std::unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
-	Drawable dr = initCube(shader);
+	Drawable dr = initPolyFromSVG("drawing.svg",shader);//initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.setMV(MV);
    dr.setColor(eI.color);

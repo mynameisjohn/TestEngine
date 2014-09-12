@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include "BaseEngine.h"
-
+#include <SDL2/SDL_image.h>
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -50,6 +50,13 @@ bool init(BaseEngine& engine){
       printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
       return false;
    }
+
+	//Init SDL image
+	int imgFlags = IMG_INIT_PNG;
+	if (!(IMG_Init(imgFlags) & imgFlags)){
+		printf("SDL_Image could not initialize! SDL_Image Error: %s\n", IMG_GetError());
+      return false;
+	}
 
    //Init SDL+OpenGL Context
    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
