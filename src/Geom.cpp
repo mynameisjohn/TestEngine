@@ -21,27 +21,42 @@ float clamp(float v, float m, float M){
 	return min(max(v,m),M);
 }
 
-//assumes "x.svg" as input
-Drawable initPolyFromSVG(std::string fileName, JShader& shader){
-	Drawable dr;
-	std::vector<glm::vec2> texCoords;
-	std::vector<glm::vec4> vertices;
+std::vector<triangle> getConvexIndices(int n){
 	std::vector<triangle> indices;
-	
-	TiXmlDocument doc("drawing.svg");
+	for (GLuint i=0;i<n/2-1;i++){
+		indices.push_back({i,n-i-1,n-i-2});//odd
+		indices.push_back({i,i+1,n-i-2});//even
+	}
+	return indices;
+}
+
+std::string getSVGPathStr(std::string svgFile){
+	TiXmlDocument doc(svgFile);
 	if (!doc.LoadFile()){
 		std::cout << "Unable to load SVG file\n";
-		return dr;
+		return "";
 	}
 
 	TiXmlHandle mHandle(&doc);
 	TiXmlElement * mElement = mHandle.FirstChild("svg").FirstChild("g").FirstChild("path").ToElement();
 	if (!mElement){
 		std::cout << "Couldn't find path element in SVG document\n";
-		return dr;
+		return "";
 	}
-	
-	std::string pathStr = mElement->Attribute("d"), d1=" ", d2=",";
+
+	return mElement->Attribute("d");
+}
+
+geoInfo SVGtoGeometry(std::string svgFile){
+   std::vector<glm::vec4> vertices;
+	std::vector<glm::vec2> texCoords;
+   std::vector<triangle> indices;
+
+	std::string pathStr = getSVGPathStr(svgFile), d1=" ", d2=",";
+	if (pathStr.length()<=1){
+		std::cout << "Error loading path string\n";
+		return {vertices, texCoords, indices};
+	}
 	bool relative = (pathStr[0] == 'm');
 	pathStr = pathStr.substr(2,pathStr.length());
 	size_t pos;
@@ -61,17 +76,13 @@ Drawable initPolyFromSVG(std::string fileName, JShader& shader){
 				glm::vec2 p;
 				pos = pathStr.find(d2);
 				std::string ptStr = pathStr.substr(0,pos);
-				if (!(std::stringstream(ptStr) >> p.x)){
+				if (!(std::stringstream(ptStr) >> p.x))
 					std::cout << "Incorrect path string\n";
-					return dr;
-				}
 				pathStr.erase(0,pos+d2.length());
 				pos = pathStr.find(d1);
 				ptStr = pathStr.substr(0,pos);
-				if (!(std::stringstream(ptStr) >> p.y)){
+				if (!(std::stringstream(ptStr) >> p.y))
                std::cout << "Incorrect path string\n";
-               return dr;
-            }
 				pathStr.erase(0,pos+d2.length());
 				if (texCoords.size() && relative)
 					p += texCoords.back();
@@ -93,103 +104,78 @@ Drawable initPolyFromSVG(std::string fileName, JShader& shader){
 		vertices.push_back(glm::vec4(vert/max(M.x,M.y),0,1));
 	}
 
-	int n = vertices.size();
-	int nElements = 3*(vertices.size()-2);
-	for (GLuint i=0;i<n/2-1;i++){
-		triangle odd, even;
-		odd = {i,n-i-1,n-i-2};
-		even = {i,i+1,n-i-2};
-		indices.push_back(odd);
-		indices.push_back(even);
-	}
+	//Maybe change this to check for concavity...much later
+	indices = getConvexIndices(vertices.size());
 
-	GLuint tmpVAO;
-   glGenVertexArrays(1, &tmpVAO);
-   glBindVertexArray(tmpVAO);
+	return {vertices, texCoords, indices};
+}
+
+GLuint genVAO(geoInfo gI, JShader& shader){
+	GLuint VAO;
+   glGenVertexArrays(1, &VAO);
+   glBindVertexArray(VAO);
 
    GLuint buffers[3];
    glGenBuffers(3, buffers);
 
    //vertices
    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4)*gI.vertices.size(), gI.vertices.data(), GL_STATIC_DRAW);
    glEnableVertexAttribArray(shader.getPosHandle());
    glVertexAttribPointer(shader.getPosHandle(), 4, GL_FLOAT, 0, 0, 0);
 
    //tex coords
    glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2)*texCoords.size(), texCoords.data(), GL_STATIC_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2)*gI.texCoords.size(), gI.texCoords.data(), GL_STATIC_DRAW);
    glEnableVertexAttribArray(shader.getTexCoordHandle());
    glVertexAttribPointer(shader.getTexCoordHandle(), 2, GL_FLOAT, 0, 0, 0);
 
    //indices
    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffers[2] );
-   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(triangle)*indices.size(), indices.data(), GL_STATIC_DRAW );
+   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(triangle)*gI.indices.size(), gI.indices.data(), GL_STATIC_DRAW );
 
    glBindVertexArray(0);
 
-	std::string imageName = fileName.substr(0,fileName.length()-4)+".png";
-   dr.setVAO(tmpVAO);
-   dr.setTex(fromImage(imageName));//outlineTexture());
-   dr.setNElements(nElements);
-
-   return dr;
-
+	return VAO;
 }
 
-
-Drawable initQuad(JShader& shader){
-   const int nVert=4, dim=3, nIndices=4;
-   const int vStride = nVert*dim*sizeof(GLint);
-   const int tStride = nVert*2*sizeof(GLfloat);
-   const int iStride = nIndices*sizeof(GLuint);
-
+//assumes "x.svg" as input, as well as some "x.png" texture
+Drawable initPolyFromSVG(std::string fileName, JShader& shader){
 	Drawable dr;
 
-   const GLint vertices[nVert][dim] = {
-		{0, 0, 0}, {1, 0, 0},
-		{0, 1, 0}, {1, 1, 0}
-	};
-
-	//why 3?
-   const GLfloat texCoords[4][3] = {
-      {0.f, 0.f}, {1.f, 0.f},
-      {0.f, 1.f}, {1.f, 1.f},
-   };
-   const GLuint indices[nIndices] = {0, 1, 2, 3};
-
-   GLuint tmpVAO;
-   glGenVertexArrays(1, &tmpVAO);
-   glBindVertexArray(tmpVAO);
-
-   GLuint buffers[3];
-   glGenBuffers(3, buffers);
-
-   //vertices
-   glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-   glBufferData(GL_ARRAY_BUFFER, vStride, vertices, GL_STATIC_DRAW);
-   glEnableVertexAttribArray(shader.getPosHandle());
-   glVertexAttribPointer(shader.getPosHandle(), dim, GL_INT, 0, 0, 0);
-
-   //tex coords
-   glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-   glBufferData(GL_ARRAY_BUFFER, tStride, texCoords, GL_STATIC_DRAW);
-   glEnableVertexAttribArray(shader.getTexCoordHandle());
-   glVertexAttribPointer(shader.getTexCoordHandle(), dim, GL_FLOAT, 0, 0, 0);
-
-   //indices
-   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffers[2] );
-   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iStride, indices, GL_STATIC_DRAW );
-
-   glBindVertexArray(0);
-
-	dr.setVAO(tmpVAO);
-	dr.setTex(fromImage("rect.png"));//outlineTexture());
-	dr.setNElements(nIndices);
+	geoInfo gI = SVGtoGeometry(fileName);
+	GLuint VAO = genVAO(gI, shader);
+	
+	std::string imageName = fileName.substr(0,fileName.length()-4)+".png";
+   dr.setVAO(VAO);
+   dr.setTex(fromImage(imageName));//outlineTexture());
+   dr.setNElements(3*gI.indices.size());
 
    return dr;
 }
 
+Drawable initQuad(JShader& shader){
+	Drawable dr;
+
+	std::vector<glm::vec4> vertices={
+		{0,0,0,1}, {1,0,0,1},
+		{1,1,0,1}, {0,1,0,1}
+	};
+	std::vector<glm::vec2> texCoords={
+		{0,0}, {1,0},
+		{1,1}, {0,1}
+	};
+	std::vector<triangle> indices=getConvexIndices(vertices.size());
+	GLuint VAO = genVAO({vertices, texCoords, indices}, shader);
+	
+	dr.setVAO(VAO);
+	dr.setTex(fromImage("rect.png"));//outlineTexture());
+	dr.setNElements(3*indices.size());
+
+   return dr;
+}
+
+//I don't even want to touch this
 Drawable initCube(JShader& shader){
    const int nVert=24, dim=3, nIndices=36;
    const int vStride = nVert*dim*sizeof(GLint);

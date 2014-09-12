@@ -27,6 +27,11 @@ Player::~Player(){
 	//NYI
 }
 
+int Player::setChildren(){
+//	mDrawables[0].addChild(&mDrawables[1]);
+	return 1;
+}
+
 void Player::update(){
 	if (grounded)
 		mVel.y=0.f;

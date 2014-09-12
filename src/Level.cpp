@@ -8,8 +8,8 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 	std::unique_ptr<Population> pop(new Population(
 	initPlayer({vec3(0, 999, -2000),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
-					vec3(400, 400, -400),  //scale
-					vec3(0.2, 0.4f, 0.8f) //color
+					vec3(600, 600, -600),  //scale
+					vec3(1,1,1) //color
 				  }, shader)
 	));
 	
@@ -49,12 +49,19 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 
 std::unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	std::unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
-	Drawable dr = initPolyFromSVG("drawing.svg",shader);//initCube(shader);
+	Drawable dr1 = initPolyFromSVG("drawing.svg",shader);//initCube(shader);
+	Drawable dr2 = initPolyFromSVG("drawing.svg",shader);//initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	dr.setMV(MV);
-   dr.setColor(eI.color);
-	playerPtr.get()->addDrawable(dr);
-
+	dr1.setMV(MV);
+   dr1.setColor(eI.color);
+	playerPtr.get()->addDrawable(dr1);
+/*
+	MV = glm::translate(vec3(0,2.f,0))*glm::scale(vec3(1,-1,1));
+	dr2.setMV(MV);
+	dr2.setColor(eI.color);
+	playerPtr.get()->addDrawable(dr2);
+	playerPtr.get()->setChildren();
+*/
 	return playerPtr;
 }
 

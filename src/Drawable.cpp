@@ -17,6 +17,17 @@ Drawable::~Drawable(){
 	mVAO = 0;
 }
 
+void Drawable::addChild(Drawable * child){
+	std::vector<Drawable *>::iterator drChildIt;
+	for (drChildIt=child->children.begin();drChildIt!=child->children.end();drChildIt++){
+		if (this == *drChildIt){
+			printf("Drawable: cycle created!\n");
+			return;
+		}
+	}
+	children.push_back(child);
+}
+
 void Drawable::setPos(vec3 pos){
 	mPos = pos;
 }
@@ -60,7 +71,6 @@ void Drawable::draw(GLint MVHandle, GLint ColorHandle, mat4 parentMV){
 	mat4 transform = parentMV * MV;
 	glUniformMatrix4fv(MVHandle, 1, GL_FALSE, glm::value_ptr(transform));
 	glUniform4fv(ColorHandle, 1, glm::value_ptr(mColor));
-	//uploadData(MVHandle, ColorHandle); //send MV matrix and color to GPU
 	glBindTexture(GL_TEXTURE_2D, mTex); //Make my texture active
 	glBindVertexArray(mVAO); //Bind my VAO
 	glDrawElements(GL_TRIANGLE_STRIP, mElementCount, GL_UNSIGNED_INT, NULL);
