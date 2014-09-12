@@ -9,9 +9,8 @@ engine using C++ and OpenGL. At the moment the following is working:
 - Basic Player Based Event Handling
 - Gravity and other "physically based" movement
 - Simple non-player entities with potential based AI/movement
+- Geometry from SVG paths (work in progress)
+- Simple Skinning (work in progress)
 
 The next big step is to work on art and music. Ideally I could remove SDL from the picture (which at the moment
-starts the OpenGL context and does Event Handling and sound) and instead use GLFW for OpenGL, OpenAL for audio, and something else for event handling. 
-
-I'd also like to us libRSVG to load in SVG files, rasterize them to textures, and generate OpenGL
-geometry from the SVG files. From there I'd like to implement a basic skinning algorithm. 
+starts the OpenGL context and does Event Handling, image loading and sound) and instead use GLFW for OpenGL, OpenAL for audio, and something else for event handling. However, at the moment it's a pretty attractive package. 
