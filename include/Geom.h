@@ -17,6 +17,7 @@ typedef struct geoInfo{
 	std::vector<glm::vec4> vertices;
 	std::vector<glm::vec2> texCoords;
 	std::vector<triangle> indices;
+	std::vector<glm::vec3> weights;
 } geoInfo;
 
 std::vector<triangle> getConvexIndices(int n);

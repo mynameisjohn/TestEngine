@@ -4,13 +4,15 @@
 #include <glm/gtx/transform.hpp>
 #include <stdio.h>
 
-Drawable::Drawable(){
+Drawable::Drawable(JShader * shader, int mode){
 	MV = mat4();
 	mColor = {1.f, 1.f, 1.f, 1.f};
 	mPos = glm::vec3();
 	visible = true;
 	mElementCount=4;
 	children.clear();
+	mShader = shader;
+	mMode=mode;
 }
 
 Drawable::~Drawable(){
@@ -67,17 +69,25 @@ void Drawable::setNElements(int n){
 	mElementCount = n;
 }
 
-void Drawable::draw(GLint MVHandle, GLint ColorHandle, mat4 parentMV){
+void Drawable::draw(mat4 parentMV){//GLint MVHandle, GLint ColorHandle, mat4 parentMV){
 	mat4 transform = parentMV * MV;
-	glUniformMatrix4fv(MVHandle, 1, GL_FALSE, glm::value_ptr(transform));
-	glUniform4fv(ColorHandle, 1, glm::value_ptr(mColor));
+
+	glUniformMatrix4fv(mShader->getMVHandle(), 1, GL_FALSE, glm::value_ptr(transform));
+	glUniform4fv(mShader->getColorHandle(), 1, glm::value_ptr(mColor));
+	glUniform1i(mShader->getModeHandle(), mMode);
+	std::vector<mat4> rigMats(3);
+	rigMats[0] = glm::translate(vec3(0.2f,0.f,0.f));
+// printf("%lf\n",rigMats[0][0][0]);
+	glUniformMatrix4fv(mShader->getRigMatHandle(),rigMats.size(),GL_FALSE,(glm::value_ptr(rigMats[0])));
+	
+
 	glBindTexture(GL_TEXTURE_2D, mTex); //Make my texture active
 	glBindVertexArray(mVAO); //Bind my VAO
 	glDrawElements(GL_TRIANGLE_STRIP, mElementCount, GL_UNSIGNED_INT, NULL);
 
 	std::vector<Drawable *>::iterator childIt;
 	for (childIt=children.begin(); childIt!=children.end(); childIt++){
-		(*childIt)->draw(MVHandle, ColorHandle, transform);
+		(*childIt)->draw(transform);
 	}
 
 }

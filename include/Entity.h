@@ -13,7 +13,7 @@ class Entity{
 		void setBB(BoundBox bb);
 		void translate(vec3);
 		void addDrawable(Drawable dr);
-		void draw(int MVHandle, int ColorHandle);
+		void draw();//int MVHandle, int ColorHandle);
 		char collidesWith(Entity * e);
 		bool overlapsWith(Entity * e);
 		float toLeft(Entity *);	

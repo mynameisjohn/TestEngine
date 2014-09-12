@@ -29,17 +29,17 @@ void Population::setPlayer(std::unique_ptr<Player> p){
 	aeVec[0] = std::move(p);
 }
 
-void Population::draw(int MVHandle, int ColorHandle){
+void Population::draw(){//int MVHandle, int ColorHandle){
 //	player.get()->draw(MVHandle, ColorHandle);
 
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt;
 
 	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)
-		obsIt->get()->draw(MVHandle, ColorHandle);
+		obsIt->get()->draw();//MVHandle, ColorHandle);
 	
 	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++)
-		aeIt->get()->draw(MVHandle, ColorHandle);
+		aeIt->get()->draw();//MVHandle, ColorHandle);
 }
 
 vec3 Population::getPlayerCenter(){

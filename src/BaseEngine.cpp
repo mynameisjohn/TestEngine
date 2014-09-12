@@ -60,7 +60,7 @@ void BaseEngine::render(){
 	shader.bind();
 
 	cam.updateProj(shader.getProjHandle());
-	pop->draw(shader.getMVHandle(), shader.getColorHandle());
+	pop->draw();//shader.getMVHandle(), shader.getColorHandle(), shader.getModeHandle());
 
 	shader.unbind();
 }

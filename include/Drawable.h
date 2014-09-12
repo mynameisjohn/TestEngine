@@ -1,6 +1,7 @@
 #ifndef DRAWABLE_H
 #define DRAWABLE_H
-#include <GL/gl.h>
+#include "JShader.h"
+//#include <GL/gl.h>
 
 #ifndef GLM_FORCE_RADIANS 
 #define GLM_FORCE_RADIANS 
@@ -14,7 +15,7 @@ using glm::vec3;
 
 class Drawable{
 	public:
-		Drawable();
+		Drawable(JShader * shader = nullptr, int mode=0x1);
 		~Drawable();
 		void identity();
 		void translate(GLfloat x, GLfloat y, GLfloat z);
@@ -22,13 +23,14 @@ class Drawable{
 		void setMV(glm::mat4 newMatrix);
 		void setVAO(GLuint VAO);
 		void setTex(GLuint tex);
+		void setMode(int mode);
 		void setColor(float r, float g, float b);
 		void setColor(vec3 color);
 		void leftMultMV(glm::mat4 left);
 		void setNElements(int n);
 		void uploadData(GLint MVHandle, GLint ColorHandle);
 		void addChild(Drawable * child);
-		void draw(GLint MVHandle, GLint ColorHandle, mat4 parentMV);
+		void draw(mat4 parentMV);//GLint MVHandle, GLint ColorHandle, mat4 parentMV);
 		bool isVisible();
 		int getNumElems();
 		GLuint getVAO();
@@ -43,7 +45,9 @@ class Drawable{
 		GLuint mVAO, mTex;
 		bool visible;
 		int mElementCount;
+		int mMode;
 		std::vector<Drawable *> children;
+		JShader * mShader;
 };
 
 #endif

@@ -4,9 +4,12 @@
 JShader::JShader(){
 	u_MVHandle = -1;
 	u_ProjHandle = -1;
+	u_RigMatHandle = -1;
 	u_ColorHandle = -1;
+	u_ModeHandle = -1;
 	a_PosHandle = -1;
 	a_TexCoordHandle = -1;
+	a_WeightHandle = -1;
 	mVS = 0;
 	mFS = 0;
 }
@@ -56,6 +59,19 @@ bool JShader::loadProgram(){
 	u_MVHandle = getUniformHandle("u_MV");
 	if (u_MVHandle < 0)
 		return false;
+
+	u_ModeHandle = getUniformHandle("u_Mode");
+	if (u_ModeHandle < 0)
+		return false;
+
+	u_RigMatHandle = getUniformHandle("u_RigMat");
+	if (u_ModeHandle < 0)
+		return false;
+	
+	a_WeightHandle = getAttribHandle("a_W");
+	if (u_ModeHandle < 0)
+		return false;
+
 /*
 	a_PosHandle = glGetAttribLocation(mProgramID, "vPosition");
    if (a_PosHandle == -1){
@@ -104,6 +120,14 @@ bool JShader::loadFrag(std::string fragStr){
 	return true;
 }
 
+GLint JShader::getRigMatHandle(){
+	return u_RigMatHandle;
+}
+
+GLint JShader::getWeightHandle(){
+	return a_WeightHandle;
+}
+
 GLint JShader::getPosHandle(){
 	return a_PosHandle;
 }
@@ -122,6 +146,10 @@ GLint JShader::getProjHandle(){
 
 GLint JShader::getColorHandle(){
 	return u_ColorHandle;
+}
+
+GLint JShader::getModeHandle(){
+	return u_ModeHandle;
 }
 
 /*

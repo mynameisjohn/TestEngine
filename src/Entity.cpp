@@ -14,14 +14,14 @@ Entity::Entity(Collider c){
 	mCollider = c;
 }
 
-void Entity::draw(int MVHandle, int ColorHandle){
+void Entity::draw(){//int MVHandle, int ColorHandle){
 /*	std::vector<Drawable>::iterator drIt;
 	for (drIt=mDrawables.begin(); drIt!=mDrawables.end(); drIt++){
 //		drIt->leftMultMV(glm::translate(mTrans));
 		drIt->draw(MVHandle, ColorHandle, glm::translate(getPos()));
 	}
 */
-	mDrawables[0].draw(MVHandle, ColorHandle, glm::translate(getPos()));
+	mDrawables[0].draw(glm::translate(getPos()));//MVHandle, ColorHandle, glm::translate(getPos()));
 }
 
 void Entity::addDrawable(Drawable dr){

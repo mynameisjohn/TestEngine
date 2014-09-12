@@ -18,7 +18,7 @@ class Population{
 		void setPlayer(std::unique_ptr<Player> p);
 		void handleKey(int k);
 		void update();
-		void draw(int, int);
+		void draw();//int, int);
 		void addObs(std::unique_ptr<Obstacle> obs);
 		void addActiveEnt(std::unique_ptr<ActiveEnt> aE);
 		vec4 move();

@@ -51,6 +51,7 @@ geoInfo SVGtoGeometry(std::string svgFile){
    std::vector<glm::vec4> vertices;
 	std::vector<glm::vec2> texCoords;
    std::vector<triangle> indices;
+	std::vector<glm::vec3> weights;
 
 	std::string pathStr = getSVGPathStr(svgFile), d1=" ", d2=",";
 	if (pathStr.length()<=1){
@@ -107,7 +108,13 @@ geoInfo SVGtoGeometry(std::string svgFile){
 	//Maybe change this to check for concavity...much later
 	indices = getConvexIndices(vertices.size());
 
-	return {vertices, texCoords, indices};
+	//Hard coded for now....
+	weights = {
+		{1,0,0}, {0,1,0}, {0,0,1},
+		{0,0,1}, {0,1,0}, {1,0,0}
+	};
+
+	return {vertices, texCoords, indices, weights};
 }
 
 GLuint genVAO(geoInfo gI, JShader& shader){
@@ -115,8 +122,8 @@ GLuint genVAO(geoInfo gI, JShader& shader){
    glGenVertexArrays(1, &VAO);
    glBindVertexArray(VAO);
 
-   GLuint buffers[3];
-   glGenBuffers(3, buffers);
+   GLuint buffers[4];
+   glGenBuffers(4, buffers);
 
    //vertices
    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
@@ -133,15 +140,23 @@ GLuint genVAO(geoInfo gI, JShader& shader){
    //indices
    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffers[2] );
    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(triangle)*gI.indices.size(), gI.indices.data(), GL_STATIC_DRAW );
-
-   glBindVertexArray(0);
+	
+	//weights
+	if (gI.weights.size()){
+		glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*gI.weights.size(), gI.weights.data(), GL_STATIC_DRAW);
+		glEnableVertexAttribArray(shader.getWeightHandle());
+		glVertexAttribPointer(shader.getWeightHandle(), 3, GL_FLOAT, 0, 0, 0);
+	}
+   
+	glBindVertexArray(0);
 
 	return VAO;
 }
 
 //assumes "x.svg" as input, as well as some "x.png" texture
 Drawable initPolyFromSVG(std::string fileName, JShader& shader){
-	Drawable dr;
+	Drawable dr(&shader,3);
 
 	geoInfo gI = SVGtoGeometry(fileName);
 	GLuint VAO = genVAO(gI, shader);
@@ -155,7 +170,7 @@ Drawable initPolyFromSVG(std::string fileName, JShader& shader){
 }
 
 Drawable initQuad(JShader& shader){
-	Drawable dr;
+	Drawable dr(&shader,2);
 
 	std::vector<glm::vec4> vertices={
 		{0,0,0,1}, {1,0,0,1},
@@ -166,7 +181,8 @@ Drawable initQuad(JShader& shader){
 		{1,1}, {0,1}
 	};
 	std::vector<triangle> indices=getConvexIndices(vertices.size());
-	GLuint VAO = genVAO({vertices, texCoords, indices}, shader);
+	std::vector<glm::vec3> weights;
+	GLuint VAO = genVAO({vertices, texCoords, indices, weights}, shader);
 	
 	dr.setVAO(VAO);
 	dr.setTex(fromImage("rect.png"));//outlineTexture());
@@ -182,7 +198,7 @@ Drawable initCube(JShader& shader){
    const int tStride = nVert*2*sizeof(GLfloat);
    const int iStride = nIndices*sizeof(GLuint);
 
-	Drawable dr;
+	Drawable dr(&shader,2);
 	int verticeCount = 24;
 	int faceCount = 12;
 
