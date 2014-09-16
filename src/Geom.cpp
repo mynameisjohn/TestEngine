@@ -5,12 +5,11 @@
 #endif
 #include <tinyxml.h>
 #include <sstream>
-
+#include <glm/gtx/transform.hpp>
 #include "Textures.h"
 
 Rig initRigFromSVG(string fileName, JShader& shader){
 	Rig r(&shader);
-
 	geoInfo gI = SVGtoGeometry(fileName);
    GLuint VAO = genVAO(gI, shader);
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
@@ -26,6 +25,7 @@ Drawable initPolyFromSVG(string fileName, JShader& shader){
 	Drawable dr(&shader,2);
 
 	geoInfo gI = SVGtoGeometry(fileName);
+	gI.weights = vector<vec3>();
 	GLuint VAO = genVAO(gI, shader);
 	
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
@@ -241,7 +241,6 @@ vector<vec4> getPathPoints(string pathStr){
       }
 	}
 
-	cout << relative << endl;
 	return ret;
 }
 geoInfo SVGtoGeometry(string svgFile){
@@ -394,7 +393,6 @@ geoInfo SVGtoGeometry(string svgFile){
    }
 */
 	tmp = getPathPoints(jointStr);
-	cout << tmp.size() << endl;
 
 	for (int i=0;i<tmp.size();i++)
       BonePoints.push_back((vec2(tmp[i])-m)/M);
@@ -405,7 +403,6 @@ geoInfo SVGtoGeometry(string svgFile){
 		for (int i=0;i<BonePoints.size();i++)
 			w[2-i]=(float)exp(-pow(BonePoints[i].y-vertices[j].y,2)/.15);
 		w=glm::normalize(w);
-		cout << w << endl;
 		weights.push_back(w);
 	}
 

@@ -12,6 +12,7 @@ class Player: public ActiveEnt{
 		Player(Collider c);
 		~Player();
 		int setChildren();
+		void setRig();
 		void update();
 		void getHandleInfo();
 		void handleKey(int k);

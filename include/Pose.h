@@ -7,6 +7,9 @@
 class Pose{
 public:
 	Pose();
+	void setMats(std::vector<glm::mat4> matVec);
+	void addMat(glm::mat4 mat);
+	void addMat(std::vector<glm::mat4> matVec);
 	Pose operator*(const float& s);
 	Pose operator+(const Pose& other);
 	float * getPtr();

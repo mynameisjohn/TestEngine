@@ -1,12 +1,29 @@
 #include "Cycle.h"
 #include "Util.h"
+#include <glm/gtx/transform.hpp>
 
 Cycle::Cycle(){
-	poses = vector<Pose>(3);
+	poses.resize(3);
+}
+
+void Cycle::setPoses(vector<Pose> poseVec){
+	if (poseVec.size()==3)
+		poses=poseVec;
+}
+
+void Cycle::addPose(Pose p){
+	if (poses.size() < 3)
+		poses.push_back(p);
+}
+
+void Cycle::addPose(vector<Pose> poseVec){
+	for (int i=0;i<poseVec.size();i++)
+		if (poses.size() < 3)
+			poses.push_back(poseVec[i]);
 }
 
 Cycle Cycle::operator*(const float& s){
-	Cycle ret;
+	Cycle ret = *this;
 	for (int i=0;i<ret.poses.size();i++)
 		ret.poses[i] = ret.poses[i]*s;
 	return ret;

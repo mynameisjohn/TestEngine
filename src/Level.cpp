@@ -54,6 +54,7 @@ unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	r.setMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+	playerPtr.get()->setRig();
 	return playerPtr;
 }
 

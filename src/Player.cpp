@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
-
 #include "Player.h"
+#include <glm/gtx/transform.hpp>
 
 Player::Player() : ActiveEnt(){
 	mSpeed = vec3(40.f, 40.f, 20.12241f);
@@ -25,6 +25,40 @@ Player::Player(vec3 translate, vec3 scale)
 
 Player::~Player(){
 	//NYI
+}
+
+void Player::setRig(){
+	Rig * r = (Rig *)mDrawables[0].get();
+	vector<mat4> joints(3);
+   vector<Pose> poses(3);
+	vector<Cycle> cycles(3);
+
+	//Standing Cycle (identities) is left alone (cycles[0] is good to go)
+
+	//Walking Cycle
+   joints[0]=glm::translate(vec3(-.1f,0,0));
+   joints[1]=glm::translate(vec3(-.1f,0,0));
+   joints[2]=glm::translate(vec3(-.1f,0,0));
+   poses[0].setMats(joints);
+   joints[0]=glm::translate(vec3(.1f,0,0));
+   joints[1]=glm::translate(vec3(.1f,0,0));
+   joints[2]=glm::translate(vec3(.1f,0,0));
+   poses[2].setMats(joints);
+   cycles[1].setPoses(poses);
+
+	//Running Cycle
+   joints[0]=glm::translate(vec3(0,-.1f,0));
+   joints[1]=glm::translate(vec3(0,-.1f,0));
+   joints[2]=glm::translate(vec3(0,-.1f,0));
+   poses[0].setMats(joints);
+   joints[0]=glm::translate(vec3(0,.1f,0));
+   joints[1]=glm::translate(vec3(0,.1f,0));
+   joints[2]=glm::translate(vec3(0,.1f,0));
+   poses[2].setMats(joints);
+//   cycles[1].setPoses(poses);
+   cycles[2].setPoses(poses);
+	
+	r->setCycles(cycles);	
 }
 
 int Player::setChildren(){
@@ -64,4 +98,16 @@ void Player::getHandleInfo(){
 	if (mHandler.getKeyState(SDLK_s))
 		mVel.z += mSpeed.z;
 //	}
+
+	Rig * r = (Rig *)mDrawables[0].get();
+	float c;
+	if (mHandler.getKeyState(SDLK_a) || mHandler.getKeyState(SDLK_d) || mHandler.getKeyState(SDLK_s) || mHandler.getKeyState(SDLK_w)){
+		if (mHandler.getKeyState(SDLK_LSHIFT))
+			c=1.f;//r->set_u({1,mod});
+		else
+			c=0.f;//r->set_u({0,mod});
+	}
+	else
+		c=-1.f;//r->set_u({-1,mod});
+	r->inc_u(c);
 }
