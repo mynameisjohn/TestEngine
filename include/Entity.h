@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <memory>
+
 #include "Collider.h"
 #include "Drawable.h"
 
@@ -12,7 +14,7 @@ class Entity{
 		void setCol(Collider c);
 		void setBB(BoundBox bb);
 		void translate(vec3);
-		void addDrawable(Drawable dr);
+		void addDrawable(unique_ptr<Drawable> dr);
 		void draw();//int MVHandle, int ColorHandle);
 		char collidesWith(Entity * e);
 		bool overlapsWith(Entity * e);
@@ -28,7 +30,7 @@ class Entity{
 		virtual void update(){}
 	protected:
 		Collider mCollider;
-		std::vector<Drawable> mDrawables;
+		vector<unique_ptr<Drawable> > mDrawables;
 		vec3 mTrans;
 		float sigmaSq, A;
 	/* These will be inlined when the time comes

@@ -1,7 +1,6 @@
 #include "Camera.h"
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -24,7 +23,7 @@ void Camera::translate(vec3 trans){
 }
 
 //what a strange method...
-void Camera::push(glm::vec4 player){
+void Camera::push(vec4 player){
 	float dX;
 
 	dX = (player.x-mBB.left());

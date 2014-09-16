@@ -1,5 +1,5 @@
-#ifndef BOUND_RECT
-#define BOUND_RECT
+#ifndef BOUNDRECT_H
+#define BOUNDRECT_H
 
 #include "glmRect.h"
 

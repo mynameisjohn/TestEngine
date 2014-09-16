@@ -1,9 +1,10 @@
 #include "glmBox.h"
+/*
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vec){
   std::cout << "<" << vec.x << ", " << vec.y << ", " << vec.z << ">";
   return os;
 }
-
+*/
 glmBox::glmBox(){
 	mPos=vec3();
 	mDim=vec3(1, 1, 1);

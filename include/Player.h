@@ -3,6 +3,7 @@
 
 #include "ActiveEnt.h"
 #include "KeyboardHandler.h"
+#include "Rig.h"
 
 class Player: public ActiveEnt{
 	public:

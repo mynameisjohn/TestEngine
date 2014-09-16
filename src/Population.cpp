@@ -1,12 +1,4 @@
 #include "Population.h"
-#include <stdio.h>
-
-/*
-TODO
-	-- Create morea active entities
-	-- Create a proper update method
-	-- hurr durr i don't know something will come up
-*/
 
 Population::Population(){
 	obsVec.clear();
@@ -17,21 +9,18 @@ Population::~Population(){
 //NYI
 }
 
-Population::Population(std::unique_ptr<Player> p){
+Population::Population(unique_ptr<Player> p){
 	obsVec.clear();
 	aeVec.clear();
 	aeVec.push_back(std::move(p));
 	player = (Player *)aeVec[0].get();
-	//player = std::move(p);
 }
 
-void Population::setPlayer(std::unique_ptr<Player> p){
+void Population::setPlayer(unique_ptr<Player> p){
 	aeVec[0] = std::move(p);
 }
 
-void Population::draw(){//int MVHandle, int ColorHandle){
-//	player.get()->draw(MVHandle, ColorHandle);
-
+void Population::draw(){
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt;
 
@@ -47,12 +36,12 @@ vec3 Population::getPlayerCenter(){
 }
 
 //These two vectors are held by smart pointers so I can polymorphize
-void Population::addObs(std::unique_ptr<Obstacle> obs){
+void Population::addObs(unique_ptr<Obstacle> obs){
 //default copy constructor???
 	obsVec.push_back(std::move(obs));//unique_ptr<Obstacle>(new Obstacle(obs)));
 }
 
-void Population::addActiveEnt(std::unique_ptr<ActiveEnt> aE){
+void Population::addActiveEnt(unique_ptr<ActiveEnt> aE){
 	aeVec.push_back(std::move(aE));//unique_ptr<ActiveEnt>(new ActiveEnt(aE)));
 }
 
@@ -60,16 +49,9 @@ void Population::handleKey(int k){
 	player->handleKey(k);
 }
 
-glm::vec4 Population::move(){
+vec4 Population::move(){
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt;
-/*
-	//move with respect to (WRT) walls and obstacles	
-	player.get()->moveWRT_walls();
-	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
-		player.get()->moveWRT_ent(obsIt->get());
-	}
-*/
 	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++){
 		aeIt->get()->move();
 		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
@@ -79,8 +61,6 @@ glm::vec4 Population::move(){
 	
 	return vec4(getPlayerCenter(), fabs(player->getVel().x));
 }
-
-
 
 void Population::update(){
 	ObsPtrVec::iterator obsIt;

@@ -1,9 +1,10 @@
 #include "glmRect.h"
+/*
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vec){
 	std::cout << "<" << vec.x << ", " << vec.y << ">";
 	return os;
 }
-
+*/
 glmRect::glmRect(){
 	mPos=vec2();
 	mDim=vec2(100.f, 100.f);

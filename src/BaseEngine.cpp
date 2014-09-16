@@ -11,7 +11,6 @@ TODO
 #include "Level.h"
 #include "BaseEngine.h"
 
-#include <iostream>
 #include <string>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -26,7 +25,7 @@ BaseEngine::~BaseEngine(){
 	glBindVertexArray(0);
 }
 
-bool BaseEngine::init(std::string vertShaderSrc, std::string fragShaderSrc){
+bool BaseEngine::init(string vertShaderSrc, string fragShaderSrc){
 	//Load Vertex/Fragment Shader files
    if (!shader.loadVert(vertShaderSrc) ||
        !shader.loadFrag(fragShaderSrc))

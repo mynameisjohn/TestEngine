@@ -37,7 +37,7 @@ void Collider::clearSub(){
 void Collider::translate(vec3 trans){
 	mBB.translate(trans);
 	
-	std::vector<BoundRect>::iterator rectIt;
+	vector<BoundRect>::iterator rectIt;
 	for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
 		rectIt->translate(vec2(trans));//trans.x,trans.y);
 }
@@ -66,7 +66,7 @@ char Collider::collidesWith(Collider& other){
 //Checks to see if a) bounding boxes collided and b) one of the sub-rects overlap
 bool Collider::overlapsWith(Collider& other){
 	if (collidesWith(other)){
-		std::vector<BoundRect>::iterator rectIt1, rectIt2;
+		vector<BoundRect>::iterator rectIt1, rectIt2;
 		for (rectIt1=mSubs.begin(); rectIt1!=mSubs.end(); rectIt1++){
 			for (rectIt2=mSubs.begin(); rectIt2!=mSubs.end(); rectIt2++){
 				if (rectIt1->collidesWith(*rectIt2))

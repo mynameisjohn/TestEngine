@@ -1,3 +1,6 @@
+#ifndef COLBUF_H
+#define COLBUF_H
+
 #include "CircBuf.h"
 
 class ColBuf : public CircBuf<int>{
@@ -15,3 +18,5 @@ private:
 inline bool ColBuf::collisionDetected(){
 	return collisions == (x|y|z);
 }
+
+#endif

@@ -1,6 +1,9 @@
 #ifndef GLM_RECT
 #define GLM_RECT
 
+#include "Util.h"
+
+/*
 #ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
 #endif
@@ -14,7 +17,7 @@ std::ostream& operator<<(std::ostream& os, const glm::vec2& vec);
 #endif
 
 using glm::vec2;
-
+*/
 class glmRect{
 public:
 	glmRect();

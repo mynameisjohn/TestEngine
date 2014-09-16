@@ -1,3 +1,6 @@
+#ifndef CIRCBUF_H
+#define CIRCBUF_H
+
 #include <vector>
 
 template <class T>
@@ -26,3 +29,5 @@ public:
 	void add(T x);
 	T last();
 };
+
+#endif

@@ -1,6 +1,9 @@
 #ifndef GLM_BOX
 #define GLM_BOX
 
+#include "Util.h"
+
+/*
 #ifndef GLM_FORCE_RADIANS 
 #define GLM_FORCE_RADIANS 
 #endif
@@ -14,7 +17,7 @@ using glm::vec3;
 #define VEC_PRINT
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vec);
 #endif
-
+*/
 class glmBox{
 	public:
 		glmBox();

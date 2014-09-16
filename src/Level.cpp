@@ -1,11 +1,12 @@
 #include "Level.h"
+#include "Rig.h"
 #include <glm/gtx/transform.hpp> 
 
-std::unique_ptr<Population> initLevel(JShader& shader){
+unique_ptr<Population> initLevel(JShader& shader){
 	const vec3 wallMin(-1000, -600, -2000);
 	const vec3 wallMax(7000, 2000, -4000);
 
-	std::unique_ptr<Population> pop(new Population(
+	unique_ptr<Population> pop(new Population(
 	initPlayer({vec3(0, 999, -2000),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
 					vec3(600, 600, -600),  //scale
@@ -47,55 +48,45 @@ std::unique_ptr<Population> initLevel(JShader& shader){
 	return pop;
 }
 
-std::unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
-	std::unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
-	Drawable dr1 = initPolyFromSVG("drawing.svg",shader);//initCube(shader);
-	Drawable dr2 = initPolyFromSVG("drawing.svg",shader);//initCube(shader);
+unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
+	unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
+	Rig r = initRigFromSVG("drawing.svg", shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	dr1.setMV(MV);
-   dr1.setColor(eI.color);
-	playerPtr.get()->addDrawable(dr1);
-/*
-	MV = glm::translate(vec3(0,2.f,0))*glm::scale(vec3(1,-1,1));
-	dr2.setMV(MV);
-	dr2.setColor(eI.color);
-	playerPtr.get()->addDrawable(dr2);
-	playerPtr.get()->setChildren();
-*/
+	r.setMV(MV);
+	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
 	return playerPtr;
 }
 
-std::unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader){ 
-	Obstacle obs(eI.translate, eI.scale);
+unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader){ 
+	unique_ptr<Obstacle> obs(new Obstacle(eI.translate, eI.scale));
 	Drawable dr = initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.setMV(MV);
    dr.setColor(eI.color);
-	obs.addDrawable(dr);
-	
-	return std::unique_ptr<Obstacle>(new Obstacle(obs));
+	obs.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
+	return obs;
 }
 
-std::unique_ptr<ActiveEnt> initAe(EntInfo eI, JShader& shader){
-   ActiveEnt aE(eI.translate, eI.scale);
+unique_ptr<ActiveEnt> initAe(EntInfo eI, JShader& shader){
+   unique_ptr<ActiveEnt> aE(new ActiveEnt(eI.translate, eI.scale));
 	Drawable dr = initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.setMV(MV);
    dr.setColor(eI.color);
-	aE.addDrawable(dr);
+	aE.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
 	
-	return std::unique_ptr<ActiveEnt>(new ActiveEnt(aE));
+	return aE;
 }
 
-std::unique_ptr<Wall> initWall(EntInfo eI, char orientation, JShader& shader){
-	Wall w(eI.translate, eI.scale, orientation);
+unique_ptr<Wall> initWall(EntInfo eI, char orientation, JShader& shader){
+	unique_ptr<Wall> w(new Wall(eI.translate, eI.scale, orientation));
 	Drawable dr = initQuad(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.setMV(MV);
    dr.setColor(eI.color);
-	w.addDrawable(dr);
+	w.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
 	
-	return std::unique_ptr<Wall>(new Wall(w));
+	return w;
 }
 
 //Sort of a black box at the moment...
@@ -134,3 +125,4 @@ void initWalls(vec3 min, vec3 max, Population * pop, JShader& shader){
 					vec3(1,1,1) //color
 				  }, 'x', shader));
 }
+
