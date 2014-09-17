@@ -48,9 +48,9 @@ void Rig::set_u(vec2 u){
 }
 
 void Rig::inc_u(float c){
-	const float dt = 0.1f;
+	const float dt = 0.15f;
 	float dx = dt*(c-u.x);
-	set_u({clamp(u.x+dx,-1,1), u.y+dt});
+	set_u({clamp(u.x+dx,-1,1), u.y+.02f});
 }
 
 void Rig::draw(mat4 parentMV){
@@ -70,6 +70,7 @@ void Rig::draw(mat4 parentMV){
    //Recursively draw children
    vector<Drawable *>::iterator childIt;
    for (childIt=children.begin(); childIt!=children.end(); childIt++){
+
       (*childIt)->draw(transform);
    }
 }
@@ -80,5 +81,5 @@ Cycle Rig::getCurrentCycle(){
 }
 
 Pose Rig::getCurrentPose(){
-	return getCurrentCycle().getCurrentPose(sin(u.y));
+	return getCurrentCycle().getCurrentPose((u.y));
 }

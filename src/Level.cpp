@@ -27,7 +27,7 @@ unique_ptr<Population> initLevel(JShader& shader){
 					vec3(400, 400, -400),  //scale
 					vec3(0.2, 0.4f, 0.8f) //color
 				  }, shader));
-	
+/*	
 	pop->addActiveEnt(initAe(
 				  {vec3(6000, 999, -3500),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
@@ -41,7 +41,7 @@ unique_ptr<Population> initLevel(JShader& shader){
 					vec3(400, 400, -400),  //scale
 					vec3(0.8f, 0.2f, 0.4f) //color
 				  }, shader));
-	
+*/	
 	//This doesn't make a front wall, so you can go over the edge
 	initWalls(wallMin, wallMax, pop.get(), shader);
 	
@@ -54,6 +54,12 @@ unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	r.setMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+
+	r = initRigFromSVG("drawing.svg", shader);
+	MV = glm::translate(vec3(-.1f,0,-.2f));
+	r.setMV(MV);playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+	
+
 	playerPtr.get()->setRig();
 	return playerPtr;
 }

@@ -12,7 +12,8 @@ public:
    Cycle operator*(const float& s);
    Cycle operator+(const Cycle& other);
    float * getPtr();
-   Pose getCurrentPose(float v);
+	Pose blendPoses(unsigned int p1, unsigned int p2, float x);
+   Pose getCurrentPose(float& v);
 private:
    std::vector<Pose> poses;
 };

@@ -5,6 +5,13 @@ Pose::Pose(){
 	joints.resize(3);
 }
 
+Pose::Pose(vector<mat4> matVec){
+	if (matVec.size() == 3)
+		joints = matVec;
+	else
+		joints.resize(3);
+}
+
 void Pose::setMats(vector<mat4> matVec){
 	if (matVec.size()==3)
 		joints=matVec;
@@ -37,4 +44,13 @@ Pose Pose::operator+(const Pose& other){
 
 float * Pose::getPtr(){
 	return (float *)joints.data();//glm::value_ptr(joints[0]);
+}
+
+//make a better constructor!
+Pose Pose::blend(const Pose& other, float x){
+	return Pose ({
+		glm::mix(joints[0], other.joints[0], x),
+		glm::mix(joints[1], other.joints[1], x),
+		glm::mix(joints[2], other.joints[2], x)
+	});
 }

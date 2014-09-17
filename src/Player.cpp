@@ -27,38 +27,41 @@ Player::~Player(){
 	//NYI
 }
 
+using glm::translate;
+using glm::rotate;
+typedef vec3 v3;
+
 void Player::setRig(){
+
+	mDrawables[0].get()->addChild(mDrawables[1].get());
+
 	Rig * r = (Rig *)mDrawables[0].get();
 	vector<mat4> joints(3);
    vector<Pose> poses(3);
 	vector<Cycle> cycles(3);
-
-	//Standing Cycle (identities) is left alone (cycles[0] is good to go)
-
-	//Walking Cycle
-   joints[0]=glm::translate(vec3(-.1f,0,0));
-   joints[1]=glm::translate(vec3(-.1f,0,0));
-   joints[2]=glm::translate(vec3(-.1f,0,0));
-   poses[0].setMats(joints);
-   joints[0]=glm::translate(vec3(.1f,0,0));
-   joints[1]=glm::translate(vec3(.1f,0,0));
-   joints[2]=glm::translate(vec3(.1f,0,0));
-   poses[2].setMats(joints);
-   cycles[1].setPoses(poses);
-
-	//Running Cycle
-   joints[0]=glm::translate(vec3(0,-.1f,0));
-   joints[1]=glm::translate(vec3(0,-.1f,0));
-   joints[2]=glm::translate(vec3(0,-.1f,0));
-   poses[0].setMats(joints);
-   joints[0]=glm::translate(vec3(0,.1f,0));
-   joints[1]=glm::translate(vec3(0,.1f,0));
-   joints[2]=glm::translate(vec3(0,.1f,0));
-   poses[2].setMats(joints);
-//   cycles[1].setPoses(poses);
-   cycles[2].setPoses(poses);
+	vec3 z(0,0,1);
 	
+	joints[0]=glm::translate(v3(-.2f,.1f,0))*rotate(1.57f/6,-z);
+	joints[1]=joints[0]*glm::scale(v3(1.5,.9,1))*glm::translate(v3(-.2f,.2f,0))*rotate(1.57f/3,-z);
+	joints[2]=joints[1]*glm::translate(v3(.0f,.2f,0))*rotate(1.57f/3,-z);
+	poses[2].setMats(joints);
+	
+	joints[0]=glm::translate(v3(.25,0,0))*rotate(1.57f/6,z);
+	joints[1]=joints[0]*rotate(1.57f/15,z);
+	joints[2]=joints[1];
+	poses[0].setMats(joints);
+	cycles[1].setPoses(poses);
+	
+
 	r->setCycles(cycles);	
+	r = (Rig *)mDrawables[1].get();
+
+	Pose p=poses[0];
+	poses[0]=poses[1];
+	poses[1]=poses[2];
+	poses[2]=p;
+	cycles[1].setPoses(poses);
+	r->setCycles(cycles);
 }
 
 int Player::setChildren(){
@@ -109,5 +112,7 @@ void Player::getHandleInfo(){
 	}
 	else
 		c=-1.f;//r->set_u({-1,mod});
+	r->inc_u(c);
+	r = (Rig *)mDrawables[1].get();
 	r->inc_u(c);
 }
