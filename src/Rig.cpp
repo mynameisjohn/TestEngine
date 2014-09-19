@@ -4,22 +4,6 @@
 
 Rig::Rig(JShader * shader)
 : Drawable(shader, 3){
-	cycles = vector<Cycle>(3);
-	u=vec2(-1,-1);
-
-	vector<mat4> joints(3);
-	vector<Pose> poses(3);
-	joints[0]=glm::translate(vec3(.1f,.1f,0));
-   joints[1]=glm::translate(vec3(.1f,-.1f,0));
-   joints[2]=glm::translate(vec3(-.1f,.1f,0));
-
-	poses[0].setMats(joints);
-	poses[1].setMats(joints);	
-	poses[2].setMats(joints);
-
-	cycles[0].setPoses(poses);
-	cycles[1].setPoses(poses);
-	cycles[2].setPoses(poses);
 }
 
 Rig::~Rig(){
@@ -50,15 +34,16 @@ void Rig::set_u(vec2 u){
 void Rig::inc_u(float c){
 	const float dt = 0.15f;
 	float dx = dt*(c-u.x);
-	set_u({clamp(u.x+dx,-1,1), u.y+.02f});
+	set_u({clamp(u.x+dx,-1,1), u.y+.11f});
 }
 
 void Rig::draw(mat4 parentMV){
 	//Find inherited transform
    mat4 transform = parentMV * MV;
    //Upload data to device
+	vector<mat4> rigData = getCurrentPose().getMats();
    glUniformMatrix4fv(mShader->getMVHandle(), 1, GL_FALSE, glm::value_ptr(transform));
-	glUniformMatrix4fv(mShader->getRigMatHandle(),3,GL_FALSE,getCurrentPose().getPtr());
+	glUniformMatrix4fv(mShader->getRigMatHandle(),3,GL_FALSE,(GLfloat *)rigData.data());//getCurrentPose().getPtr());
    glUniform4fv(mShader->getColorHandle(), 1, glm::value_ptr(mColor));
    glUniform1i(mShader->getModeHandle(), mMode);
    
@@ -69,10 +54,8 @@ void Rig::draw(mat4 parentMV){
 
    //Recursively draw children
    vector<Drawable *>::iterator childIt;
-   for (childIt=children.begin(); childIt!=children.end(); childIt++){
-
+   for (childIt=children.begin(); childIt!=children.end(); childIt++)
       (*childIt)->draw(transform);
-   }
 }
 
 Cycle Rig::getCurrentCycle(){

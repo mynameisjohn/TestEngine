@@ -36,18 +36,45 @@ void Player::setRig(){
 	mDrawables[0].get()->addChild(mDrawables[1].get());
 
 	Rig * r = (Rig *)mDrawables[0].get();
+/*
+	vector<fdualquat> joints;
+   vector<Pose> poses;
+	vector<Cycle> cycles;
+*/
+
 	vector<mat4> joints(3);
+//	vector<fdualquat> joints(3);
    vector<Pose> poses(3);
 	vector<Cycle> cycles(3);
-	vec3 z(0,0,1);
+	const vec3 z(0,0,1);
+	fdualquat d = createDQ_t({.25f,0,0})*createDQ_r(vec4(z,1.57f/6));
 	
-	joints[0]=glm::translate(v3(-.2f,.1f,0))*rotate(1.57f/6,-z);
-	joints[1]=joints[0]*glm::scale(v3(1.5,.9,1))*glm::translate(v3(-.2f,.2f,0))*rotate(1.57f/3,-z);
-	joints[2]=joints[1]*glm::translate(v3(.0f,.2f,0))*rotate(1.57f/3,-z);
+//	joints[0]=getDQMat(createDQ_t(vec3())*createDQ_r(vec4(-z,1.57f/6)));
+//glm::translate(v3(-.2f,.1f,0))*rotate(1.57f/6,-z);
+	joints[1]=getDQMat(createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5)));//joints[0];//*getDQMat(createDQ_t(vec3(-.25f,0,0))*createDQ_r(vec4(-z,1.57f/3)));
+//joints[0]*glm::scale(v3(1.5,.9,1))*glm::translate(v3(-.2f,.2f,0))*rotate(1.57f/3,-z);
+	joints[2]=joints[1]*getDQMat(createDQ_t(vec3(0,.1f,0))*createDQ_r(vec4(-z,1.57f/3)));
+//joints[1]*glm::translate(v3(.0f,.2f,0))*rotate(1.57f/3,-z);
+	
+	cout << getDQMat(fdualquat()) << endl;
+
+	poses[2]=Pose({
+		fdualquat(),//identity?
+		createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5)),
+		createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5))*createDQ_t(vec3(0,.1f,0))*createDQ_r(vec4(-z,1.57f/3))
+	});
 	poses[2].setMats(joints);
 	
-	joints[0]=glm::translate(v3(.25,0,0))*rotate(1.57f/6,z);
-	joints[1]=joints[0]*rotate(1.57f/15,z);
+
+	poses[0]=Pose({
+		createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6)),
+		createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6))*createDQ_r(vec4(z,1.57f/12)),
+		createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6))*createDQ_r(vec4(z,1.57f/12))
+	});
+		
+	joints[0]=getDQMat(createDQ_t(vec3(.25f,0,0))*createDQ_r(vec4(z,1.57f/6)));
+//glm::translate(v3(.25,0,0))*rotate(1.57f/6,z);
+	joints[1]=joints[0]*getDQMat(createDQ_r(vec4(z,1.57f/15)));
 	joints[2]=joints[1];
 	poses[0].setMats(joints);
 	cycles[1].setPoses(poses);

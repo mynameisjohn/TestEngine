@@ -401,7 +401,7 @@ geoInfo SVGtoGeometry(string svgFile){
 		vec3 w;//this is always 3...
 //		cout << vertices[j] << endl;
 		for (int i=0;i<BonePoints.size();i++)
-			w[2-i]=(float)exp(-pow(BonePoints[i].y-vertices[j].y,2)/.1f);
+			w[2-i]=(float)exp(-pow(BonePoints[i].y-vertices[j].y,2)/.15f);
 		w=glm::normalize(w);
 		weights.push_back(w);
 	}

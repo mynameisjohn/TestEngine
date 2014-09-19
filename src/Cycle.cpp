@@ -1,6 +1,5 @@
-#include "Cycle.h"
 #include "Util.h"
-#include <glm/gtx/transform.hpp>
+#include "Cycle.h"
 
 Cycle::Cycle(){
 	poses.resize(3);
@@ -45,7 +44,6 @@ Pose Cycle::getCurrentPose(float& x){
 	unsigned int p1=0, p2=1;
 	if (x>=x4)
       x=x1;
-
    if (x1 <= x && x < x2)
 		return blendPoses(0,1,x-x1);
    else if (x2 <= x && x < x3)
@@ -59,16 +57,16 @@ Pose Cycle::getCurrentPose(float& x){
 
 /*
 //	vec3 L = getLagrangeInterpolants(v);
-	float x; vec3 L;
+	float v=x;vec3 L;
 	//do something about this nonsense pleas
 	//do something about this nonsense pleasee
-	if (v>x4) v=x1;
+//	if (v>x4) v=x1;
 	L.x=((v-x2)*(v-x3)*(v-x4))/((x1-x2)*(x1-x3)*(x1-x4));
 	L.y=((v-x1)*(v-x3)*(v-x4))/((x2-x1)*(x2-x3)*(x2-x4));
 	L.z=((v-x2)*(v-x1)*(v-x4))/((x3-x1)*(x3-x2)*(x3-x4));
 	L.x+=((v-x2)*(v-x3)*(v-x1))/((x4-x1)*(x4-x3)*(x4-x2));
 
-//	L = getLagrangeInterpolants(sin(v));
+	L = getLagrangeInterpolants(sin(v));
 	return poses[0]*L.x+poses[1]*L.y+poses[2]*L.z;
 */
 }
