@@ -3,13 +3,13 @@
 #include <glm/gtx/transform.hpp> 
 
 unique_ptr<Population> initLevel(JShader& shader){
-	const vec3 wallMin(-1000, -600, -2000);
+	const vec3 wallMin(-1000, -600, -1000);
 	const vec3 wallMax(7000, 2000, -4000);
 
 	unique_ptr<Population> pop(new Population(
 	initPlayer({vec3(0, 999, -2000),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
-					vec3(600, 600, -600),  //scale
+					vec3(500, 600, -2),  //scale
 					vec3(1,1,1) //color
 				  }, shader)
 	));
@@ -49,7 +49,7 @@ unique_ptr<Population> initLevel(JShader& shader){
 }
 
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
-	unique_ptr<Player> playerPtr(new Player(eI.translate, vec3(1,1.6,1)*eI.scale));
+	unique_ptr<Player> playerPtr(new Player(eI.translate, vec3(0.5f,1.6,1)*eI.scale));
 	Drawable dr = initPolyFromSVG("coat.svg",shader);
 	Rig r = initRigFromSVG("drawing.svg", shader);
 
@@ -57,19 +57,23 @@ unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	r.setMV(MV);
    playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-	MV = glm::translate(vec3(.02f,0,-.001f));
+	MV = glm::translate(vec3(.02f,0,-.1f));
 	r.setMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-	
-	MV = glm::translate(vec3(0,.65f,-.002f));
+
+	MV = glm::translate(vec3(0,.65f,-.2f));
 	dr.setMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
-
-
+	
+	MV = glm::translate(vec3(.09f,0,-.3f))*glm::scale(vec3(0.8,0.8,1));
+	r = initRigFromSVG("arm.svg", shader);
+	r.setMV(MV);
+	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+/*
 	r = initRigFromSVG("drawing.svg", shader);
 	r.setMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-	
+*/	
 
 	playerPtr.get()->setRig();
 	return playerPtr;
