@@ -22,7 +22,7 @@ Drawable initPolyFromSVG(string fileName, JShader& shader);
 Rig initRigFromSVG(string fileName, JShader& shader);
 vector<triangle> getConvexIndices(int n);
 map<string,string> getSVGPathMap(string svgFile);
-geoInfo SVGtoGeometry(string svgFile);
+geoInfo SVGtoGeometry(string svgFile, bool rigged);
 GLuint genVAO(geoInfo gI, JShader& shader);
 
 #endif

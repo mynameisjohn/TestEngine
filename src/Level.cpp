@@ -49,15 +49,26 @@ unique_ptr<Population> initLevel(JShader& shader){
 }
 
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
-	unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
+	unique_ptr<Player> playerPtr(new Player(eI.translate, vec3(1,1.6,1)*eI.scale));
+	Drawable dr = initPolyFromSVG("coat.svg",shader);
 	Rig r = initRigFromSVG("drawing.svg", shader);
+
+
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	r.setMV(MV);
+   playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+	MV = glm::translate(vec3(.02f,0,-.001f));
+	r.setMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+	
+	MV = glm::translate(vec3(0,.65f,-.002f));
+	dr.setMV(MV);
+	playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
+
 
 	r = initRigFromSVG("drawing.svg", shader);
-	MV = glm::translate(vec3(-.1f,0,-.2f));
-	r.setMV(MV);playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+	r.setMV(MV);
+	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
 	
 
 	playerPtr.get()->setRig();

@@ -10,7 +10,7 @@
 
 Rig initRigFromSVG(string fileName, JShader& shader){
 	Rig r(&shader);
-	geoInfo gI = SVGtoGeometry(fileName);
+	geoInfo gI = SVGtoGeometry(fileName,1);
    GLuint VAO = genVAO(gI, shader);
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
    r.setVAO(VAO);
@@ -24,10 +24,9 @@ Rig initRigFromSVG(string fileName, JShader& shader){
 Drawable initPolyFromSVG(string fileName, JShader& shader){
 	Drawable dr(&shader,2);
 
-	geoInfo gI = SVGtoGeometry(fileName);
+	geoInfo gI = SVGtoGeometry(fileName,0);
 	gI.weights = vector<vec3>();
-	GLuint VAO = genVAO(gI, shader);
-	
+	GLuint VAO = genVAO(gI, shader);	
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
    dr.setVAO(VAO);
    dr.setTex(fromImage(imageName));//outlineTexture());
@@ -243,7 +242,7 @@ vector<vec4> getPathPoints(string pathStr){
 
 	return ret;
 }
-geoInfo SVGtoGeometry(string svgFile){
+geoInfo SVGtoGeometry(string svgFile, bool rigged){
    vector<vec4> vertices;
 	vector<vec2> texCoords;
    vector<triangle> indices;
@@ -252,48 +251,7 @@ geoInfo SVGtoGeometry(string svgFile){
 
 	map<string,string> pathMap = getSVGPathMap(svgFile);
 
-	string outlineStr = pathMap.at("outline"), jointStr = pathMap.at("joints"), d1=" ", d2=",";
-
-/*	
-	vector<vec4>::iterator vIt;
-	vector<vec4> temp;
-	vec4 m,M;
-
-
-	//Form texture coordinates	
-	temp = getPathPoints(outlineStr);
-	for (vIt=temp.begin(); vIt!=temp.end(); vIt++){
-		m.x = min(m.x,vIt->x); m.y = min(m.y,vIt->y);
-      M.x = max(M.x,vIt->x); M.y = max(M.y,vIt->y);
-	}
-	M -= m;
-	for (vIt=temp.begin(); vIt!=temp.end(); vIt++){
-		vec2 tC;
-		vec4 vert;
-		*vIt -= m;
-		tC = vec2(*vIt/M);
-		texCoords.push_back(tC);
-		vIt->y=M.y-vIt->y;//flipping y direction
-		vert = *vIt/max(M.x,M.y);
-		vert.z=0; vert.w=1;
-		vertices.push_back(vert);
-		cout << vertices.back() << endl;
-	}
-
-	indices = getConvexIndices(vertices.size());
-
-	temp = getPathPoints(jointStr);//temp.size() better be 3
-	cout << temp.size() << endl;
-	for (vIt=vertices.begin(); vIt!=vertices.end(); vIt++){
-		vec3 w(
-			(float)exp(-pow(temp[0].y-vIt->y,2)/.15f),
-			(float)exp(-pow(temp[1].y-vIt->y,2)/.15f),
-			(float)exp(-pow(temp[2].y-vIt->y,2)/.15f)
-		);
-//		weights.push_back(glm::normalize(w));
-	}
-*/
-
+	string outlineStr = pathMap.at("outline"), d1=" ", d2=",";
 
 	vector<vec4> tmp = getPathPoints(outlineStr);
 
@@ -304,36 +262,6 @@ geoInfo SVGtoGeometry(string svgFile){
 	bool relative = (outlineStr[0] == 'm');
 	outlineStr = outlineStr.substr(2,outlineStr.length());
 	size_t pos;
-/*	
-	while (pos != string::npos){
-		switch (outlineStr[0]){
-			case 'L':
-			case 'l':
-            pos = outlineStr.find(d1);
-            outlineStr.erase(0,pos+d1.length());
-            break;
-         case 'z':
-         case 'Z':
-            pos = string::npos;
-            break;
-         default:
-				vec2 p;
-				pos = outlineStr.find(d2);
-				string ptStr = outlineStr.substr(0,pos);
-				if (!(stringstream(ptStr) >> p.x))
-					cout << "Incorrect path string\n";
-				outlineStr.erase(0,pos+d2.length());
-				pos = outlineStr.find(d1);
-				ptStr = outlineStr.substr(0,pos);
-				if (!(stringstream(ptStr) >> p.y))
-               cout << "Incorrect path string\n";
-				outlineStr.erase(0,pos+d2.length());
-				if (texCoords.size() && relative)
-					p += texCoords.back();
-//				texCoords.push_back(p);
-		}
-	}
-*/
 	for (int i=0;i<tmp.size();i++)
 		texCoords.push_back(vec2(tmp[i]));	
 
@@ -350,92 +278,28 @@ geoInfo SVGtoGeometry(string svgFile){
 		*it /= M;
 		vert.y = M.y-vert.y;
 		vertices.push_back(vec4(vert/max(M.x,M.y),0,1));
-//		cout << vertices.back() << endl;
 	}
 
 	//Maybe change this to check for concavity...much later
 	indices = getConvexIndices(vertices.size());
 
-	//Hard coded for now....
-	vector<vec2> BonePoints;
-/*
-	pos=0;
-   relative = (jointStr[0] == 'm');
-   jointStr = jointStr.substr(2,jointStr.length());
-   while (pos != string::npos){
-      switch (jointStr[0]){
-         case 'L':
-         case 'l':
-            pos = jointStr.find(d1);
-            jointStr.erase(0,pos+d1.length());
-            break;
-         case 'z':
-         case 'Z':
-            pos = string::npos;
-            break;
-         default:
-            vec2 p;
-            pos = jointStr.find(d2);
-            string ptStr = jointStr.substr(0,pos);
-            if (!(stringstream(ptStr) >> p.x))
-               cout << "Incorrect path string\n";
-            jointStr.erase(0,pos+d2.length());
-            pos = jointStr.find(d1);
-            ptStr = jointStr.substr(0,pos);
-            if (!(stringstream(ptStr) >> p.y))
-               cout << "Incorrect path string\n";
-            jointStr.erase(0,pos+d2.length());
-				p = (p-m)/M;
-            if (BonePoints.size() && relative)
-               p += BonePoints.back();
-            //BonePoints.push_back(p);
-      }
-   }
-*/
-	tmp = getPathPoints(jointStr);
+	if (rigged){
+		string jointStr = pathMap.at("joints");
+		vector<vec2> BonePoints;
+		tmp = getPathPoints(jointStr);
 
-	for (int i=0;i<tmp.size();i++)
-      BonePoints.push_back((vec2(tmp[i])-m)/M);
+		for (int i=0;i<tmp.size();i++)
+			BonePoints.push_back((vec2(tmp[i])-m)/M);
 
-	for (int j=0;j<vertices.size();j++){
-		vec3 w;//this is always 3...
-//		cout << vertices[j] << endl;
-		for (int i=0;i<BonePoints.size();i++)
-			w[2-i]=(float)exp(-pow(BonePoints[i].y-vertices[j].y,2)/.15f);
-		w=glm::normalize(w);
-		weights.push_back(w);
+		for (int j=0;j<vertices.size();j++){
+			vec3 w;//this is always 3...
+			for (int i=0;i<BonePoints.size();i++)
+				w[2-i]=(float)exp(-pow(BonePoints[i].y-vertices[j].y,2)/.15f);
+			w=glm::normalize(w);
+			weights.push_back(w);
+		}
 	}
 
-/*
-	weights = {
-{0.984471, 0.175527, 0.00261039},
- 
-{0.894276, 0.447171, 0.0175529},
- 
-{0.505167, 0.856476, 0.10609},
- 
-{0.284419, 0.934142, 0.215603},
- 
-{0.178233, 0.927066, 0.32982},
- 
-{0.0418761, 0.68865, 0.723883},
- 
-{0.00269803, 0.212666, 0.977121},
- 
-{0.00244645, 0.203027, 0.97917},
- 
-{0.0359489, 0.653881, 0.755742},
- 
-{0.144524, 0.910338, 0.38781},
- 
-{0.284419, 0.934142, 0.215603},
- 
-{0.514486, 0.851283, 0.103057},
- 
-{0.898393, 0.43887, 0.0168529},
- 
-{0.984471, 0.175527, 0.00261039}};
-*/
 	return {vertices, texCoords, indices, weights};
 }
 

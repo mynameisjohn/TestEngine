@@ -3,7 +3,7 @@
 #include <glm/gtx/transform.hpp>
 
 Player::Player() : ActiveEnt(){
-	mSpeed = vec3(40.f, 40.f, 20.12241f);
+	mSpeed = vec3(400.f, 30.f, 10.f);
 	mDash = 1.5f;
 	A = 10000.f;	
 	sigmaSq = 5000.f;
@@ -16,7 +16,7 @@ Player::Player(Collider c) : ActiveEnt(c){
 
 Player::Player(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale){
-	mSpeed = vec3(40.f, 40.f, 20.12241f);
+	mSpeed = vec3(20.f, 40.f, 20.12241f);
 	mDash=1.5f;
 	A = 10000.f;	
 	sigmaSq = 5000.f;
@@ -34,51 +34,34 @@ typedef vec3 v3;
 void Player::setRig(){
 
 	mDrawables[0].get()->addChild(mDrawables[1].get());
+	mDrawables[0].get()->addChild(mDrawables[2].get());
 
 	Rig * r = (Rig *)mDrawables[0].get();
-/*
-	vector<fdualquat> joints;
-   vector<Pose> poses;
-	vector<Cycle> cycles;
-*/
 
 	vector<mat4> joints(3);
-//	vector<fdualquat> joints(3);
    vector<Pose> poses(3);
 	vector<Cycle> cycles(3);
 	const vec3 z(0,0,1);
-	fdualquat d = createDQ_t({.25f,0,0})*createDQ_r(vec4(z,1.57f/6));
-	
-//	joints[0]=getDQMat(createDQ_t(vec3())*createDQ_r(vec4(-z,1.57f/6)));
-//glm::translate(v3(-.2f,.1f,0))*rotate(1.57f/6,-z);
-	joints[1]=getDQMat(createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5)));//joints[0];//*getDQMat(createDQ_t(vec3(-.25f,0,0))*createDQ_r(vec4(-z,1.57f/3)));
-//joints[0]*glm::scale(v3(1.5,.9,1))*glm::translate(v3(-.2f,.2f,0))*rotate(1.57f/3,-z);
-	joints[2]=joints[1]*getDQMat(createDQ_t(vec3(0,.1f,0))*createDQ_r(vec4(-z,1.57f/3)));
-//joints[1]*glm::translate(v3(.0f,.2f,0))*rotate(1.57f/3,-z);
-	
-	cout << getDQMat(fdualquat()) << endl;
+	vector<fdualquat> mJoints;
 
-	poses[2]=Pose({
-		fdualquat(),//identity?
-		createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5)),
-		createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5))*createDQ_t(vec3(0,.1f,0))*createDQ_r(vec4(-z,1.57f/3))
-	});
-	poses[2].setMats(joints);
-	
+	//Stand cycle is identity(cycles[0] by default)
 
-	poses[0]=Pose({
-		createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6)),
-		createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6))*createDQ_r(vec4(z,1.57f/12)),
-		createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6))*createDQ_r(vec4(z,1.57f/12))
-	});
-		
-	joints[0]=getDQMat(createDQ_t(vec3(.25f,0,0))*createDQ_r(vec4(z,1.57f/6)));
-//glm::translate(v3(.25,0,0))*rotate(1.57f/6,z);
-	joints[1]=joints[0]*getDQMat(createDQ_r(vec4(z,1.57f/15)));
-	joints[2]=joints[1];
-	poses[0].setMats(joints);
+	//Walk Cycle
+	mJoints.push_back(createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6)));
+	mJoints.push_back(mJoints.back()*createDQ_r(vec4(z,1.57f/12)));
+	mJoints.push_back(mJoints.back()*fdualquat());
+	poses[0]=Pose(mJoints);
+	mJoints.clear();
+
+	mJoints.push_back(fdualquat());
+	mJoints.push_back(mJoints.back()*createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5)));
+	mJoints.push_back(mJoints.back()*createDQ_t(vec3(0,.1f,0))*createDQ_r(vec4(-z,1.57f/3)));
+	poses[2]=Pose(mJoints);
+	mJoints.clear();
+	
 	cycles[1].setPoses(poses);
 	
+
 
 	r->setCycles(cycles);	
 	r = (Rig *)mDrawables[1].get();

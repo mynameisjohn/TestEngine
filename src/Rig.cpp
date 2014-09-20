@@ -34,7 +34,7 @@ void Rig::set_u(vec2 u){
 void Rig::inc_u(float c){
 	const float dt = 0.15f;
 	float dx = dt*(c-u.x);
-	set_u({clamp(u.x+dx,-1,1), u.y+.11f});
+	set_u({clamp(u.x+dx,-1,1), u.y+.09f});
 }
 
 void Rig::draw(mat4 parentMV){

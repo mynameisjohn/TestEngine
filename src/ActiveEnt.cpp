@@ -36,6 +36,7 @@ void ActiveEnt::update(vec3 a){
 	vec3 dt(mVel.x*a.x < 0.f ? 7.5f : 0.75f, 0.f, mVel.z*a.z < 0.f ? 7.5f : 0.75f);
 	mVel = glm::clamp(mVel+dt*a, -mSpeed, mSpeed);
 
+	//jump
 	if (grounded && fabs(a.y) > 0.25f)
 		mVel.y += mSpeed.y;
 	
