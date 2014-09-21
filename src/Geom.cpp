@@ -10,10 +10,11 @@
 
 Rig initRigFromSVG(string fileName, JShader& shader){
 	Rig r(&shader);
+	r.setCycles(getRigCycles(fileName));
 	geoInfo gI = SVGtoGeometry(fileName,1);
    GLuint VAO = genVAO(gI, shader);
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
-   r.setVAO(VAO);
+	r.setVAO(VAO);
    r.setTex(fromImage(imageName));//outlineTexture());
    r.setNElements(3*gI.indices.size());
 
@@ -181,12 +182,63 @@ vector<triangle> getConvexIndices(int n){
 	return indices;
 }
 
+vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
+	vector<Cycle> cycles;
+	vector<Pose> poses;
+	vector<fdualquat> joints;
+	vec3 T;
+	vec4 R;
+
+	TiXmlDocument doc(svgFile);
+   if (!doc.LoadFile()){
+      cout << "Unable to load SVG file " << svgFile << "\n";
+   }
+
+   TiXmlHandle mHandle(&doc);
+	TiXmlElement * rig, * cycle, * pose, * joint;
+	rig = mHandle.FirstChild("svg").FirstChild("g").FirstChild("rig").ToElement();
+		if (!rig) 
+			return cycles;
+//	cout << (bool)rig->FirstChildElement("cycle")->FirstChildElement("pose")->FirstChildElement("trans") << endl;
+	for (cycle = rig->FirstChildElement("cycle"); cycle; cycle=cycle->NextSiblingElement("cycle")){
+		for (pose = cycle->FirstChildElement("pose"); pose; pose=pose->NextSiblingElement("pose")){
+			for (joint = pose->FirstChildElement("trans"); joint; joint=joint->NextSiblingElement("trans")){
+				string inStr = joint->Attribute("T");
+				size_t pos=0;
+				string d=",";
+				for (int i=0;i<3;i++){
+					pos = inStr.find(d);
+					stringstream(inStr.substr(0,pos)) >> T[i];
+					inStr.erase(0,pos+d.length());
+				}
+				inStr = joint->Attribute("R");
+				pos=0;
+				for (int i=0;i<4;i++){
+					pos = inStr.find(d);//in degrees
+					stringstream(inStr.substr(0,pos)) >> R[i];
+//					cout << R << "\n";
+					inStr.erase(0,pos+d.length());
+				}
+//				cout << T << ", " << R << endl;
+				joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
+//				cout << joints.back() << endl;
+			}
+			poses.emplace_back(joints);
+			joints.clear();
+		}
+		cycles.emplace_back(poses);
+		poses.clear();
+	}
+//	cout << cycles.size() << endl;
+	return cycles;
+}
+
 map<string,string> getSVGPathMap(string svgFile){
 	map<string,string> pathMap;
 
 	TiXmlDocument doc(svgFile);
 	if (!doc.LoadFile()){
-		cout << "Unable to load SVG file\n";
+		cout << "Unable to load SVG file " << svgFile << "\n";
 	}
 
 	TiXmlHandle mHandle(&doc);
@@ -200,7 +252,8 @@ map<string,string> getSVGPathMap(string svgFile){
 //    cout << string(mElement->Attribute("id")) + "\n \n";
       mElement = mElement->NextSiblingElement("path");//->ToElement();
    }
-
+	mElement = mHandle.FirstChild("svg").FirstChild("g").FirstChild("rig").ToElement();
+//	if (mElement) printRig(mElement);
 	return pathMap;
 }
 
@@ -242,12 +295,14 @@ vector<vec4> getPathPoints(string pathStr){
 
 	return ret;
 }
+
+
 geoInfo SVGtoGeometry(string svgFile, bool rigged){
+
    vector<vec4> vertices;
 	vector<vec2> texCoords;
    vector<triangle> indices;
 	vector<vec3> weights;
-
 
 	map<string,string> pathMap = getSVGPathMap(svgFile);
 
@@ -289,8 +344,9 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 		tmp = getPathPoints(jointStr);
 
 		for (int i=0;i<tmp.size();i++)
-			BonePoints.push_back((vec2(tmp[i])-m)/M);
+			BonePoints.push_back((vec2(tmp[i])-m)/max(M.x,M.y));
 
+		//Use this opportunity to switch the transform origin
 		for (int j=0;j<vertices.size();j++){
 			vec3 w;//this is always 3...
 			for (int i=0;i<BonePoints.size();i++)

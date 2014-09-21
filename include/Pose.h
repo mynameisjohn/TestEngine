@@ -24,7 +24,7 @@ public:
 	Pose operator+(const Pose& other);
 	Pose blend(const Pose& other, float x);
 	float * getPtr();
-	vector<mat4> getMats();
+	std::vector<glm::mat4> getMats();
 private:
 	std::vector<glm::mat4> joints;
 	std::vector<fdualquat> mJoints;

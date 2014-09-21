@@ -38,6 +38,11 @@ void Player::setRig(){
 	mDrawables[2].get()->addChild(mDrawables[3].get());
 
 	Rig * r = (Rig *)mDrawables[0].get();
+	r->set_u({1.f,-1.f});
+	r = (Rig *)mDrawables[1].get();
+	r->set_u({1.f,1.f});
+/*
+	Rig * r = (Rig *)mDrawables[0].get();
 
 	vector<mat4> joints(3);
    vector<Pose> poses(3);
@@ -63,7 +68,6 @@ void Player::setRig(){
 	cycles[1].setPoses(poses);
 	
 
-
 	r->setCycles(cycles);	
 	r = (Rig *)mDrawables[1].get();
 
@@ -75,7 +79,22 @@ void Player::setRig(){
 	r->setCycles(cycles);
 
 	r = (Rig *)mDrawables[3].get();
+	mJoints.push_back(createDQ_r(vec4(z,1.57f/12)));
+	mJoints.push_back(mJoints.back()*createDQ_r(vec4(z,1.57f/12)));
+	mJoints.push_back(mJoints.back()*fdualquat());
+	poses[0]=Pose(mJoints);
+	mJoints.clear();
+
+	mJoints.push_back(createDQ_t(vec3())*createDQ_r(vec4(z,1.57f/12)));
+   mJoints.push_back(mJoints.back()*createDQ_r(vec4(z,1.57f/12)));
+   mJoints.push_back(mJoints.back()*fdualquat());
+   poses[2]=Pose(mJoints);
+   mJoints.clear();
+
+	cycles[0].setPoses(poses);
+	cycles[1].setPoses(poses);
 	r->setCycles(cycles);
+*/
 }
 
 int Player::setChildren(){

@@ -21,6 +21,7 @@ Drawable initCube(JShader& shader);
 Drawable initPolyFromSVG(string fileName, JShader& shader);
 Rig initRigFromSVG(string fileName, JShader& shader);
 vector<triangle> getConvexIndices(int n);
+vector<Cycle> getRigCycles(string svgFile);
 map<string,string> getSVGPathMap(string svgFile);
 geoInfo SVGtoGeometry(string svgFile, bool rigged);
 GLuint genVAO(geoInfo gI, JShader& shader);

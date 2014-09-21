@@ -10,24 +10,13 @@ protected:
 	int idx;
 	int dim;
 public:
-	CircBuf(int dim);
-/*{
-		this->dim=dim;
-		data.clear();
-		data.resize(dim);
-		idx=-1;
-	}
-
-	inline void add(T x){
-		idx = (idx+1)%dim;
-		data[idx] = x;
-	}
-	inline T last(){
-		return data[idx];
-	}
-*/
+	CircBuf(int dim=1);
+	CircBuf(std::vector<T> in);
 	void add(T x);
+	unsigned int size();
 	T last();
+	void cycle();
+	T get(int i);
 };
 
 #endif

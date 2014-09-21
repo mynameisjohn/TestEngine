@@ -12,14 +12,31 @@ float clamp(float v, float m, float M){
    return min(max(v,m),M);
 }
 
+float degToRad(float d){
+	return (float)d*M_PI/180.f;
+}
+
+float radToDeg(float r){
+	return (float)r*180./M_PI;
+}
+
 fdualquat createDQ_t(vec3 trans){
 	return fdualquat({1,0,0,0},{0,vec3(0.5f*trans)});
 }
 
-fdualquat createDQ_r(vec4 rot){
+fdualquat createDQ_r(fquat rot){
+	cout << rot << endl;
 	vec3 axis = glm::normalize(vec3(rot.x, rot.y, rot.z));
-	rot.w *= 0.5f;
-	return fdualquat({cos(rot.w),sin(rot.w)*axis},{0,vec3()});
+	float angle = 0.5f*degToRad(rot.w);
+	return fdualquat({cos(angle),sin(angle)*axis},{0,vec3()});
+}
+
+fdualquat createDQ_r(vec4 rot){
+	vec3 axis = glm::normalize(vec3(rot.y, rot.z, rot.w));
+	float angle = 0.5f*degToRad(rot.x);
+	//rot.w *= 0.5f;
+	return fdualquat({cos(angle),sin(angle)*axis},{0,vec3()});
+	//return fdualquat({cos(rot.w),sin(rot.w)*axis},{0,vec3()});
 }
 
 mat4 getDQMat(const fdualquat& Q){

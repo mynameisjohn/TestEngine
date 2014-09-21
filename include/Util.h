@@ -22,8 +22,11 @@ using namespace std;
 float min(float v1, float v2);
 float max(float v1, float v2);
 float clamp(float v, float m, float M);
+float degToRad(float d);
+float radToDeg(float r);
 
 fdualquat createDQ_t(glm::vec3 trans);
+fdualquat createDQ_r(glm::fquat rot);
 fdualquat createDQ_r(glm::vec4 trans);
 mat4 getDQMat(const fdualquat&);
 fdualquat dslerp(const fdualquat&, const fdualquat&, float);//const fdualquat& a, const fdualquat& b, float x);
