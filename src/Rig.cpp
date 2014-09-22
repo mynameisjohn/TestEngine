@@ -60,9 +60,11 @@ void Rig::draw(mat4 parentMV){
 
 Cycle Rig::getCurrentCycle(){
 	vec3 L = getLagrangeInterpolants(u.x);
+
    return cycles[0]*L.x+cycles[1]*L.y+cycles[2]*L.z;
 }
 
 Pose Rig::getCurrentPose(){
+//	cout << u << endl;
 	return getCurrentCycle().getCurrentPose((u.y));
 }

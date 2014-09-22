@@ -14,6 +14,7 @@ Rig initRigFromSVG(string fileName, JShader& shader){
 	geoInfo gI = SVGtoGeometry(fileName,1);
    GLuint VAO = genVAO(gI, shader);
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
+	r.leftMultMV(glm::translate(gI.offset));
 	r.setVAO(VAO);
    r.setTex(fromImage(imageName));//outlineTexture());
    r.setNElements(3*gI.indices.size());
@@ -199,7 +200,7 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 	rig = mHandle.FirstChild("svg").FirstChild("g").FirstChild("rig").ToElement();
 		if (!rig) 
 			return cycles;
-//	cout << (bool)rig->FirstChildElement("cycle")->FirstChildElement("pose")->FirstChildElement("trans") << endl;
+
 	for (cycle = rig->FirstChildElement("cycle"); cycle; cycle=cycle->NextSiblingElement("cycle")){
 		for (pose = cycle->FirstChildElement("pose"); pose; pose=pose->NextSiblingElement("pose")){
 			for (joint = pose->FirstChildElement("trans"); joint; joint=joint->NextSiblingElement("trans")){
@@ -216,12 +217,9 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 				for (int i=0;i<4;i++){
 					pos = inStr.find(d);//in degrees
 					stringstream(inStr.substr(0,pos)) >> R[i];
-//					cout << R << "\n";
 					inStr.erase(0,pos+d.length());
 				}
-//				cout << T << ", " << R << endl;
 				joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
-//				cout << joints.back() << endl;
 			}
 			poses.emplace_back(joints);
 			joints.clear();
@@ -229,7 +227,6 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 		cycles.emplace_back(poses);
 		poses.clear();
 	}
-//	cout << cycles.size() << endl;
 	return cycles;
 }
 
@@ -246,14 +243,14 @@ map<string,string> getSVGPathMap(string svgFile){
 	if (!mElement){
 		cout << "Couldn't find path element in SVG document\n";
 	}
-//	string ret = mElement->Attribute("d");
+	
 	while (mElement){
 		pathMap[mElement->Attribute("id")] = mElement->Attribute("d");
-//    cout << string(mElement->Attribute("id")) + "\n \n";
       mElement = mElement->NextSiblingElement("path");//->ToElement();
    }
+	
 	mElement = mHandle.FirstChild("svg").FirstChild("g").FirstChild("rig").ToElement();
-//	if (mElement) printRig(mElement);
+	
 	return pathMap;
 }
 
@@ -298,11 +295,11 @@ vector<vec4> getPathPoints(string pathStr){
 
 
 geoInfo SVGtoGeometry(string svgFile, bool rigged){
-
    vector<vec4> vertices;
 	vector<vec2> texCoords;
    vector<triangle> indices;
 	vector<vec3> weights;
+	vec3 offset;
 
 	map<string,string> pathMap = getSVGPathMap(svgFile);
 
@@ -354,9 +351,22 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 			w=glm::normalize(w);
 			weights.push_back(w);
 		}
+
+		float len = 0;
+		int k=0;
+		for (int i=0;i<BonePoints.size();i++){
+			if (glm::length(BonePoints[i]) > len){
+				k=i;
+				len=glm::length(BonePoints[i]);
+			}
+		}
+
+		for (int i=0;i<vertices.size();i++)
+			vertices[i] -= vec4(BonePoints[k],0,0);
+		offset = vec3(BonePoints[k],0);
 	}
 
-	return {vertices, texCoords, indices, weights};
+	return {vertices, texCoords, indices, weights, offset};
 }
 
 GLuint genVAO(geoInfo gI, JShader& shader){

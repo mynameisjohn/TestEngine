@@ -44,7 +44,7 @@ mat4 getDQMat(const fdualquat& Q){
 }
 
 fdualquat dslerp(const fdualquat& a, const fdualquat& b, float x){//const fdualquat& a, const fdualquat& b, float x){
-	return fdualquat(glm::mix(a.real,b.real, x),glm::mix(a.dual,b.dual, x));
+	return glm::normalize(fdualquat(glm::mix(a.real,b.real, x),glm::lerp(a.dual,b.dual, x)));
 }
 
 vec3 getLagrangeInterpolants(float x){

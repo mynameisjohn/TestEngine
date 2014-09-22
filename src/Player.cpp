@@ -36,11 +36,14 @@ void Player::setRig(){
 	mDrawables[0].get()->addChild(mDrawables[1].get());
 	mDrawables[0].get()->addChild(mDrawables[2].get());
 	mDrawables[2].get()->addChild(mDrawables[3].get());
+	mDrawables[2].get()->addChild(mDrawables[4].get());
+
 
 	Rig * r = (Rig *)mDrawables[0].get();
-	r->set_u({1.f,-1.f});
+	r->set_u({1.f,0});
 	r = (Rig *)mDrawables[1].get();
-	r->set_u({1.f,1.f});
+	r->set_u({1.f,2.f});
+
 /*
 	Rig * r = (Rig *)mDrawables[0].get();
 
@@ -150,9 +153,5 @@ void Player::getHandleInfo(){
 	r->inc_u(c);
 	r = (Rig *)mDrawables[3].get();
 	r->inc_u(c);
-
-	static float y=0.f;
-	mDrawables[2].get()->leftMultMV(glm::translate(vec3(0.f,0.0001f*(sin(2.f*y)+sin(y)),0.f)));
-	y+=0.4f;
 
 }

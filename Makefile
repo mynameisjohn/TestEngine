@@ -1,6 +1,6 @@
 CXX = g++
 LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer -lm -lGL -lGLU -lGLEW -lstdc++ -ltinyxml
-CFLAGS = -O1 -std=gnu++11 -MMD -g
+CFLAGS = -std=gnu++11 -MMD -g
 INCLUDES = -I include
 
 #thanks to bobah on SO

@@ -9,7 +9,7 @@ unique_ptr<Population> initLevel(JShader& shader){
 	unique_ptr<Population> pop(new Population(
 	initPlayer({vec3(0, 999, -2000),   //translate
 					vec4(1, 0, 0, 0.f),    //rotate
-					vec3(300, 400, -2),  //scale
+					vec3(300, 300, -2),  //scale
 					vec3(1,1,1) //color
 				  }, shader)
 	));
@@ -49,28 +49,37 @@ unique_ptr<Population> initLevel(JShader& shader){
 }
 
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
-	unique_ptr<Player> playerPtr(new Player(eI.translate, vec3(0.5f,1.6,1)*eI.scale));
+	unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
 	Drawable dr = initPolyFromSVG("coat.svg",shader);
 	Rig r = initRigFromSVG("drawing.svg", shader);
 
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	r.setMV(MV);
+	r.leftMultMV(MV);
    playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-	MV = glm::translate(vec3(.02f,0,-.1f));
-	r.setMV(MV);
+
+	r = initRigFromSVG("drawing.svg", shader);
+	MV = glm::translate(vec3(-0.0925432, -0.923909,-.1f));
+	r.leftMultMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
 
-	MV = glm::translate(vec3(-.02f,.65f,-.2f));
-	dr.setMV(MV);
+	MV = glm::translate(vec3(-.12f,-.3,-.2f));
+	dr.leftMultMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
 	
 	MV = glm::translate(vec3(.1f,0,-.3f))*glm::scale(vec3(0.8,0.8,1));
 	r = initRigFromSVG("arm.svg", shader);
-	r.setMV(MV);
+	r.leftMultMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
+	
+	MV = glm::translate(vec3(0,.9f,.02f))*glm::scale(vec3(0.45,0.4,1));
+	dr = initPolyFromSVG("face.svg",shader);
+	dr.leftMultMV(MV);
+   playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
+
+
 /*
 	r = initRigFromSVG("drawing.svg", shader);
-	r.setMV(MV);
+	r.leftMultMV(MV);
 	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
 */	
 
@@ -82,7 +91,7 @@ unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader){
 	unique_ptr<Obstacle> obs(new Obstacle(eI.translate, eI.scale));
 	Drawable dr = initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	dr.setMV(MV);
+	dr.leftMultMV(MV);
    dr.setColor(eI.color);
 	obs.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
 	return obs;
@@ -92,7 +101,7 @@ unique_ptr<ActiveEnt> initAe(EntInfo eI, JShader& shader){
    unique_ptr<ActiveEnt> aE(new ActiveEnt(eI.translate, eI.scale));
 	Drawable dr = initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	dr.setMV(MV);
+	dr.leftMultMV(MV);
    dr.setColor(eI.color);
 	aE.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
 	
@@ -103,7 +112,7 @@ unique_ptr<Wall> initWall(EntInfo eI, char orientation, JShader& shader){
 	unique_ptr<Wall> w(new Wall(eI.translate, eI.scale, orientation));
 	Drawable dr = initQuad(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	dr.setMV(MV);
+	dr.leftMultMV(MV);
    dr.setColor(eI.color);
 	w.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
 	

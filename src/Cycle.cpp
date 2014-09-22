@@ -28,7 +28,7 @@ void Cycle::addPose(vector<Pose> poseVec){
 Cycle Cycle::operator*(const float s){
 	Cycle ret(*this);
 	for (int i=0;i<ret.poses.size();i++)
-		ret.poses[i] = ret.poses[i]*s;
+		ret.poses[i] = this->poses[i]*s;
 	return ret;
 }
 
@@ -45,13 +45,10 @@ Pose Cycle::blendPoses(unsigned int p1, unsigned int p2, float x){
 
 //this is slow but works for now... just like everything else
 Pose Cycle::getCurrentPose(float x){
-	const float x1=-1.f, x2=0.f, x3=1.f, x4=2.f;
 	int p1, p2;
 	p1 = (int)x;
 	p2 = (p1+1)%poses.size();
 	float s = x-(float)p1;
 	p1 %= poses.size();
-
 	return blendPoses(p1,p2,s);
-
 }

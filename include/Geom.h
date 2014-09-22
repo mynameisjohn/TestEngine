@@ -14,6 +14,7 @@ typedef struct geoInfo{
 	vector<vec2> texCoords;
 	vector<triangle> indices;
 	vector<vec3> weights;
+	vec3 offset;
 } geoInfo;
 
 Drawable initQuad(JShader& shader);
