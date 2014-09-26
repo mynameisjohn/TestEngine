@@ -34,7 +34,8 @@
      inkscape:window-height="1078"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     borderlayer="true" />
   <metadata
      id="metadata3989">
     <rdf:RDF>
@@ -52,13 +53,14 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-		
-       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 321.48884,378.91999 8.10827,51.26952 3.66887,46.72686 -0.45237,43.33225 -8.44733,38.6885 -5.79287,50.39366 -3.14548,80.71619 26.23895,5.00856 63.70043,-1.95739 23.29924,-7.09178 -12.58762,-77.82267 -2.66888,-41.35698 -4.74826,-46.26506 1.98388,-43.65579 3.9797,-54.92083 -23.33447,-45.08535 -16.07541,-19.59303 -36.44444,0.92265 z"
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 321.48884,378.91999 8.10827,51.26952 3.66887,46.72686 -0.45237,43.33225 -8.44733,38.6885 -5.79287,50.39366 -11.14548,80.71619 26.23895,5.00856 49.70043,-1.95739 27.29924,-7.09178 1.41238,-77.82267 1.33112,-41.35698 -4.74826,-46.26506 1.98388,-43.65579 3.9797,-54.92083 -23.33447,-45.08535 -16.07541,-19.59303 -36.44444,0.92265 z"
        id="outline"
        inkscape:connector-curvature="0"
-		 
        sodipodi:nodetypes="ccccccccccccccccccc"
-       inkscape:label="#path3031" />
+       inkscape:label="#path3031"
+       inkscape:export-filename="/home/john/TestEngine/coat.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>

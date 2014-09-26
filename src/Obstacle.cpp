@@ -7,6 +7,9 @@ Obstacle::Obstacle(){
 	sigmaSq *= sigmaSq;
 }
 
+Obstacle::Obstacle(Entity * f) : Entity(f){
+}
+
 Obstacle::Obstacle(vec3 translate, vec3 scale)
 : Entity(translate,scale){
 	colorOsc = 0.f;

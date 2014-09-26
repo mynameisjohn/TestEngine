@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<drawable name="leg1" fileName="leg.svg" type="r">
+	<drawable name="leg2" fileName="leg.svg" type="r">
+	<drawable name="body" fileName="coat.png" type="t">
+		<drawable name="arm" fileName="arm.svg" type="r">
+		<drawable name="head" fileName="face.svg" type="t">
+		</drawable>
+		</drawable>
+	</drawable>
+	</drawable>
+</drawable>

@@ -14,7 +14,7 @@ class Drawable{
 		void translate(GLfloat x, GLfloat y, GLfloat z);
 		void setMV(mat4 newMatrix);
 		void setVAO(GLuint VAO);
-		void setTex(GLuint tex);
+		virtual void setTex(GLuint tex);
 		void setMode(int mode);
 		void setColor(float r, float g, float b);
 		void setColor(vec3 color);

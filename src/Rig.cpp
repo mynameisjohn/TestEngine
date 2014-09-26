@@ -16,6 +16,10 @@ void Rig::setCycles(vector<Cycle> cycleVec){
 		cycles=cycleVec;
 }
 
+void Rig::setTex(GLuint tex){
+	mTex = tex;
+}
+
 void Rig::addCycle(Cycle c){
 	if (cycles.size() < 3)
 		cycles.push_back(c);

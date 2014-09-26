@@ -22,6 +22,16 @@ ActiveEnt::ActiveEnt(vec3 translate, vec3 scale) : Entity(translate, scale){
    sigmaSq *= sigmaSq;
 }
 
+ActiveEnt::ActiveEnt(Entity * frame) : Entity(frame){
+   mVel = vec3();
+	mSpeed = vec3(50.f, 40.f, 30.f);
+   speedOsc=0.f;
+   grounded=false;
+	A = 50000.f;
+   sigmaSq = 200.f;
+   sigmaSq *= sigmaSq;
+}
+
 ActiveEnt::ActiveEnt(Collider c) : Entity(c){
 	//NYI
 }

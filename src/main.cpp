@@ -107,6 +107,9 @@ bool init(BaseEngine& engine){
 	glDepthFunc(GL_LESS);
 	//glEnable(GL_CULL_FACE); //maybe put this back later...
    glEnable(GL_MULTISAMPLE);
+
+	glEnable(GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    
 	return true;
 }

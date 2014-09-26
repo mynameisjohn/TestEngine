@@ -14,6 +14,7 @@ public:
 	void inc_u(float c);
 	void set_u(vec2 u);
 	void draw(mat4 parentMV);
+	void setTex(GLuint tex);
 	Cycle getCurrentCycle();
 	Pose getCurrentPose();
 private:

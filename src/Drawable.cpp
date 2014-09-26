@@ -52,6 +52,7 @@ void Drawable::setVAO(GLuint VAO){
 
 void Drawable::setTex(GLuint tex){
 	mTex = tex;
+	mMode = 2;
 }
 
 void Drawable::leftMultMV(mat4 left){

@@ -8,6 +8,7 @@
 class Player: public ActiveEnt{
 	public:
 		Player();
+		Player(Entity *);
 		Player(vec3 translate, vec3 scale);
 		Player(Collider c);
 		~Player();

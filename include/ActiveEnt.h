@@ -1,12 +1,14 @@
+
 #ifndef ACTIVEENT_H
 #define ACTIVEENT_H
-
+#include <stdlib.h>
 #include "Entity.h"
 #include <stdio.h>
 
 class ActiveEnt: public Entity{
 	public:
 		ActiveEnt();
+		ActiveEnt(Entity *);
 		ActiveEnt(vec3 translate, vec3 scale);
 		ActiveEnt(Collider c);
 		void update(vec3 a);//NYI

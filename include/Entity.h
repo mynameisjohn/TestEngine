@@ -6,10 +6,14 @@
 #include "Collider.h"
 #include "Drawable.h"
 
+typedef std::map<std::string, std::unique_ptr<Drawable> > SceneGraph;
+
 class Entity{
 	public:
 		Entity();
+		Entity(Entity *);
 		Entity(vec3 translate, vec3 scale);
+		Entity(vec3 translate, vec3 scale, SceneGraph SG);
 		Entity(Collider c);
 		void setCol(Collider c);
 		void setBB(BoundBox bb);
@@ -28,9 +32,11 @@ class Entity{
 		vec3 center();
 		virtual vec3 getPotential(vec3 pos);
 		virtual void update(){}
+		Collider * getCollider(){return &mCollider;}
 	protected:
 		Collider mCollider;
 		vector<unique_ptr<Drawable> > mDrawables;
+		SceneGraph mSkeleton;
 		vec3 mTrans;
 		float sigmaSq, A;
 	/* These will be inlined when the time comes

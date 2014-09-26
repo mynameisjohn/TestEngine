@@ -3,21 +3,6 @@
 
 #include "Util.h"
 
-/*
-#ifndef GLM_FORCE_RADIANS
-#define GLM_FORCE_RADIANS
-#endif
-
-#include <glm/glm.hpp>
-#include <iostream>
-
-#ifndef VEC2_PRINT
-#define VEC2_PRINT
-std::ostream& operator<<(std::ostream& os, const glm::vec2& vec);
-#endif
-
-using glm::vec2;
-*/
 class glmRect{
 public:
 	glmRect();

@@ -1,12 +1,13 @@
 #include "Geom.h"
+#include "Textures.h"
 
 #ifndef TIXML_USE_STL
 #define TIXML_USE_STL
 #endif
+
 #include <tinyxml.h>
 #include <sstream>
 #include <glm/gtx/transform.hpp>
-#include "Textures.h"
 
 Rig initRigFromSVG(string fileName, JShader& shader){
 	Rig r(&shader);
@@ -37,8 +38,14 @@ Drawable initPolyFromSVG(string fileName, JShader& shader){
    return dr;
 }
 
+Drawable initTexQuad(string imageName, JShader& shader){
+	Drawable dr = initQuad(shader);
+	dr.setTex(fromImage(imageName));
+	return dr;
+}
+
 Drawable initQuad(JShader& shader){
-	Drawable dr(&shader,2);
+	Drawable dr(&shader,1);
 
 	vector<vec4> vertices={
 		{0,0,0,1}, {1,0,0,1},
@@ -53,7 +60,6 @@ Drawable initQuad(JShader& shader){
 	GLuint VAO = genVAO({vertices, texCoords, indices, weights}, shader);
 	
 	dr.setVAO(VAO);
-	dr.setTex(fromImage("rect.png"));//outlineTexture());
 	dr.setNElements(3*indices.size());
 
    return dr;
@@ -187,8 +193,10 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 	vector<Cycle> cycles;
 	vector<Pose> poses;
 	vector<fdualquat> joints;
+	//vector<QuatVec> joints;
 	vec3 T;
 	vec4 R;
+	//fquat R;
 
 	TiXmlDocument doc(svgFile);
    if (!doc.LoadFile()){
@@ -196,15 +204,16 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
    }
 
    TiXmlHandle mHandle(&doc);
-	TiXmlElement * rig, * cycle, * pose, * joint;
+	TiXmlElement * rig, * cycle, * pose, * transform;
+
 	rig = mHandle.FirstChild("svg").FirstChild("g").FirstChild("rig").ToElement();
 		if (!rig) 
 			return cycles;
 
 	for (cycle = rig->FirstChildElement("cycle"); cycle; cycle=cycle->NextSiblingElement("cycle")){
 		for (pose = cycle->FirstChildElement("pose"); pose; pose=pose->NextSiblingElement("pose")){
-			for (joint = pose->FirstChildElement("trans"); joint; joint=joint->NextSiblingElement("trans")){
-				string inStr = joint->Attribute("T");
+			for (transform=pose->FirstChildElement("trans"); transform; transform=transform->NextSiblingElement("trans")){
+				string inStr = transform->Attribute("T");
 				size_t pos=0;
 				string d=",";
 				for (int i=0;i<3;i++){
@@ -212,13 +221,16 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 					stringstream(inStr.substr(0,pos)) >> T[i];
 					inStr.erase(0,pos+d.length());
 				}
-				inStr = joint->Attribute("R");
+				inStr = transform->Attribute("R");
 				pos=0;
 				for (int i=0;i<4;i++){
 					pos = inStr.find(d);//in degrees
 					stringstream(inStr.substr(0,pos)) >> R[i];
 					inStr.erase(0,pos+d.length());
 				}
+				//float th = degToRad(R.w)/2;
+				//R = fquat(cos(th), sin(th)*vec3(R.x,R.y,R.z));
+				//joints.emplace_back(T,R);
 				joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
 			}
 			poses.emplace_back(joints);
@@ -292,7 +304,6 @@ vector<vec4> getPathPoints(string pathStr){
 
 	return ret;
 }
-
 
 geoInfo SVGtoGeometry(string svgFile, bool rigged){
    vector<vec4> vertices;

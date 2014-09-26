@@ -3,11 +3,20 @@
 #include <glm/gtx/transform.hpp>
 
 Player::Player() : ActiveEnt(){
-	mSpeed = vec3(400.f, 30.f, 10.f);
+	mSpeed = vec3(40.f, 30.f, 10.f);
 	mDash = 1.5f;
 	A = 10000.f;	
 	sigmaSq = 5000.f;
 	sigmaSq *= sigmaSq;
+}
+
+Player::Player(Entity * f) : ActiveEnt(f){
+	mSpeed = vec3(40.f, 30.f, 10.f);
+	mDash = 1.5f;
+	A = 10000.f;	
+	sigmaSq = 5000.f;
+	sigmaSq *= sigmaSq;
+
 }
 
 Player::Player(Collider c) : ActiveEnt(c){
@@ -27,10 +36,6 @@ Player::~Player(){
 	//NYI
 }
 
-using glm::translate;
-using glm::rotate;
-typedef vec3 v3;
-
 void Player::setRig(){
 
 	mDrawables[0].get()->addChild(mDrawables[1].get());
@@ -43,61 +48,6 @@ void Player::setRig(){
 	r->set_u({1.f,0});
 	r = (Rig *)mDrawables[1].get();
 	r->set_u({1.f,2.f});
-
-/*
-	Rig * r = (Rig *)mDrawables[0].get();
-
-	vector<mat4> joints(3);
-   vector<Pose> poses(3);
-	vector<Cycle> cycles(3);
-	const vec3 z(0,0,1);
-	vector<fdualquat> mJoints;
-
-	//Stand cycle is identity(cycles[0] by default)
-
-	//Walk Cycle
-	mJoints.push_back(createDQ_t(vec3(.3f,0,0))*createDQ_r(vec4(z,1.57f/6)));
-	mJoints.push_back(mJoints.back()*createDQ_r(vec4(z,1.57f/12)));
-	mJoints.push_back(mJoints.back()*fdualquat());
-	poses[0]=Pose(mJoints);
-	mJoints.clear();
-
-	mJoints.push_back(fdualquat());
-	mJoints.push_back(mJoints.back()*createDQ_t(vec3(-.2f,.1f,0))*createDQ_r(vec4(-z,1.57f/5)));
-	mJoints.push_back(mJoints.back()*createDQ_t(vec3(0,.1f,0))*createDQ_r(vec4(-z,1.57f/3)));
-	poses[2]=Pose(mJoints);
-	mJoints.clear();
-	
-	cycles[1].setPoses(poses);
-	
-
-	r->setCycles(cycles);	
-	r = (Rig *)mDrawables[1].get();
-
-	Pose p=poses[0];
-	poses[0]=poses[1];
-	poses[1]=poses[2];
-	poses[2]=p;
-	cycles[1].setPoses(poses);
-	r->setCycles(cycles);
-
-	r = (Rig *)mDrawables[3].get();
-	mJoints.push_back(createDQ_r(vec4(z,1.57f/12)));
-	mJoints.push_back(mJoints.back()*createDQ_r(vec4(z,1.57f/12)));
-	mJoints.push_back(mJoints.back()*fdualquat());
-	poses[0]=Pose(mJoints);
-	mJoints.clear();
-
-	mJoints.push_back(createDQ_t(vec3())*createDQ_r(vec4(z,1.57f/12)));
-   mJoints.push_back(mJoints.back()*createDQ_r(vec4(z,1.57f/12)));
-   mJoints.push_back(mJoints.back()*fdualquat());
-   poses[2]=Pose(mJoints);
-   mJoints.clear();
-
-	cycles[0].setPoses(poses);
-	cycles[1].setPoses(poses);
-	r->setCycles(cycles);
-*/
 }
 
 int Player::setChildren(){

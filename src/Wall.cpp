@@ -5,6 +5,9 @@ Wall::Wall()
 	orientation='u';
 }
 
+Wall::Wall(Entity * f) : Obstacle(f){
+}
+
 Wall::Wall(vec3 translate, vec3 scale, char o){
 	float tmp;
 	switch(o){

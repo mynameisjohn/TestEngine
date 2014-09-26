@@ -35,7 +35,7 @@ bool BaseEngine::init(string vertShaderSrc, string fragShaderSrc){
    if (!shader.loadProgram())
       return false;
 	
-	pop = std::move(initLevel(shader));
+	pop = std::move(initLevel(shader, 1));
 	return true;
 }
 

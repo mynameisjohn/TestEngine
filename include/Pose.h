@@ -9,6 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/dual_quaternion.hpp>
 
+#include "QuatVec.h"
+
 using glm::fdualquat;
 using glm::fquat;
 
@@ -16,18 +18,15 @@ class Pose{
 public:
 	Pose();
 	Pose(std::vector<fdualquat> inQuats);
-	Pose(std::vector<glm::mat4>);
-	void setMats(std::vector<glm::mat4> matVec);
-	void addMat(glm::mat4 mat);
-	void addMat(std::vector<glm::mat4> matVec);
+	Pose(std::vector<QuatVec> in);
 	Pose operator*(const float& s);
 	Pose operator+(const Pose& other);
 	Pose blend(const Pose& other, float x);
 	float * getPtr();
 	std::vector<glm::mat4> getMats();
 private:
-	std::vector<glm::mat4> joints;
 	std::vector<fdualquat> mJoints;
+	std::vector<QuatVec> joints;
 };
 
 //	fdualquat createTransQuat(glm::vec3 trans);
