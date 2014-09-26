@@ -49,6 +49,8 @@ unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
 	collider = h.FirstChild("Entity").FirstChild("Collider").ToElement();
 	if (skeleton && collider){
 		Skeleton s = getSkeleton(skeleton, shader);
+		mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
+		s.getRoot()->leftMultMV(MV);
 		Collider c = getCollider(collider);
 		unique_ptr<Entity> ret(new Entity(c,move(s)));//eI.translate, eI.scale, move(s)));
 		return ret;
@@ -61,7 +63,8 @@ unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
 	unique_ptr<Player> other(new Player(loadEntFromFile(eI, shader).get()));
-	cout << eI.scale << endl;
+	other.get()->getCollider()->scale(glm::abs(eI.scale));	
+
 	Drawable dr = initTexQuad("res/coat.png", shader);//("coat.svg",shader);
 	Rig r = initRigFromSVG("res/drawing.svg", shader);
 
