@@ -10,7 +10,6 @@ class Player: public ActiveEnt{
 		Player();
 		Player(Entity *);
 		Player(vec3 translate, vec3 scale);
-		Player(Collider c);
 		~Player();
 		int setChildren();
 		void setRig();

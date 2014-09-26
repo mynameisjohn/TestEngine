@@ -10,20 +10,14 @@ Entity::Entity(Entity * f)
 	sigmaSq=1.f;
 }
 
-Entity::Entity(vec3 translate, vec3 scale){
-	mCollider = Collider(BoundBox((scale)));
-	this->translate(translate);
-}
-
-Entity::Entity(vec3 translate, vec3 scale, SceneGraph SG)
-	: mCollider(BoundBox(scale)), mSkeleton(std::move(SG))
+Entity::Entity(vec3 translate, vec3 scale)
+	: mCollider(BoundBox(scale))
 {
 	this->translate(translate);
 }
 
-Entity::Entity(Collider c){
-	mCollider = c;
-}
+Entity::Entity(Collider c, Skeleton s)
+: mCollider(c), mSkeleton(move(s)){}
 
 void Entity::draw(){
 	mDrawables[0].get()->draw(glm::translate(getPos()));

@@ -49,13 +49,15 @@ unique_ptr<Drawable> initDrawable(TiXmlElement * el, JShader& shader){
 }
 
 //Initializes Scene graph, stored as a string map for convenience
-SceneGraph initSceneGraph(TiXmlElement * root, JShader& shader){
-	SceneGraph ret;
-
-	if (root)
-		fillSceneGraph(ret, root, shader);
+Skeleton getSkeleton(TiXmlElement * skeleton, JShader& shader){
+	TiXmlElement * root = skeleton->FirstChildElement("drawable");
+	if (root){
+		SceneGraph sg;
+		fillSceneGraph(sg, root, shader);
+		return Skeleton(move(sg), sg[root->Attribute("name")].get());
+	}
 	else
 		cout << "Invalid XML file" << endl;
 	
-	return ret;
+	return Skeleton();
 }

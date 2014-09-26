@@ -42,6 +42,13 @@ void Collider::translate(vec3 trans){
 		rectIt->translate(vec2(trans));//trans.x,trans.y);
 }
 
+void Collider::scale(vec3 s){
+	mBB.scale(s);
+	vector<BoundRect>::iterator rectIt;
+   for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
+		rectIt->scale(vec2(s));
+}
+
 //This whole thing should be inlined or something
 bool Collider::collidesX(Collider& other){
 	return mBB.collidesX(other.mBB);

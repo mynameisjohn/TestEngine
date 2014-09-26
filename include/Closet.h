@@ -8,10 +8,9 @@
 #include <tinyxml.h>
 
 #include "Geom.h"
-#include <memory>
+#include "Skeleton.h"
 
-typedef std::map<std::string, std::unique_ptr<Drawable> > SceneGraph;
-
-SceneGraph initSceneGraph(TiXmlElement * root, JShader& shader);
+Skeleton getSkeleton(TiXmlElement *, JShader&);
+//SceneGraph initSceneGraph(TiXmlElement * root, JShader& shader);
 
 #endif

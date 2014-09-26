@@ -8,6 +8,7 @@ public:
 	glmRect();
 	glmRect(vec2 dim);
 	glmRect(vec2 pos, vec2 dim);
+	void scale(vec2 s);
 	float left();
 	float right();
 	float bottom();

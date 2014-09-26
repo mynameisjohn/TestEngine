@@ -10,7 +10,6 @@ class ActiveEnt: public Entity{
 		ActiveEnt();
 		ActiveEnt(Entity *);
 		ActiveEnt(vec3 translate, vec3 scale);
-		ActiveEnt(Collider c);
 		void update(vec3 a);//NYI
 		void moveWRT_ent(Entity * e);
 		void moveToEdge(int, Entity *);

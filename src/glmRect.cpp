@@ -15,6 +15,11 @@ glmRect::glmRect(vec2 pos, vec2 dim){
 	mDim=glm::abs(dim);
 }
 
+//Note that this doesn't scale about origin (intentionally)
+void glmRect::scale(vec2 s){
+	mDim *= s;
+}
+
 float glmRect::left(){
 	return mPos.x;
 }

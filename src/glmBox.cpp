@@ -1,10 +1,4 @@
 #include "glmBox.h"
-/*
-std::ostream& operator<<(std::ostream& os, const glm::vec3& vec){
-  std::cout << "<" << vec.x << ", " << vec.y << ", " << vec.z << ">";
-  return os;
-}
-*/
 glmBox::glmBox(){
 	mPos=vec3();
 	mDim=vec3(1, 1, 1);
@@ -18,6 +12,11 @@ glmBox::glmBox(vec3 dim){
 glmBox::glmBox(vec3 pos, vec3 dim){
 	mPos=pos;
 	mDim=glm::abs(dim);
+}
+
+//Note that this doesn't scale about origin (intentionally)
+void glmBox::scale(vec3 s){
+	mDim *= s;
 }
 
 float glmBox::left(){
@@ -40,7 +39,7 @@ float glmBox::near(){
 	return mPos.z;
 }
 
-//Minus because z goes from 0->-inf
+//Minus because z goes from 0 -> -inf
 float glmBox::far(){
 	return mPos.z-mDim.z;
 }

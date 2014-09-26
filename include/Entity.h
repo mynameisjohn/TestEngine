@@ -1,19 +1,15 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include <memory>
-
 #include "Collider.h"
-#include "Drawable.h"
-
-typedef std::map<std::string, std::unique_ptr<Drawable> > SceneGraph;
+#include "Skeleton.h"
 
 class Entity{
 	public:
 		Entity();
 		Entity(Entity *);
 		Entity(vec3 translate, vec3 scale);
-		Entity(vec3 translate, vec3 scale, SceneGraph SG);
+		Entity(Collider c, Skeleton s);
 		Entity(Collider c);
 		void setCol(Collider c);
 		void setBB(BoundBox bb);
@@ -36,7 +32,8 @@ class Entity{
 	protected:
 		Collider mCollider;
 		vector<unique_ptr<Drawable> > mDrawables;
-		SceneGraph mSkeleton;
+		Skeleton mSkeleton;
+//		SceneGraph mSkeleton;
 		vec3 mTrans;
 		float sigmaSq, A;
 	/* These will be inlined when the time comes

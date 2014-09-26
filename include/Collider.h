@@ -17,7 +17,8 @@ class Collider{
 		void setWalls(vec3 min, vec3 max);
 		void clearSub();
 		void translate(vec3 trans);
-      char collidesWith(Collider&);
+		void scale(vec3 s);
+	   char collidesWith(Collider&);
 		bool collidesX(Collider&);
       bool collidesY(Collider&);
 		bool collidesZ(Collider&);

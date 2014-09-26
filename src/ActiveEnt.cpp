@@ -32,10 +32,6 @@ ActiveEnt::ActiveEnt(Entity * frame) : Entity(frame){
    sigmaSq *= sigmaSq;
 }
 
-ActiveEnt::ActiveEnt(Collider c) : Entity(c){
-	//NYI
-}
-
 void ActiveEnt::update(vec3 a){
 	if (grounded)
 		mVel.y=0;

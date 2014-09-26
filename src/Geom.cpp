@@ -193,10 +193,8 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 	vector<Cycle> cycles;
 	vector<Pose> poses;
 	vector<fdualquat> joints;
-	//vector<QuatVec> joints;
 	vec3 T;
 	vec4 R;
-	//fquat R;
 
 	TiXmlDocument doc(svgFile);
    if (!doc.LoadFile()){

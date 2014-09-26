@@ -19,10 +19,6 @@ Player::Player(Entity * f) : ActiveEnt(f){
 
 }
 
-Player::Player(Collider c) : ActiveEnt(c){
-	//NYI
-}
-
 Player::Player(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale){
 	mSpeed = vec3(20.f, 40.f, 20.12241f);

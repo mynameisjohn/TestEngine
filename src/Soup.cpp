@@ -3,6 +3,39 @@
 #include "Closet.h"
 #include <glm/gtx/transform.hpp> 
 
+Collider getCollider(TiXmlElement * collider){
+	string d=",";
+	BoundBox bb;
+	vector<BoundRect> recVec;
+	for (TiXmlElement * box=collider->FirstChildElement("box"); box; box=box->NextSiblingElement("box")){
+		vec3 dim;
+		string in = box->Attribute("S");
+		size_t pos=0;
+		for (int i=0;i<3;i++){
+			pos=in.find(d);
+			stringstream(in.substr(0,pos)) >> dim[i];
+			in.erase(0,pos+d.length());
+		}
+		bb = BoundBox(dim);
+		for (TiXmlElement  * rect=box->FirstChildElement("rect"); rect; rect=rect->NextSiblingElement("rect")){
+			vec2 rDim;
+			pos=0;
+			in = rect->Attribute("S");
+			for (int i=0;i<2;i++){
+				pos=in.find(d);
+				stringstream(in.substr(0,pos)) >> rDim[i];
+				in.erase(0,pos+d.length());
+			}
+			recVec.emplace_back(rDim);
+		}
+	}
+	Collider c(bb);
+	for (vector<BoundRect>::iterator it=recVec.begin(); it!=recVec.end(); it++)
+		c.addSub(*it);
+//	c.scale(vec3(600,600,2));
+	return c;
+}
+
 unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
 	TiXmlDocument doc(eI.fileName);
    if (!doc.LoadFile()){
@@ -11,18 +44,24 @@ unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
    }
 
    TiXmlHandle h(&doc);
-   TiXmlElement * rootDrawable = h.FirstChild("drawable").ToElement();
-	SceneGraph sg = initSceneGraph(rootDrawable, shader);
+	TiXmlElement * skeleton, * collider;
+	skeleton = h.FirstChild("Entity").FirstChild("Skeleton").ToElement();
+	collider = h.FirstChild("Entity").FirstChild("Collider").ToElement();
+	if (skeleton && collider){
+		Skeleton s = getSkeleton(skeleton, shader);
+		Collider c = getCollider(collider);
+		unique_ptr<Entity> ret(new Entity(c,move(s)));//eI.translate, eI.scale, move(s)));
+		return ret;
+	}
 
-	unique_ptr<Entity> ret(new Entity(eI.translate, eI.scale, std::move(sg)));
-
-	return ret;
+	cout << "Invalid XML File" << endl;
+	return nullptr;
 }
 
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
-	unique_ptr<Player> other(new Player(eI.translate, eI.scale));
-	unique_ptr<Player> playerPtr(new Player(loadEntFromFile(eI, shader).get()));
-
+	unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
+	unique_ptr<Player> other(new Player(loadEntFromFile(eI, shader).get()));
+	cout << eI.scale << endl;
 	Drawable dr = initTexQuad("res/coat.png", shader);//("coat.svg",shader);
 	Rig r = initRigFromSVG("res/drawing.svg", shader);
 
