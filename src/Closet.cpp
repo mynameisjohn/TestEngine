@@ -8,6 +8,7 @@ unique_ptr<Drawable> initDrawable(TiXmlElement * el, JShader& shader){
 	unique_ptr<Drawable> ret;
 	bool rigged = string(el->Attribute("type")) == string("r");
 	bool tex = (string(el->Attribute("type")) == string("t")) && !rigged;
+	bool poly ((string(el->Attribute("type")) == string("p")) && (!tex || !rigged));
 
 	vec3 scale, translate;
 	string S = el->Attribute("S"), T=el->Attribute("T"), d=",";
@@ -25,6 +26,8 @@ unique_ptr<Drawable> initDrawable(TiXmlElement * el, JShader& shader){
 		ret = unique_ptr<Drawable>(new Rig(initRigFromSVG(fileName, shader)));
 	else if (tex)
 		ret = unique_ptr<Drawable>(new Drawable(initTexQuad(fileName, shader)));
+	else if (poly)
+		ret = unique_ptr<Drawable>(new Drawable(initPolyFromSVG(fileName, shader)));
 	else
 		ret = unique_ptr<Drawable>(new Drawable(initQuad(shader)));
 

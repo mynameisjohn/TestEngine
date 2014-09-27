@@ -9,9 +9,9 @@
 	<Skeleton>
 		<drawable name="leg1" fileName="leg.svg" type="r" S="1,1,1" T="0,0,0">
 			<drawable name="leg2" fileName="leg.svg" type="r" S="1,1,1" T=".03,0,.1">
-			<drawable name="body" fileName="coat.png" type="t" S=".33,1,1" T="-.05,.75,-.05">
-				<drawable name="arm" fileName="arm.svg" type="r" S="1,1,1" T="0,0,0"/>
-				<drawable name="head" fileName="face.png" type="t" S=".2,.4,1" T="0,1.7,0"/>
+			<drawable name="body" fileName="coat.svg" type="p" S="1,1,1" T="-.05,.75,-.05">
+				<drawable name="arm" fileName="arm.svg" type="r" S=".8,.8,1" T=".07,.8,-.07"/>
+				<drawable name="head" fileName="face.png" type="t" S=".32,.4,1" T="-.07,1.7,.0"/>
 			</drawable>
 			</drawable>
 		</drawable>

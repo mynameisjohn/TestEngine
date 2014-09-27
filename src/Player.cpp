@@ -38,12 +38,13 @@ void Player::setRig(){
 	mDrawables[2].get()->addChild(mDrawables[3].get());
 	mDrawables[2].get()->addChild(mDrawables[4].get());
 
-
-	Rig * r = (Rig *)mDrawables[0].get();
-	r->set_u({1.f,0});
-	r = (Rig *)mDrawables[1].get();
-	r->set_u({1.f,2.f});
 */
+	Rig * r = (Rig *)mSkeleton["leg1"];
+//mDrawables[0].get();
+	r->set_u({1.f,0});
+	r = (Rig *)mSkeleton["leg2"];
+	r->set_u({1.f,2.f});
+
 }
 
 int Player::setChildren(){
@@ -68,7 +69,8 @@ void Player::getHandleInfo(){
 //	if (mCollider.isGrounded){
 	float dashSpeed = mSpeed.x*(mHandler.getKeyState(SDLK_LSHIFT) ? mDash : 1.f);
 	bool jump = mHandler.getKeyState(SDLK_SPACE);
-
+	bool dir = mVel.x < 0;
+	
 	mVel.x=0;
 	if (mHandler.getKeyState(SDLK_a))
 		mVel.x -= dashSpeed;
@@ -83,8 +85,8 @@ void Player::getHandleInfo(){
 	if (mHandler.getKeyState(SDLK_s))
 		mVel.z += mSpeed.z;
 //	}
-/*
-	Rig * r = (Rig *)mDrawables[0].get();
+
+	Rig * r = (Rig *)mSkeleton["leg1"];
 	float c;
 	if (mHandler.getKeyState(SDLK_a) || mHandler.getKeyState(SDLK_d) || mHandler.getKeyState(SDLK_s) || mHandler.getKeyState(SDLK_w)){
 		if (mHandler.getKeyState(SDLK_LSHIFT))
@@ -95,9 +97,10 @@ void Player::getHandleInfo(){
 	else
 		c=-1.f;//r->set_u({-1,mod});
 	r->inc_u(c);
-	r = (Rig *)mDrawables[1].get();
+
+	r = (Rig *)mSkeleton["leg2"];
 	r->inc_u(c);
-	r = (Rig *)mDrawables[3].get();
-	r->inc_u(c);
-*/
+	vec3 t = vec3(1,0,0)*((mCollider.center()-mCollider.getPos()));
+	if (dir!=(mVel.x < 0))
+		mSkeleton.getRoot()->leftMultMV(glm::translate(t)*glm::scale(vec3(-1,1,1)));
 }
