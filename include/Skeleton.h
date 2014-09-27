@@ -13,6 +13,7 @@ public:
 	Skeleton(SceneGraph SG, Drawable * r);
 	Skeleton(Drawable * r);
 	void setRoot(Drawable * r);
+	void add(std::string, std::unique_ptr<Drawable>);
 	Drawable * getRoot();
 	Drawable * operator[](string idx);
 private:

@@ -52,6 +52,8 @@ unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
 		mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 		s.getRoot()->leftMultMV(MV);
 		Collider c = getCollider(collider);
+		c.scale(glm::abs(eI.scale));
+		c.translate(eI.translate);
 		unique_ptr<Entity> ret(new Entity(c,move(s)));//eI.translate, eI.scale, move(s)));
 		return ret;
 	}
@@ -61,10 +63,11 @@ unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
 }
 
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
-	unique_ptr<Player> playerPtr(new Player(eI.translate, eI.scale));
-	unique_ptr<Player> other(new Player(loadEntFromFile(eI, shader).get()));
-	other.get()->getCollider()->scale(glm::abs(eI.scale));	
+	unique_ptr<Player> other(new Player(eI.translate, eI.scale));
+	unique_ptr<Player> playerPtr(new Player(loadEntFromFile(eI, shader).get()));
 
+	//playerPtr.get()->getCollider()->scale(glm::abs(eI.scale));	
+/*
 	Drawable dr = initTexQuad("res/coat.png", shader);//("coat.svg",shader);
 	Rig r = initRigFromSVG("res/drawing.svg", shader);
 
@@ -92,37 +95,76 @@ unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
    playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
 
 	playerPtr.get()->setRig();
-	return playerPtr;
+*/	return playerPtr;
 }
 
 unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader){ 
+	const string name = "dr";
+	Skeleton s;
+	s.add(name,move(unique_ptr<Drawable>(new Drawable(initCube(shader)))));
+	s.setRoot(s[name]);
+	Collider c(BoundBox(eI.scale));
+	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
+	s[name]->leftMultMV(MV);
+	unique_ptr<Obstacle> obs(new Obstacle(new Entity(c, move(s))));
+	obs.get()->translate(eI.translate);	
+/*
 	unique_ptr<Obstacle> obs(new Obstacle(eI.translate, eI.scale));
 	Drawable dr = initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.leftMultMV(MV);
    //dr.setColor(eI.color);
 	obs.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
+*/
 	return obs;
 }
 
 unique_ptr<ActiveEnt> initAe(EntInfo eI, JShader& shader){
-   unique_ptr<ActiveEnt> aE(new ActiveEnt(eI.translate, eI.scale));
+	Skeleton s;
+	s.add("dr",unique_ptr<Drawable>(new Drawable(initCube(shader))));
+	s.setRoot(s["dr"]);
+	Collider c(BoundBox(eI.scale));
+	unique_ptr<ActiveEnt> aE(new ActiveEnt(new Entity(c, move(s))));
+	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
+	s["dr"]->leftMultMV(MV);
+	aE.get()->translate(eI.translate);	
+  /*
+	unique_ptr<ActiveEnt> aE(new ActiveEnt(eI.translate, eI.scale));
 	Drawable dr = initCube(shader);
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.leftMultMV(MV);
    dr.setColor(eI.color);
 	aE.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
-	
+	*/
 	return aE;
 }
 
 unique_ptr<Wall> initWall(EntInfo eI, char orientation, JShader& shader){
+	const string name = "dr";
+	Skeleton s;
+	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
+	s.add(name,unique_ptr<Drawable>(new Drawable(initQuad(shader))));
+	s.setRoot(s[name]);
+	s[name]->leftMultMV(MV);
+	s[name]->setColor(eI.color);
+	unique_ptr<Wall> w(new Wall(eI.translate, eI.scale, orientation));
+	w.get()->setSkeleton(move(s));
+
+/*	
+	
+	Collider c(BoundBox(eI.scale));
+	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
+	s[name]->leftMultMV(MV);
+	unique_ptr<Wall> w(new Wall(new Entity(c, move(s))));
+	w.get()->translate(eI.translate);	
+
 	unique_ptr<Wall> w(new Wall(eI.translate, eI.scale, orientation));
 	Drawable dr = initQuad(shader);
+	Skeleton s;
 	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
 	dr.leftMultMV(MV);
    dr.setColor(eI.color);
 	w.get()->addDrawable(unique_ptr<Drawable>(new Drawable(dr)));
-	
+*/	
 	return w;
 }

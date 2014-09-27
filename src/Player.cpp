@@ -16,7 +16,6 @@ Player::Player(Entity * f) : ActiveEnt(f){
 	A = 10000.f;	
 	sigmaSq = 5000.f;
 	sigmaSq *= sigmaSq;
-
 }
 
 Player::Player(vec3 translate, vec3 scale)
@@ -33,7 +32,7 @@ Player::~Player(){
 }
 
 void Player::setRig(){
-
+/*
 	mDrawables[0].get()->addChild(mDrawables[1].get());
 	mDrawables[0].get()->addChild(mDrawables[2].get());
 	mDrawables[2].get()->addChild(mDrawables[3].get());
@@ -44,6 +43,7 @@ void Player::setRig(){
 	r->set_u({1.f,0});
 	r = (Rig *)mDrawables[1].get();
 	r->set_u({1.f,2.f});
+*/
 }
 
 int Player::setChildren(){
@@ -83,7 +83,7 @@ void Player::getHandleInfo(){
 	if (mHandler.getKeyState(SDLK_s))
 		mVel.z += mSpeed.z;
 //	}
-
+/*
 	Rig * r = (Rig *)mDrawables[0].get();
 	float c;
 	if (mHandler.getKeyState(SDLK_a) || mHandler.getKeyState(SDLK_d) || mHandler.getKeyState(SDLK_s) || mHandler.getKeyState(SDLK_w)){
@@ -99,5 +99,5 @@ void Player::getHandleInfo(){
 	r->inc_u(c);
 	r = (Rig *)mDrawables[3].get();
 	r->inc_u(c);
-
+*/
 }

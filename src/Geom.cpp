@@ -9,6 +9,7 @@
 #include <sstream>
 #include <glm/gtx/transform.hpp>
 
+//Bug with the way offset is being handled
 Rig initRigFromSVG(string fileName, JShader& shader){
 	Rig r(&shader);
 	r.setCycles(getRigCycles(fileName));
@@ -51,9 +52,10 @@ Drawable initQuad(JShader& shader){
 		{0,0,0,1}, {1,0,0,1},
 		{1,1,0,1}, {0,1,0,1}
 	};
+	//Somewhere along the way these are being flipped (the y coords should be reversed...)
 	vector<vec2> texCoords={
-		{0,0}, {1,0},
-		{1,1}, {0,1}
+		{0,1}, {1,1},
+		{1,0}, {0,0}
 	};
 	vector<triangle> indices=getConvexIndices(vertices.size());
 	vector<vec3> weights;

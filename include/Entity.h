@@ -12,6 +12,7 @@ class Entity{
 		Entity(Collider c, Skeleton s);
 		Entity(Collider c);
 		void setCol(Collider c);
+		void setSkeleton(Skeleton s);
 		void setBB(BoundBox bb);
 		void translate(vec3);
 		void addDrawable(unique_ptr<Drawable> dr);
@@ -29,6 +30,7 @@ class Entity{
 		virtual vec3 getPotential(vec3 pos);
 		virtual void update(){}
 		Collider * getCollider(){return &mCollider;}
+		Skeleton * getSkeleton(){return &mSkeleton;}
 	protected:
 		Collider mCollider;
 		vector<unique_ptr<Drawable> > mDrawables;

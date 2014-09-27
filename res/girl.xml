@@ -9,13 +9,11 @@
 	<Skeleton>
 		<drawable name="leg1" fileName="leg.svg" type="r" S="1,1,1" T="0,0,0">
 			<drawable name="leg2" fileName="leg.svg" type="r" S="1,1,1" T="0,0,0">
-			<drawable name="body" fileName="coat.png" type="t" S="1,1,1" T="0,0,0">
-				<drawable name="arm" fileName="arm.svg" type="r" S="1,1,1" T="0,0,0">
-				<drawable name="head" fileName="face.svg" type="t" S="1,1,1" T="0,0,0">
-				</drawable>
-				</drawable>
+<!--			<drawable name="body" fileName="coat.png" type="t" S="1,1,1" T="0,0,0">
+				<drawable name="arm" fileName="arm.svg" type="r" S="1,1,1" T="0,0,0"/>
+				<drawable name="head" fileName="face.png" type="t" S="1,1,1" T="0,0,0"/>
 			</drawable>
-			</drawable>
+-->			</drawable>
 		</drawable>
 	</Skeleton>
 </Entity>

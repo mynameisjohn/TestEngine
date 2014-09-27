@@ -45,7 +45,7 @@ void Rig::draw(mat4 parentMV){
 	//Find inherited transform
    mat4 transform = parentMV * MV;
    //Upload data to device
-	vector<mat4> rigData = getCurrentPose().getMats();
+	vector<mat4> rigData(3);// = getCurrentPose().getMats();
    glUniformMatrix4fv(mShader->getMVHandle(), 1, GL_FALSE, glm::value_ptr(transform));
 	glUniformMatrix4fv(mShader->getRigMatHandle(),3,GL_FALSE,(GLfloat *)rigData.data());//getCurrentPose().getPtr());
    glUniform4fv(mShader->getColorHandle(), 1, glm::value_ptr(mColor));

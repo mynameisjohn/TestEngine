@@ -17,11 +17,12 @@ Entity::Entity(vec3 translate, vec3 scale)
 }
 
 Entity::Entity(Collider c, Skeleton s)
-: mCollider(c), mSkeleton(move(s)){}
+: mCollider(c), mSkeleton(move(s)){
+}
 
 void Entity::draw(){
-	mDrawables[0].get()->draw(glm::translate(getPos()));
-//	mSkeleton.begin()->second.get()->draw(glm::translate(getPos()));
+	//mDrawables[0].get()->draw(glm::translate(getPos()));
+	mSkeleton.getRoot()->draw(glm::translate(getPos()));
 }
 
 void Entity::addDrawable(unique_ptr<Drawable> dr){
@@ -34,6 +35,10 @@ void Entity::setCol(Collider c){
 
 void Entity::setBB(BoundBox bb){
 	mCollider.setBB(bb);
+}
+
+void Entity::setSkeleton(Skeleton s){
+	mSkeleton = move(s);
 }
 
 char Entity::collidesWith(Entity * e){
