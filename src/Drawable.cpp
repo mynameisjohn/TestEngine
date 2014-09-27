@@ -26,6 +26,10 @@ void Drawable::addChild(Drawable * child){
 			return;
 		}
 	}
+	//This line negates any parent transforms at the start - 
+	//it may seem like an error, but I like the control this gives me
+	//while preserving the hierarchy
+	child->leftMultMV(glm::inverse(MV));
 	children.push_back(child);
 }
 
@@ -62,29 +66,7 @@ void Drawable::leftMultMV(mat4 left){
 void Drawable::setNElements(int n){
 	mElementCount = n;
 }
-/*
-	if (mMode==3){
-		static float osc = 0.f;
-		float mod = 0.5f*sin(osc)+0.5f;
-		
-		vector<mat4> rigMats(3);
-		osc += 0.125f;  mod = sin(osc);
 
-		rigMats[0] = (float)(-0.5f*sin(osc)*(1-sin(osc)))*glm::rotate(1.57f/12.f, vec3(0,0,1))*glm::translate(vec3(.0f,0.f,0.f))+
-						(float)(1-pow(sin(osc),2))*mat4()+
-						(float)(0.5f*sin(osc)*(1+sin(osc)))*glm::translate(vec3(-0.f,0.0f,0.f))*glm::rotate(-1.57f/15.f, vec3(0,0,1));
-
-		rigMats[1] = (float)(-0.5f*sin(osc)*(1-sin(osc)))*glm::rotate(1.57f/4.f, vec3(0,0,1))*glm::translate(vec3(.1f,0.f,0.f))+
-						(float)(1-pow(sin(osc),2))*mat4()+
-						(float)(0.5f*sin(osc)*(1+sin(osc)))*glm::translate(vec3(-0.2f,0.0f,0.f))*glm::rotate(-1.57f/4.f, vec3(0,0,1));
-
-		rigMats[2] = (float)(-0.5f*sin(osc)*(1-sin(osc)))*glm::rotate(1.57f/10.f, vec3(0,0,1))*glm::translate(vec3(.1f,0.f,0.f))+
-						(float)(1-pow(sin(osc),2))*mat4()+
-						(float)(0.5f*sin(osc)*(1+sin(osc)))*glm::translate(vec3(-0.2f,0.2f,0.f))*glm::rotate(-1.57f/3.f, vec3(0,0,1));
-
-		glUniformMatrix4fv(mShader->getRigMatHandle(),rigMats.size(),GL_FALSE,(glm::value_ptr(rigMats[0])));
-	}
-*/
 void Drawable::draw(mat4 parentMV){//GLint MVHandle, GLint ColorHandle, mat4 parentMV){
 	//Find inherited transform
 	mat4 transform = parentMV * MV;

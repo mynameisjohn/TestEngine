@@ -65,7 +65,8 @@ unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
 unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	unique_ptr<Player> other(new Player(eI.translate, eI.scale));
 	unique_ptr<Player> playerPtr(new Player(loadEntFromFile(eI, shader).get()));
-
+	//(*(playerPtr.get()->getSkeleton()))["leg2"]->leftMultMV(glm::inverse((*(playerPtr.get()->getSkeleton()))["leg1"]->getMVMat()));
+	
 	//playerPtr.get()->getCollider()->scale(glm::abs(eI.scale));	
 /*
 	Drawable dr = initTexQuad("res/coat.png", shader);//("coat.svg",shader);

@@ -21,6 +21,10 @@ void Skeleton::add(string k, unique_ptr<Drawable> v){
 		cout <<"duplicate" << endl;
 }
 
+void Skeleton::identity(){
+	
+}
+
 Drawable * Skeleton::getRoot(){
 	return root;
 }
