@@ -24,6 +24,7 @@ float max(float v1, float v2);
 float clamp(float v, float m, float M);
 float degToRad(float d);
 float radToDeg(float r);
+float lagrangeTime(float t0, float t1, float t);
 
 fdualquat createDQ_t(glm::vec3 trans);
 fdualquat createDQ_r(glm::fquat rot);

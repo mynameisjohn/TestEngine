@@ -82,67 +82,67 @@
        inkscape:connector-curvature="0"
        inkscape:label="#path2993" />
 	<rig>
-		<cycle id = "stand">
-			<pose>
+		<cycle id="stand" C="3">
+			<pose t="0" dt=".1">
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.25" dt=".1">
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.5" dt=".1">
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.75" dt=".1">
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
 		</cycle>
-		<cycle id = "walk">
-			<pose>
+		<cycle id = "walk" C="3">
+			<pose t="0" dt=".1">
 				<trans T="0,0,0" R="25,0,0,1"/>
 				<trans T="0,.05,0" R="-15,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.25" dt=".1">
 				<trans T="0,0,0" R="5,0,0,1"/>
 				<trans T="0,0,0" R="5,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.5" dt=".1">
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.75" dt=".1">
 				<trans T="0,0,0" R="-20,0,0,1"/>
 				<trans T="0,0,0" R="-5,0,0,1"/>
 				<trans T="0,0,0" R="5,0,0,1"/>
 			</pose>
 		</cycle>
-		<cycle id = "run">
-			<pose>
+		<cycle id = "run" C="3">
+			<pose t="0" dt=".1">
 				<trans T="0,0,0" R="30,0,0,1"/>
 				<trans T=".15,.1,0" R="-10,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.25" dt=".1">
 				<trans T="0,0,0" R="20,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.5" dt=".1">
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 				<trans T="0,0,0" R="0,0,0,1"/>
 			</pose>
-			<pose>
+			<pose t="0.75" dt=".1">
 				<trans T="0,0,0" R="-6,0,0,1"/>
 				<trans T=".2,0,0" R="-45,0,0,1"/>
 				<trans T=".1,0,0" R="-20,0,0,1"/>

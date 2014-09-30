@@ -7,6 +7,7 @@ class Cycle{
 public:
    Cycle();
 	Cycle(std::vector<Pose> poseVec);
+	Cycle(std::vector<Pose> poseVec, unsigned int C);
 	void setPoses(std::vector<Pose> poseVec);
 	void addPose(Pose p);
 	void addPose(std::vector<Pose> poseVec);
@@ -15,8 +16,9 @@ public:
    float * getPtr();
 	Pose blendPoses(unsigned int p1, unsigned int p2, float x);
    Pose getCurrentPose(float v);
+	Pose collapsePoses(unsigned int C, float t);
 private:
-	unsigned int cp;
+	unsigned int C;
    std::vector<Pose> poses;
 };
 

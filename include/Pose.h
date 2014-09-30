@@ -19,14 +19,17 @@ public:
 	Pose();
 	Pose(std::vector<fdualquat> inQuats);
 	Pose(std::vector<QuatVec> in);
+	Pose(std::vector<fdualquat> in, float t, float dt);
 	Pose operator*(const float& s);
 	Pose operator+(const Pose& other);
 	Pose blend(const Pose& other, float x);
 	float * getPtr();
+	float getTime();
 	std::vector<glm::mat4> getMats();
 private:
 	std::vector<fdualquat> mJoints;
 	std::vector<QuatVec> joints;
+	float T, dt;
 };
 
 //	fdualquat createTransQuat(glm::vec3 trans);

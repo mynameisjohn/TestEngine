@@ -20,6 +20,10 @@ float radToDeg(float r){
 	return (float)r*180./M_PI;
 }
 
+float lagrangeTime(float t0, float t1, float t){
+	return (t-t0)/(t1-t0);
+}
+
 fdualquat createDQ_t(vec3 trans){
 	return fdualquat({1,0,0,0},{0,vec3(0.5f*trans)});
 }

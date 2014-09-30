@@ -1,7 +1,6 @@
 #include "Util.h"
 #include "Closet.h"
 #include <glm/gtx/transform.hpp>
-#include <sstream>
 
 unique_ptr<Drawable> initDrawable(TiXmlElement * el, JShader& shader){
 	string fileName = string("res/") + el->Attribute("fileName");

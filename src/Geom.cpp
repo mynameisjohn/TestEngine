@@ -181,7 +181,7 @@ Drawable initCube(JShader& shader){
 
    return dr;
 }
-
+/*
 vector<triangle> getConvexIndices(int n){
 	vector<triangle> indices;
 	for (GLuint i=0;i<n/2-1;i++){
@@ -212,6 +212,7 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 
 	for (cycle = rig->FirstChildElement("cycle"); cycle; cycle=cycle->NextSiblingElement("cycle")){
 		for (pose = cycle->FirstChildElement("pose"); pose; pose=pose->NextSiblingElement("pose")){
+			//add support for dt, t, here
 			for (transform=pose->FirstChildElement("trans"); transform; transform=transform->NextSiblingElement("trans")){
 				string inStr = transform->Attribute("T");
 				size_t pos=0;
@@ -233,10 +234,27 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 				//joints.emplace_back(T,R);
 				joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
 			}
-			poses.emplace_back(joints);
+			float t=.1, dt=.1;
+			try{
+				stringstream(string(cycle->Attribute("t"))) >> t;
+				stringstream(string(cycle->Attribute("dt"))) >> dt;
+			}
+			catch (exception& e){
+				cout << "Standard exception: " << e.what() << endl;
+			}
+			//stringstream(string(pose->Attribute("t"))) >> t;
+			//stringstream(string(pose->Attribute("dt"))) >> t;
+			poses.emplace_back(joints, t, dt);
 			joints.clear();
 		}
-		cycles.emplace_back(poses);
+		unsigned int C=2;
+		try{
+			stringstream(string(cycle->Attribute("C"))) >> C;
+		}
+		catch (exception& e){
+			cout << "Standard exception: " << e.what() << endl;
+		}
+		cycles.emplace_back(poses, C);
 		poses.clear();
 	}
 	return cycles;
@@ -275,7 +293,7 @@ vector<vec4> getPathPoints(string pathStr){
 	relative = (pathStr[0] == 'm');
 	pathStr = pathStr.substr(2,pathStr.length());
 	while (pos != string::npos){
-		switch (pathStr[0]){
+		switch (pathStr[0]){//todo: add support for Q and C
          case 'L':
          case 'l':
             pos = pathStr.find(d1);
@@ -379,7 +397,7 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 
 	return {vertices, texCoords, indices, weights, offset};
 }
-
+*/
 GLuint genVAO(geoInfo gI, JShader& shader){
 	GLuint VAO;
    glGenVertexArrays(1, &VAO);

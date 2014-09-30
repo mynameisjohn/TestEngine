@@ -3,12 +3,15 @@
 
 Pose::Pose(){
 	joints.resize(3);
-	mJoints.resize(3);
-	
+	mJoints.resize(3);	
 }
 
 Pose::Pose(vector<fdualquat> inQuats)
 : joints(3), mJoints(inQuats){
+}
+
+Pose::Pose(vector<fdualquat> inQuats, float t, float dt)
+: Pose(inQuats){
 }
 
 Pose::Pose(vector<QuatVec> in)
@@ -42,6 +45,10 @@ Pose Pose::operator+(const Pose& other){
 
 float * Pose::getPtr(){
 	return (float *)joints.data();//glm::value_ptr(joints[0]);
+}
+
+float Pose::getTime(){
+	return T;
 }
 
 //make a better constructor!
