@@ -2,6 +2,10 @@
 
 #include <glm/gtx/transform.hpp>
 
+int wrap(int dim, int num){
+	return (dim+num)%dim;
+}
+
 float min(float v1, float v2){
    return (v1 < v2 ? v1 : v2);
 }
@@ -24,12 +28,18 @@ float lagrangeTime(float t0, float t1, float t){
 	return (t-t0)/(t1-t0);
 }
 
+fquat getRQ(vec4 rot){
+	vec3 axis = glm::normalize(vec3(rot.y, rot.z, rot.w));
+   float angle = 0.5f*degToRad(rot.x);
+	
+	return fquat(cos(angle),sin(angle)*axis);
+}
+
 fdualquat createDQ_t(vec3 trans){
 	return fdualquat({1,0,0,0},{0,vec3(0.5f*trans)});
 }
 
 fdualquat createDQ_r(fquat rot){
-	cout << rot << endl;
 	vec3 axis = glm::normalize(vec3(rot.x, rot.y, rot.z));
 	float angle = 0.5f*degToRad(rot.w);
 	return fdualquat({cos(angle),sin(angle)*axis},{0,vec3()});

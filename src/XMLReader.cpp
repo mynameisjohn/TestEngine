@@ -34,7 +34,8 @@ vector<triangle> getConvexIndices(int n){
 vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 	vector<Cycle> cycles;
 	vector<Pose> poses;
-	vector<fdualquat> joints;
+	//vector<fdualquat> joints;
+	vector<QuatVec> Joints;
 	vec3 T;
 	vec4 R;
 
@@ -71,15 +72,20 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 				//float th = degToRad(R.w)/2;
 				//R = fquat(cos(th), sin(th)*vec3(R.x,R.y,R.z));
 				//joints.emplace_back(T,R);
-				joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
+				//joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
+				Joints.push_back((Joints.size() ? Joints.back() : QuatVec())*QuatVec(T,getRQ(R)));
+				//cout << joints.back().real << "\n";
+				//cout << Joints.back().rot << "\n" << endl;
 			}
 			float t=.1, dt=.1;
 			fillIn(pose, "t", t);
 			fillIn(pose, "dt", dt);
 			//stringstream(string(pose->Attribute("t"))) >> t;
 			//stringstream(string(pose->Attribute("dt"))) >> t;
-			poses.emplace_back(joints, t, dt);
-			joints.clear();
+			poses.emplace_back(Joints, t, dt);
+			//poses.back().setQuatVecs(Joints);
+			//joints.clear();
+			Joints.clear();
 		}
 		unsigned int C=2;
 		fillIn(cycle,"C", C);

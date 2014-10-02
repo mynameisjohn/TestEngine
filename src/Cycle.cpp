@@ -47,14 +47,15 @@ Pose Cycle::blendPoses(unsigned int p1, unsigned int p2, float x){
 	return poses[p1].blend(poses[p2],x);
 }
 
-int wrap(int dim, int num){
-	return (dim+num)%dim;
-}
-
-//ok here goes some shit
-Pose Cycle::collapsePoses(unsigned int C, float t){
+//I've read that float -> int is rather slow
+Pose Cycle::collapsePoses(float& t){
 	int top, bottom, center;
 	bool red=true;
+	if (poses.size() <= C+1)
+		C = poses.size()-1;
+
+	if (t>(float)poses.size())
+		t=0.f;
 
 	bottom = -(C/2);
    top = C/2+(C%2!=0);
@@ -62,31 +63,36 @@ Pose Cycle::collapsePoses(unsigned int C, float t){
 	vector<Pose> tmp(top-bottom); 
 	for (int i=bottom,k=0;i<top;i++,k++){
       int i1=center+i, i2=i1+1;
-      i1 = ((poses.size()+i1)%poses.size());
-      i2 = ((poses.size()+i2)%poses.size());
-		tmp[k]=blendPoses(i1,i2,lagrangeTime(poses[i1].getTime(), poses[i2].getTime(), t));
+		float x = lagrangeTime((float)i1, (float)i2, t);
+//		cout << x << endl;
+      i1 = wrap(poses.size(),i1);
+      i2 = wrap(poses.size(),i2);
+		tmp[k]=blendPoses(i1,i2,x);//lagrangeTime((float)i1, (float)i2, t));
 	}
 
 	for (int j=1;j<C;j++){
       for (int i=bottom+j/2, k=0;i<top-(j+1)/2;i++, k++){
          int t1 = center+i, t2 = t1+red+1;
-         cout << j << "\t" << i << "\t" << t1 << "\t" << t2 << endl;
-         t1 = ((poses.size()+t1)%poses.size());
-         t2 = ((poses.size()+t2)%poses.size());
-         tmp[k].blend(tmp[k+1],lagrangeTime(poses[t1].getTime(), poses[t2].getTime(), t));
+			float x = lagrangeTime((float)t1, (float)(t2), t);
+         if (t>0) 
+				cout << center << "\t" << t << "\t" << t1 << "\t" << t2 << endl;
+         t1 = wrap(poses.size(),t1);
+         t2 = wrap(poses.size(),t2);
+         tmp[k]=tmp[k].blend(tmp[k+1],x);//lagrangeTime((float)t1, (float)t2, t));
       }
       red = !red;
    }
-
 	return tmp[0];
 }
 
 //this is slow but works for now... just like everything else
-Pose Cycle::getCurrentPose(float x){
+Pose Cycle::getCurrentPose(float& x){
+	C=3;
 	int p1, p2;
 	p1 = (int)x;
 	p2 = (p1+1)%poses.size();
 	float s = x-(float)p1;
 	p1 %= poses.size();
+	return collapsePoses(x);
 	return blendPoses(p1,p2,s);
 }

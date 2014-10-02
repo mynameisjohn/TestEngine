@@ -44,7 +44,7 @@ void Player::setRig(){
 	r->set_u({1.f,0});
 	r = (Rig *)mSkeleton["leg2"];
 	r->set_u({1.f,2.f});
-	/*
+/*	
 	r = (Rig *)mSkeleton["body"];
 	r->leftMultMV(glm::translate(vec3(-.1,0,0))*glm::rotate(.2f,vec3(0,0,-1)));
 */

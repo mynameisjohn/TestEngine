@@ -18,7 +18,7 @@ public:
 	QuatVec operator * (const QuatVec& other);
 	QuatVec operator + (const QuatVec& other);
 	void operator *= (const float s);
-	QuatVec blend(const QuatVec& other, float x);
+	QuatVec blend(const QuatVec& other, float a);
 	glm::mat4 toMat4();
 };
 
