@@ -47,7 +47,7 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
    TiXmlHandle mHandle(&doc);
 	TiXmlElement * rig, * cycle, * pose, * transform;
 
-	rig = mHandle.FirstChild("svg").FirstChild("g").FirstChild("rig").ToElement();
+	rig = mHandle.FirstChild("rig").ToElement();//.FirstChild("g").FirstChild("rig").ToElement();
 		if (!rig) 
 			return cycles;
 
@@ -69,25 +69,16 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 					stringstream(inStr.substr(0,pos)) >> R[i];
 					inStr.erase(0,pos+d.length());
 				}
-				//float th = degToRad(R.w)/2;
-				//R = fquat(cos(th), sin(th)*vec3(R.x,R.y,R.z));
-				//joints.emplace_back(T,R);
-				//joints.push_back((joints.size() ? joints.back() : fdualquat())*createDQ_t(T) * createDQ_r(R));
+//cout << R << "\n" << getRQ(R) << "\n" << glm::dot(getRQ(R),getRQ(vec4(R.x-25,R.y,R.z,R.w))) << "\n" << endl;
 				Joints.push_back((Joints.size() ? Joints.back() : QuatVec())*QuatVec(T,getRQ(R)));
-				//cout << joints.back().real << "\n";
-				//cout << Joints.back().rot << "\n" << endl;
 			}
 			float t=.1, dt=.1;
 			fillIn(pose, "t", t);
 			fillIn(pose, "dt", dt);
-			//stringstream(string(pose->Attribute("t"))) >> t;
-			//stringstream(string(pose->Attribute("dt"))) >> t;
-			poses.emplace_back(Joints, t, dt);
-			//poses.back().setQuatVecs(Joints);
-			//joints.clear();
+			poses.emplace_back(Joints);//, t, dt);
 			Joints.clear();
 		}
-		unsigned int C=2;
+		unsigned int C=1;
 		fillIn(cycle,"C", C);
 		cycles.emplace_back(poses, C);
 		poses.clear();
@@ -97,7 +88,6 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 
 map<string,string> getSVGPathMap(string svgFile){
 	map<string,string> pathMap;
-
 	TiXmlDocument doc(svgFile);
 	if (!doc.LoadFile()){
 		cout << "Unable to load SVG file " << svgFile << "\n";
@@ -207,11 +197,11 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 		for (int i=0;i<tmp.size();i++)
 			BonePoints.push_back((vec2(tmp[i])-m)/max(M.x,M.y));
 
-		//Use this opportunity to switch the transform origin
+		//This assumes a lot (i.e joints drawn bottom-up)
 		for (int j=0;j<vertices.size();j++){
 			vec3 w;//this is always 3...
 			for (int i=0;i<BonePoints.size();i++)
-				w[2-i]=(float)exp(-pow(BonePoints[i].y-vertices[j].y,2)/.15f);
+				w[i]=(float)exp(-pow(glm::length(BonePoints[i]-vec2(vertices[j])),2)/.1f);
 			w=glm::normalize(w);
 			weights.push_back(w);
 		}

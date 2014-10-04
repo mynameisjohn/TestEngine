@@ -12,7 +12,7 @@ unique_ptr<Population> initLevelOne(JShader& shader){
    const vec3 wallMax(7000, 2000, -4000);
 
 	unique_ptr<Population> pop(new Population(
-   initPlayer({"res/girl.xml",
+   initPlayer({"girl",
 					vec3(0, 999, -2000),   //translate
                vec4(1, 0, 0, 0.f),    //rotate
                vec3(600, 600, -2),  //scale

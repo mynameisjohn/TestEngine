@@ -3,12 +3,12 @@
 
 Pose::Pose()
 : joints(3), T(1.f), dt(0.01f){}
-
+/*
 Pose::Pose(vector<QuatVec> in, float t, float dt)
 : joints(in), T(t), dt(dt){}
-
+*/
 Pose::Pose(vector<QuatVec> in)
-: joints(in){}
+: joints(in), dt(0.01f){}
 
 Pose Pose::operator*(const float& s){
 	Pose ret(this->joints);
@@ -32,6 +32,14 @@ Pose Pose::blend(const Pose& other, float x){
 		joints[1].blend(other.joints[1], x),
 		joints[2].blend(other.joints[2], x)
 	});
+}
+
+void Pose::setDT(float dt){
+	this->dt = dt;
+}
+
+float Pose::maxDiff(const Pose& other){
+	return radToDeg(2*acos((glm::conjugate(joints.back().rot)*other.joints.back().rot).w));
 }
 
 //Maybe I can upload the quaternion rather than a matrix

@@ -37,9 +37,10 @@ Collider getCollider(TiXmlElement * collider){
 }
 
 unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader){
-	TiXmlDocument doc(eI.fileName);
+	string fileName = "res/"+eI.name+"/"+eI.name+".xml";
+	TiXmlDocument doc(fileName);
    if (!doc.LoadFile()){
-      cout << "Unable to load Graph File " << eI.fileName << endl;
+      cout << "Unable to load Graph File " << eI.name << endl;
       return nullptr;
    }
 
@@ -66,38 +67,7 @@ unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader){
 	unique_ptr<Player> other(new Player(eI.translate, eI.scale));
 	unique_ptr<Player> playerPtr(new Player(loadEntFromFile(eI, shader).get()));
 	playerPtr.get()->setRig();
-	//(*(playerPtr.get()->getSkeleton()))["leg2"]->leftMultMV(glm::inverse((*(playerPtr.get()->getSkeleton()))["leg1"]->getMVMat()));
-	
-	//playerPtr.get()->getCollider()->scale(glm::abs(eI.scale));	
-/*
-	Drawable dr = initTexQuad("res/coat.png", shader);//("coat.svg",shader);
-	Rig r = initRigFromSVG("res/drawing.svg", shader);
-
-	mat4 MV = glm::rotate(eI.rotate.w, vec3(eI.rotate)) * glm::scale(eI.scale);
-	r.leftMultMV(MV);
-   playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-
-	r = initRigFromSVG("res/drawing.svg", shader);
-	MV = glm::translate(vec3(-0.2, -0.923909,-.1f));
-	r.leftMultMV(MV);
-	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-
-	MV = glm::translate(vec3(-.22f,-.1,-.2f))*glm::scale(vec3(0.44f,.84f,1));
-	dr.leftMultMV(MV);
-	playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
-	
-	MV = glm::translate(vec3(.1f,0,-.3f))*glm::scale(vec3(0.8,0.8,1));
-	r = initRigFromSVG("res/arm.svg", shader);
-	r.leftMultMV(MV);
-	playerPtr.get()->addDrawable((unique_ptr<Rig>(new Rig(r))));
-	
-	MV = glm::translate(vec3(-.03,.95f,.02f))*glm::scale(vec3(0.4,0.4,1));
-	dr = initTexQuad("res/face3.png", shader);
-	dr.leftMultMV(MV);
-   playerPtr.get()->addDrawable((unique_ptr<Drawable>(new Drawable(dr))));
-
-	playerPtr.get()->setRig();
-*/	return playerPtr;
+	return playerPtr;
 }
 
 unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader){ 

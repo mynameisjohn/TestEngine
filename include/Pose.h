@@ -19,10 +19,11 @@ public:
 	Pose();
 //	Pose(std::vector<fdualquat> inQuats);
 	Pose(std::vector<QuatVec> in);
-	Pose(std::vector<QuatVec> in, float t, float dt);
 	Pose operator*(const float& s);
 	Pose operator+(const Pose& other);
 	Pose blend(const Pose& other, float x);
+	void setDT(float dt);
+	float maxDiff(const Pose& other);
 	std::vector<glm::mat4> getMats();
 private:
 //	std::vector<fdualquat> mJoints;

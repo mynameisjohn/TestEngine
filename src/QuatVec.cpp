@@ -10,7 +10,8 @@ using glm::slerp;
 using glm::mix;
 
 QuatVec::QuatVec()
-: trans(), rot() {}
+: trans(), rot() {
+}
 
 QuatVec::QuatVec(vec3 t, fquat r)
 : trans(t), rot(normalize(r)) {

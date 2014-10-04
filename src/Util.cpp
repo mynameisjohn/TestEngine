@@ -21,7 +21,7 @@ float degToRad(float d){
 }
 
 float radToDeg(float r){
-	return (float)r*180./M_PI;
+	return (float)(r*180.f)/((float)M_PI);
 }
 
 float lagrangeTime(float t0, float t1, float t){

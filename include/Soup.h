@@ -5,7 +5,7 @@
 #include "Wall.h"
 
 typedef struct EntInfo{
-	string fileName;
+	string name;
    vec3 translate;
    vec4 rotate;
    vec3 scale;

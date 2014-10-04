@@ -8,7 +8,7 @@
 	</Collider>
 	<Skeleton>
 		<drawable name="leg1" fileName="leg2.svg" type="r" S=".65,.9,1" T="0,0,0">
-			<drawable name="leg2" fileName="leg2.svg" type="r" S=".65,.9,1" T=".00,0,.03">
+			<drawable name="leg2" fileName="leg2.svg" type="r" S=".7,.9,1" T=".01,0,.03">
 			<drawable name="body" fileName="torso_face.png" type="t" S=".35,1,1" T="-.1,.8,-.05">
 				<drawable name="arm" fileName="arm.svg" type="r" S=".8,.7,1" T="0.02,.7,-.06"/>
 			</drawable>

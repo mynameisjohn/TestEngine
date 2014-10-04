@@ -14,7 +14,6 @@ public:
 	Skeleton(Drawable * r);
 	void setRoot(Drawable * r);
 	void add(std::string, std::unique_ptr<Drawable>);
-	void identity();
 	Drawable * getRoot();
 	Drawable * operator[](string idx);
 private:

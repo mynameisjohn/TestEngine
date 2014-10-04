@@ -1,7 +1,7 @@
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_image.h>
 #include "Textures.h"
-
+#include "Util.h"
 unsigned int fromImage(std::string fileName){
 	GLuint tex;
 	SDL_Surface * s = nullptr;
@@ -15,7 +15,7 @@ unsigned int fromImage(std::string fileName){
 
    //Upload host texture to device
    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, s->w, s->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, s->pixels);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
    // Set filtering
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

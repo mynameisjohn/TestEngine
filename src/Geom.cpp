@@ -49,13 +49,16 @@ GLuint genVAO(geoInfo gI, JShader& shader){
 //Bug with the way offset is being handled
 Rig initRigFromSVG(string fileName, JShader& shader){
 	Rig r(&shader);
-	r.setCycles(getRigCycles(fileName));
-	geoInfo gI = SVGtoGeometry(fileName,1);
+	string imageName, rigName;
+//	imageName = fileName.substr(0,fileName.length()-4)+".png";
+//	rigName
+	r.setCycles(getRigCycles("res/rig/"+fileName+".rig"));
+	geoInfo gI = SVGtoGeometry("res/svg/"+fileName+".svg",1);
    GLuint VAO = genVAO(gI, shader);
-	string imageName = fileName.substr(0,fileName.length()-4)+".png";
+//	string imageName = fileName.substr(0,fileName.length()-4)+".png";
 	r.leftMultMV(glm::translate(gI.offset));
 	r.setVAO(VAO);
-   r.setTex(fromImage(imageName));//outlineTexture());
+   r.setTex(fromImage("res/img/"+fileName+".png"));//outlineTexture());
    r.setNElements(3*gI.indices.size());
 
 	return r;
@@ -65,12 +68,12 @@ Rig initRigFromSVG(string fileName, JShader& shader){
 Drawable initPolyFromSVG(string fileName, JShader& shader){
 	Drawable dr(&shader,2);
 
-	geoInfo gI = SVGtoGeometry(fileName,0);
+	geoInfo gI = SVGtoGeometry("res/svg/"+fileName,0);
 	gI.weights = vector<vec3>();
 	GLuint VAO = genVAO(gI, shader);	
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
    dr.setVAO(VAO);
-   dr.setTex(fromImage(imageName));//outlineTexture());
+   dr.setTex(fromImage("res/img/"+imageName));//outlineTexture());
    dr.setNElements(3*gI.indices.size());
 
    return dr;
@@ -78,7 +81,7 @@ Drawable initPolyFromSVG(string fileName, JShader& shader){
 
 Drawable initTexQuad(string imageName, JShader& shader){
 	Drawable dr = initQuad(shader);
-	dr.setTex(fromImage(imageName));
+	dr.setTex(fromImage("res/img/"+imageName+".png"));
 	return dr;
 }
 

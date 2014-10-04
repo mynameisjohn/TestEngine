@@ -31,10 +31,13 @@ void Rig::addCycle(vector<Cycle> cycleVec){
 			cycles.push_back(cycleVec[i]);
 }
 
+//These two methods are useless and will be phased out asap
 void Rig::set_u(vec2 u){
 	this->u=u;//glm::clamp(u,vec2(-1,-1), vec2(1,1));
 }
 
+//How do I get c where it needs to be?
+//only deal with DT Here
 void Rig::inc_u(float c){
 	const float dt = 0.15f;
 	float dx = dt*(c-u.x);

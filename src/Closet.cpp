@@ -3,7 +3,7 @@
 #include <glm/gtx/transform.hpp>
 
 unique_ptr<Drawable> initDrawable(TiXmlElement * el, JShader& shader){
-	string fileName = string("res/") + el->Attribute("fileName");
+	string fileName = el->Attribute("fileName");
 	unique_ptr<Drawable> ret;
 	bool rigged = string(el->Attribute("type")) == string("r");
 	bool tex = (string(el->Attribute("type")) == string("t")) && !rigged;
