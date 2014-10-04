@@ -39,9 +39,10 @@ void Rig::set_u(vec2 u){
 //How do I get c where it needs to be?
 //only deal with DT Here
 void Rig::inc_u(float c){
-	const float dt = 0.15f;
+	const float dt = .35f;
 	float dx = dt*(c-u.x);
-	set_u({clamp(u.x+dx,-1,1), u.y+.1f});
+//	set_u({clamp(u.x+dx,-1,1), u.y+.1f}); This line causes a bug where the run cycle gets chosen(only for arm?)
+	set_u({c, u.y+.1f});
 }
 
 void Rig::draw(mat4 parentMV){
@@ -65,6 +66,8 @@ void Rig::draw(mat4 parentMV){
       (*childIt)->draw(transform);
 }
 
+//I'm going to phase this out...it was a nice idea but not worth it in the end
+//(I suspect it's incompatible with my interpolation
 Cycle Rig::getCurrentCycle(){
 	vec3 L = getLagrangeInterpolants(u.x);
 

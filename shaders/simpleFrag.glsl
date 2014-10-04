@@ -18,11 +18,21 @@ uniform sampler2D u_Texture;
 //Input color
 uniform vec4 u_Color;
 
+varying vec4 weightColor;
+
 void main(){
 	if (u_Mode == MODE_COLOR){
 		gl_FragColor = u_Color;
 	}
-	else if (u_Mode == MODE_TEX || u_Mode == MODE_RIG){
+	else if (u_Mode == MODE_TEX){
 		gl_FragColor = u_Color * texture2D(u_Texture, v_TexCoord);
+	}/*
+	else if (u_Mode == MODE_TEX || u_Mode == MODE_RIG){
+//		gl_FragColor = u_Color * texture2D(u_Texture, v_TexCoord);
+		gl_FragColor = weightColor;
+	}*/
+	else{
+		gl_FragColor = u_Color * texture2D(u_Texture, v_TexCoord);
+//		gl_FragColor = weightColor;
 	}
 }

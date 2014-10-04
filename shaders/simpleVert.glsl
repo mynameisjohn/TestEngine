@@ -23,10 +23,13 @@ attribute vec2 a_TexCoord;
 //Varying texture coordinate, used in Fragment Shader
 varying vec2 v_TexCoord;
 
+varying vec4 weightColor;
+
 void main(){
 	if (u_Mode == MODE_RIG){
 		gl_Position = u_Proj * u_MV * (a_W.x*u_RigMat[0]+a_W.y*u_RigMat[1]+a_W.z*u_RigMat[2]) * a_Position;
 		v_TexCoord = a_TexCoord;
+		weightColor = vec4(a_W.x,a_W.y,a_W.z,1);
 	}
 	else if (u_Mode == MODE_TEX){
 		gl_Position = u_Proj * u_MV * a_Position;

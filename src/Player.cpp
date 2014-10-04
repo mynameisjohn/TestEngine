@@ -44,7 +44,9 @@ void Player::setRig(){
 	r->set_u({1.f,0});
 	r = (Rig *)mSkeleton["leg2"];
 	r->set_u({1.f,2.f});
-	r = (Rig *)mSkeleton["arm"];
+	r = (Rig *)mSkeleton["arm1"];
+	r->set_u({1.f,0.f});
+	r = (Rig *)mSkeleton["arm2"];
 	r->set_u({1.f,2.f});
 /*	
 	r = (Rig *)mSkeleton["body"];
@@ -105,9 +107,8 @@ void Player::getHandleInfo(){
 
 	r = (Rig *)mSkeleton["leg2"];
 	r->inc_u(c);
-	vec3 t = vec3(1,0,0)*((mCollider.center()-mCollider.getPos()));
-	r = (Rig *)mSkeleton["arm"];
+	r = (Rig *)mSkeleton["arm1"];
 	r->inc_u(c);
-	//if (dir!=(mVel.x < 0))
-		//mSkeleton.getRoot()->leftMultMV(glm::translate(t)*glm::scale(vec3(-1,1,1)));
+	r = (Rig *)mSkeleton["arm2"];
+	r->inc_u(c);
 }
