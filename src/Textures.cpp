@@ -2,12 +2,21 @@
 #include <SDL2/SDL_image.h>
 #include "Textures.h"
 #include "Util.h"
-unsigned int fromImage(std::string fileName){
-	GLuint tex;
-	SDL_Surface * s = nullptr;
-	s = IMG_Load(fileName.c_str());
-	if (!s)
-		return 0;//This is bad
+
+vector<unsigned int> fromFileList(vector<string> files){
+	vector<unsigned int> ret;
+	for (int i=0;i<files.size();i++)
+		ret.push_back(fromImage(files[i]));
+	return ret;
+}
+
+unsigned int fromImage(string fileName){
+	GLuint tex(0);
+	SDL_Surface * s = IMG_Load(fileName.c_str());
+	if (!s){
+		cout << "Failed to load texture " << fileName << endl;
+		return tex;//This is bad
+	}
 
 	//Generate the device texture and bind it
    glGenTextures(1, &tex);

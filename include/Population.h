@@ -3,9 +3,11 @@
 
 #include "Player.h"
 #include "Obstacle.h"
+#include "Seeker.h"
 
 typedef vector<unique_ptr<Obstacle> > ObsPtrVec;
 typedef vector<unique_ptr<ActiveEnt> > AePtrVec;
+typedef vector<unique_ptr<Seeker> > SeekPtrVec;
 
 using glm::vec4;
 
@@ -15,18 +17,20 @@ class Population{
 		Population(unique_ptr<Player> p);
 		~Population();
 		void setPlayer(unique_ptr<Player> p);
-		void handleKey(int k);
-		void update();
+		void update();//EventInfo);
 		void draw();//int, int);
 		void addObs(unique_ptr<Obstacle> obs);
 		void addActiveEnt(unique_ptr<ActiveEnt> aE);
+		void addSeeker(unique_ptr<Seeker> seek);
 		vec4 move();
 		vec3 getPlayerCenter();
 		Player * getPlayer();
 	private:
-		Player * player;
+//		Player * player;
+		unique_ptr<Player> player;
 		ObsPtrVec obsVec;
 		AePtrVec aeVec;
+		SeekPtrVec seekVec;
 };
 
 #endif

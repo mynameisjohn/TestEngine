@@ -1,17 +1,17 @@
 CXX = g++
-LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer -lm -lGL -lGLU -lGLEW -lstdc++ -ltinyxml
-CFLAGS = -std=gnu++11 -MMD -MP -g
+LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer -lm -lGL -lGLU -lGLEW -lstdc++# -ltinyxml
+CFLAGS = -std=gnu++11 -MMD -MP -g -t
 INCLUDES = -I include
+TINYXML = obj/tinyxml
 
 #thanks to bobah on SO
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
-DEP_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.d)))
 
 all: testExe
 
 testExe: $(OBJ_FILES)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) -o $@ $^ $(LDFLAGS) $(TINYXML)/*.o
 
 
 obj/%.o: src/%.cpp

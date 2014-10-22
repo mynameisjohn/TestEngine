@@ -34,6 +34,14 @@ void Collider::clearSub(){
 	mSubs.clear();
 }
 
+void Collider::moveTo(vec3 pos){
+	mBB.moveTo(pos);
+
+   vector<BoundRect>::iterator rectIt;
+   for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
+      rectIt->moveTo(vec2(pos));
+}
+
 void Collider::translate(vec3 trans){
 	mBB.translate(trans);
 	
@@ -114,6 +122,10 @@ vec3 Collider::center(){
 
 vec3 Collider::getPos(){
 	return mBB.getPos();
+}
+
+vec3 Collider::getDim(){
+	return mBB.getDim();
 }
 
 //This just moves the collider with respect to the walls

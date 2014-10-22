@@ -1,15 +1,40 @@
 #include "XMLReader.h"
 #include <exception>
+#include <glm/gtx/transform.hpp>
 
 template <typename T>
-void fillIn(TiXmlElement * el, string id, T& v){
+bool fillIn(TiXmlElement * el, string id, T& v){
 	try{
-      stringstream(el->Attribute(id.c_str())) >> v;
+      return stringstream(el->Attribute(id.c_str())) >> v;
    }
-   catch (exception& e){/*
-      cout << "XML attribute " << id << "in element " << 
-		string(el->Attribute("id")) << " did not fit in variable. " << endl;*/
+   catch (exception& e){
+      cout << "XML attribute " << id << " in element " << 
+		string(el->Attribute("id")) << " did not fit in variable. " << endl;
+		return false;
    }
+	return true;
+}
+
+bool fillIn(string s, unsigned int v);
+bool fillIn(string s, float v);
+
+vector<string> getSprtFileList(string sprtFile){
+	vector<string> ret;
+	TiXmlDocument doc(sprtFile);
+   if (!doc.LoadFile()){
+      cout << "Unable to load Sprite file " << sprtFile << "\n";
+		return ret;
+   }
+
+   TiXmlHandle mHandle(&doc);
+	TiXmlElement * sprt, * el = mHandle.FirstChild("spritesheet").ToElement();
+
+	for (sprt=el->FirstChildElement("sprite"); sprt; sprt = sprt->NextSiblingElement("sprite")){
+		string fileName = sprt->Attribute("fileName");
+		ret.push_back(fileName);
+	}
+
+	return ret;
 }
 
 void fillIt(TiXmlElement * el, string id, unsigned int &v){
@@ -31,13 +56,14 @@ vector<triangle> getConvexIndices(int n){
 	return indices;
 }
 
-vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
+Rig getRigFromSVG(string svgFile, JShader& shader){
+	Rig ret(&shader);
 	vector<Cycle> cycles;
 	vector<Pose> poses;
-	//vector<fdualquat> joints;
 	vector<QuatVec> Joints;
-	vec3 T;
+	vec3 T, S;
 	vec4 R;
+	unsigned int C;
 
 	TiXmlDocument doc(svgFile);
    if (!doc.LoadFile()){
@@ -49,7 +75,25 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 
 	rig = mHandle.FirstChild("rig").ToElement();//.FirstChild("g").FirstChild("rig").ToElement();
 		if (!rig) 
-			return cycles;
+			return ret;
+
+	if (rig->Attribute("S")){
+		string inStr = rig->Attribute("S");
+		size_t pos=0;
+		const string d=",";
+		for (int i=0;i<3;i++){
+			pos = inStr.find(d);
+			stringstream(inStr.substr(0,pos)) >> S[i];
+			inStr.erase(0,pos+d.length());
+		}
+	}
+	else
+		S = vec3(1);
+
+	ret.leftMultMV(glm::scale(S));
+
+	if (!fillIn(rig, "C", C))
+		C=1;
 
 	for (cycle = rig->FirstChildElement("cycle"); cycle; cycle=cycle->NextSiblingElement("cycle")){
 		for (pose = cycle->FirstChildElement("pose"); pose; pose=pose->NextSiblingElement("pose")){
@@ -69,21 +113,20 @@ vector<Cycle> getRigCycles(string svgFile){//TiXmlElement * rig){
 					stringstream(inStr.substr(0,pos)) >> R[i];
 					inStr.erase(0,pos+d.length());
 				}
-//cout << R << "\n" << getRQ(R) << "\n" << glm::dot(getRQ(R),getRQ(vec4(R.x-25,R.y,R.z,R.w))) << "\n" << endl;
-				Joints.push_back((Joints.size() ? Joints.back() : QuatVec())*QuatVec(T,getRQ(R)));
+				Joints.push_back((Joints.size() ? Joints.back() : QuatVec()) * QuatVec(T,getRQ(R)));
 			}
-			float t=.1, dt=.1;
-			fillIn(pose, "t", t);
-			fillIn(pose, "dt", dt);
 			poses.emplace_back(Joints);//, t, dt);
 			Joints.clear();
 		}
-		unsigned int C=1;
-		fillIn(cycle,"C", C);
-		cycles.emplace_back(poses, C);
+		float dt;
+		if (!fillIn(cycle,"dt",dt))
+			dt=0.02f;
+		cycles.emplace_back(poses, C, dt);
 		poses.clear();
 	}
-	return cycles;
+
+	ret.setCycles(cycles);
+	return ret;
 }
 
 map<string,string> getSVGPathMap(string svgFile){
@@ -132,12 +175,12 @@ vector<vec4> getPathPoints(string pathStr){
 	         pos = pathStr.find(d2);
             string ptStr = pathStr.substr(0,pos);
             if (!(stringstream(ptStr) >> p.x))
-               cout << "Incorrect path string\n";
+               cout << "Incorrect path string" << ptStr << endl;
             pathStr.erase(0,pos+d2.length());
             pos = pathStr.find(d1);
             ptStr = pathStr.substr(0,pos);
             if (!(stringstream(ptStr) >> p.y))
-               cout << "Incorrect path string\n";
+               cout << "Incorrect path string" << ptStr << endl;
             pathStr.erase(0,pos+d2.length());
             if (ret.size() && relative)
                p += ret.back();
@@ -165,12 +208,14 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 		cout << "Error loading path string\n";
 		return {vertices, texCoords, indices};
 	}
+
 	bool relative = (outlineStr[0] == 'm');
 	outlineStr = outlineStr.substr(2,outlineStr.length());
 	size_t pos;
 	for (int i=0;i<tmp.size();i++)
 		texCoords.push_back(vec2(tmp[i]));	
 
+	//min, Max
 	vec2 m=texCoords.front(), M=texCoords.front();
 	vector<vec2>::iterator it;
 	for (it=texCoords.begin(); it!=texCoords.end(); it++){
@@ -194,16 +239,20 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 		vector<vec2> BonePoints;
 		tmp = getPathPoints(jointStr);
 
-		for (int i=0;i<tmp.size();i++)
+		for (int i=0;i<tmp.size();i++){
 			BonePoints.push_back((vec2(tmp[i])-m)/max(M.x,M.y));
+			BonePoints.back().y = 1.f-BonePoints.back().y;
+		}
 
 		//This assumes a lot (i.e joints drawn bottom-up)
 		for (int j=0;j<vertices.size();j++){
-			vec3 w;//this is always 3...
-			for (int i=0;i<BonePoints.size();i++)
-				w[i]=(float)exp(-pow(glm::length(BonePoints[i]-vec2(vertices[j])),2)/.075f);
+			vec3 w;//nJoints should be  < 3
+			for (int i=0;i<BonePoints.size();i++){
+				int idx = BonePoints.size()-1-i;
+				w[idx]=(float)exp(-pow(glm::length(BonePoints[i]-vec2(vertices[j])),2)/.075f);
+			}
 			w=glm::normalize(w);
-			cout << w << endl;
+			//cout << w << endl;
 			weights.push_back(w);
 		}
 
@@ -215,7 +264,6 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 				len=glm::length(BonePoints[i]);
 			}
 		}
-
 		for (int i=0;i<vertices.size();i++)
 			vertices[i] -= vec4(BonePoints[k],0,0);
 		offset = vec3(BonePoints[k],0);

@@ -2,10 +2,14 @@
 #include "Camera.h"
 #include "JShader.h"
 #include "Population.h"
+#include "Level.h"
 
 #include <memory>
 #include <SDL2/SDL.h>
 #include <iostream>
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 450
 
 class BaseEngine{
 public:
@@ -19,8 +23,9 @@ public:
 private:
 	Camera cam;
 	JShader shader;
-	std::unique_ptr<Population> pop;
-	std::vector<Drawable> drawables;
+	unique_ptr<Population> pop;
+	Level level;
+//	vector<Drawable> drawables;
 };
 
 int keyCode(SDL_Event& e);

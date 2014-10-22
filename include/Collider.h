@@ -17,6 +17,7 @@ class Collider{
 		void setWalls(vec3 min, vec3 max);
 		void clearSub();
 		void translate(vec3 trans);
+		void moveTo(vec3 pos);
 		void scale(vec3 s);
 	   char collidesWith(Collider&);
 		bool collidesX(Collider&);
@@ -32,6 +33,7 @@ class Collider{
 		vec3 move(vec3 vel);
 		vec3 getPos();
 		vec3 center();
+		vec3 getDim();
 	private:
 		BoundBox mBB;
 		std::vector<BoundRect> mSubs;

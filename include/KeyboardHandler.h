@@ -1,9 +1,20 @@
 #ifndef KEYBOARDHANDLER_H
 #define KEYBOARDHANDLER_H
 
-#include <stdio.h>
-//#include <SDL2/SDL.h>
+#include <vector>
 
+const int KEYCOUNT = 256;
+
+class KeyboardHandler{
+public:
+	KeyboardHandler();
+	int getKeyState(int);
+	void handleKey(int);
+
+private:
+	std::vector<bool> keyState;
+};
+/*
 class KeyboardHandler{
 public:
 	KeyboardHandler(){
@@ -17,13 +28,14 @@ public:
 
 	//just toggles for now	
 	inline void handleKey(int key){
-		//if (key>0 && key<255)
-		key &= 0xFF;
-		keyState[key] = !keyState[key];
+		if (key > 0){
+			key &= 0xFF;
+			keyState[key] = !keyState[key];
+		}
 	}
 
 protected:
 	bool keyState[256];
 };
-
+*/
 #endif

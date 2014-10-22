@@ -13,13 +13,21 @@ public:
 	void addCycle(vector<Cycle> cycleVec);
 	void inc_u(float c);
 	void set_u(vec2 u);
-	void draw(mat4 parentMV);
-	void setTex(GLuint tex);
+	mat4 draw(mat4 parentMV, unsigned int curTex, vec2& u, unsigned int from, unsigned int to);
+	mat4 draw(mat4 parentMV, unsigned int curTex=0);
+//	void setTex(GLuint tex);
+	void set_to(unsigned int t);
+	void set_pose(float t);
+	void shift();
+	float getShift();
 	Cycle getCurrentCycle();
 	Pose getCurrentPose();
 private:
 	vector<Cycle> cycles;
 	vec2 u;
+//	float u, v;
+	unsigned int numPoses;
+	unsigned int from, to;
 };
 
 #endif

@@ -3,14 +3,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
-Drawable::Drawable(JShader * shader, int mode){
-	MV = mat4();
-	mColor = {1.f, 1.f, 1.f, 1.f};
-	visible = true;
-	mElementCount=4;
+Drawable::Drawable(JShader * shader, int mode)
+:	cTex(0), MV(), mColor(1,1,1,1), visible(true), mShader(shader), mMode(mode)
+{
 	children.clear();
-	mShader = shader;
-	mMode=mode;
+	mTexVec.clear();
 }
 
 Drawable::~Drawable(){
@@ -28,11 +25,14 @@ void Drawable::addChild(Drawable * child){
 	}
 	//This line negates any parent transforms at the start - 
 	//it may seem like an error, but I like the control this gives me
-	//while preserving the hierarchy
+
 	child->leftMultMV(glm::inverse(MV));
 	children.push_back(child);
 }
 
+void Drawable::setVisibility(bool b){
+	visible = b;
+}
 
 void Drawable::setMV(mat4 newMatrix){
 	MV = newMatrix;
@@ -42,8 +42,8 @@ void Drawable::identity(){
 	MV = mat4();
 }
 
-void Drawable::setColor(float r, float g, float b){
-	mColor = {r,g,b,1.f};
+void Drawable::setColor(float r, float g, float b, float a){
+	mColor = {r,g,b,a};
 }
 
 void Drawable::setColor(vec3 color){
@@ -54,11 +54,25 @@ void Drawable::setVAO(GLuint VAO){
 	mVAO = VAO;
 }
 
-void Drawable::setTex(GLuint tex){
-	mTex = tex;
-	mMode = 2;
+int Drawable::addTex(GLuint tex){
+	if (mMode < 0)
+		mMode = 0;
+	mTexVec.push_back(tex);
+	return mTexVec.size()-1;
 }
 
+int Drawable::addTex(vector<GLuint> texVec){
+	for (int i=0;i<texVec.size();i++)
+		addTex(texVec[i]);
+	return mTexVec.size()-1;
+}
+
+/*
+void Drawable::setTex(GLuint tex){
+	mTexVec[0] = tex;
+	mMode = 2;
+}
+*/
 void Drawable::leftMultMV(mat4 left){
 	MV = left * MV;
 }
@@ -67,7 +81,10 @@ void Drawable::setNElements(int n){
 	mElementCount = n;
 }
 
-void Drawable::draw(mat4 parentMV){//GLint MVHandle, GLint ColorHandle, mat4 parentMV){
+mat4 Drawable::draw(mat4 parentMV, unsigned int curTex){//GLint MVHandle, GLint ColorHandle, mat4 parentMV){
+	if (!visible)
+		return mat4();
+	
 	//Find inherited transform
 	mat4 transform = parentMV * MV;
 	
@@ -75,17 +92,20 @@ void Drawable::draw(mat4 parentMV){//GLint MVHandle, GLint ColorHandle, mat4 par
 	glUniformMatrix4fv(mShader->getMVHandle(), 1, GL_FALSE, glm::value_ptr(transform));
 	glUniform4fv(mShader->getColorHandle(), 1, glm::value_ptr(mColor));
 	glUniform1i(mShader->getModeHandle(), mMode);
-	
+
 	//Bind Texture/VAO and Draw
-	glBindTexture(GL_TEXTURE_2D, mTex); //Make my texture active
+	if (mTexVec.size())
+		glBindTexture(GL_TEXTURE_2D, mTexVec[0]); //Make my texture active
 	glBindVertexArray(mVAO); //Bind my VAO
 	glDrawElements(GL_TRIANGLE_STRIP, mElementCount, GL_UNSIGNED_INT, NULL);
-
+/*
 	//Recursively draw children
 	vector<Drawable *>::iterator childIt;
 	for (childIt=children.begin(); childIt!=children.end(); childIt++){
-		(*childIt)->draw(transform);
+		(*childIt)->draw(transform, curTex);
 	}
+*/	
+	return transform;
 }
 
 bool Drawable::isVisible(){
@@ -96,12 +116,16 @@ int Drawable::getNumElems(){
 	return mElementCount;
 }
 
+void Drawable::setCurTex(GLuint ct){
+	cTex = wrap(mTexVec.size(), ct);
+}
+
 GLuint Drawable::getVAO(){
 	return mVAO;
 }
 
 GLuint Drawable::getTex(){
-	return mTex;
+	return mTexVec.back();
 }
 
 GLfloat * Drawable::getMVPtr(){
@@ -114,4 +138,8 @@ GLfloat * Drawable::getColorPtr(){
 
 mat4 Drawable::getMVMat(){
 	return MV;
+}
+
+mat4 Drawable::getMVInverse(){
+	return glm::inverse(MV);
 }

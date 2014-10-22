@@ -13,6 +13,10 @@ void BoundRect::translate(vec2 trans){
 	mPos += trans;
 }
 
+void BoundRect::moveTo(vec2 pos){
+	mPos = pos;
+}
+
 bool BoundRect::collidesWith(BoundRect other){
 	return collidesX(other) && collidesY(other);
 }

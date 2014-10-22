@@ -4,6 +4,11 @@
 #include "Collider.h"
 #include "Skeleton.h"
 
+typedef struct HitEffect{
+	float damage;
+	vec3 force;
+} HitEffect;
+
 class Entity{
 	public:
 		Entity();
@@ -15,10 +20,16 @@ class Entity{
 		void setSkeleton(Skeleton s);
 		void setBB(BoundBox bb);
 		void translate(vec3);
-		void addDrawable(unique_ptr<Drawable> dr);
-		void draw();//int MVHandle, int ColorHandle);
+		void moveTo(vec3);
+		void reflect();
+		//void setVisible(bool b=true);
+		//bool isVisible();
+		virtual void takeHit(HitEffect hEff);
+
+//		void addDrawable(unique_ptr<Drawable> dr);
+		virtual void draw();//int MVHandle, int ColorHandle);
 		char collidesWith(Entity * e);
-		bool overlapsWith(Entity * e);
+		virtual bool overlapsWith(Entity * e); //make this virtual
 		float toLeft(Entity *);	
 		float toRight(Entity *);
 		float toBottom(Entity *);
@@ -33,11 +44,18 @@ class Entity{
 		Skeleton * getSkeleton(){return &mSkeleton;}
 	protected:
 		Collider mCollider;
-		vector<unique_ptr<Drawable> > mDrawables;
+		//vector<unique_ptr<Drawable> > mDrawables;
 		Skeleton mSkeleton;
 //		SceneGraph mSkeleton;
-		vec3 mTrans;
+//		vec3 mTrans;
 		float sigmaSq, A;
+		bool flip;
+
+		//friendly grandkids
+		//technically these are class declarations...is that bad?
+		friend class Player;
+		friend class Wall;
+
 	/* These will be inlined when the time comes
 	public:
 		inline void translate(vec3 trans){

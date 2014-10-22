@@ -1,9 +1,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "Projectile.h"
+
 #include "ActiveEnt.h"
-#include "KeyboardHandler.h"
+#include "EventRegister.h"
 #include "Rig.h"
+
+#include <list>
 
 class Player: public ActiveEnt{
 	public:
@@ -12,13 +16,28 @@ class Player: public ActiveEnt{
 		Player(vec3 translate, vec3 scale);
 		~Player();
 		int setChildren();
-		void setRig();
-		void update();
-		void getHandleInfo();
-		void handleKey(int k);
+		void move();
+		char moveWRT_ent(Entity * e);
+		void draw();
+		void update();//EventInfo);
+		void updateKeys();
+		void updateMouse();
+		void updateSkeleton();
+		//void handleKey(int k);
+		void setProjectile(Projectile * p);
+		void addProjectile(Projectile p);
+		bool overlapsWith(Entity * e);
+		EventRegister * getRegPtr();
 	private:
-		KeyboardHandler mHandler;
+		//vector<unique_ptr<Projectile> > mProjectiles;
+		list<Projectile> projList;
+		Projectile mProj;
+//		KeyboardHandler mHandler;
 		float mDash;
+		bool jumping;
+		int activeProj;
+public:
+		EventRegister eReg;
 };
 
 #endif

@@ -2,8 +2,6 @@
 #include <GL/gl.h>
 #include "BaseEngine.h"
 #include <SDL2/SDL_image.h>
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
 
 bool init(BaseEngine& engine);
 void close();
@@ -107,7 +105,7 @@ bool init(BaseEngine& engine){
 	glDepthFunc(GL_LESS);
 	//glEnable(GL_CULL_FACE); //maybe put this back later...
    glEnable(GL_MULTISAMPLE_ARB);
-	glAlphaFunc(GL_GREATER, 0.75);
+	glAlphaFunc(GL_GREATER, 0.5);
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

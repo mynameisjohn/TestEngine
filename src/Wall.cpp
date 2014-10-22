@@ -25,7 +25,7 @@ Wall::Wall(vec3 translate, vec3 scale, char o){
 	orientation=o;
 	mCollider = Collider(BoundBox(scale));
 	mCollider.addSub(BoundRect(vec2(scale)));
-	mCollider.scale(vec3(1,1,100));//this is to give the walls some back thickness
+	mCollider.scale(vec3(1,1,1000));//this is to give the walls some back thickness
 	this->translate(translate);
 }
 

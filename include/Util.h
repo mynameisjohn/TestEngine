@@ -26,6 +26,33 @@ float clamp(float v, float m, float M);
 float degToRad(float d);
 float radToDeg(float r);
 float lagrangeTime(float t0, float t1, float t);
+float lerp(float x, float y, float a);
+/*
+template <typename T>
+bool vecContains(vector<T>& vec, T v){
+	vector<T>::iterator it;
+	for (it=vec.begin();it!=vec.end();it++)
+		if (*it == v)
+			return true;
+	return false;
+}
+
+template bool vecContains(vector<int>&, int);
+*/
+mat4 getAlignMat(vec3 x, vec3 y, vec3 z);
+mat4 getAlignMat(vec3 u, char o);
+
+fquat getQuatFromVec2(vec2 r);
+
+template <typename T>
+T remap(T v, T m1, T m2, T m3, T m4){
+	return (((v-m1)/(m2-m1))*(m4-m3)+m3);
+}
+
+template float remap<float>(float, float, float, float, float);
+template vec2 remap<vec2>(vec2,vec2,vec2,vec2,vec2);
+template vec3 remap<vec3>(vec3,vec3,vec3,vec3,vec3);
+template vec4 remap<vec4>(vec4,vec4,vec4,vec4,vec4);
 
 fquat getRQ(vec4 rot);
 

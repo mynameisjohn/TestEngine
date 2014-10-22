@@ -23,23 +23,32 @@ void Camera::translate(vec3 trans){
 }
 
 //what a strange method...
-void Camera::push(vec4 player){
+vec3 Camera::push(vec4 player){
 	float dX;
 
 	dX = (player.x-mBB.left());
 	//printf("%lf\t",dX);	
 	if (dX < buf){//don't sweat the small stuff...
 		translate(vec3(player.w, 0, 0));
-		return;
+	}
+	else{
+		dX = (mBB.right() - player.x);
+		//printf("%lf\n",dX);	
+		if (dX < buf){
+			translate(vec3(-player.w, 0, 0));
+		}
 	}
 
-	dX = (mBB.right() - player.x);
-	//printf("%lf\n",dX);	
-	if (dX < buf){
-		translate(vec3(-player.w, 0, 0));
-	}
+	vec4 playerPos = projMat*vec4(player.x,player.y,player.z,1);
+	//cout << playerPos/playerPos.w << endl;
 
-	return;
+	return vec3(playerPos)/playerPos.w;
+/*
+	playerPos /= playerPos.w;
+
+	//returns true of the mouse is to the player's right
+	return (playerPos.x - sp.x < 0);
+*/
 }
 
 void Camera::setProjMat(mat4 p){

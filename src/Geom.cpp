@@ -9,6 +9,11 @@
 #include <sstream>
 #include <glm/gtx/transform.hpp>
 
+const string SVG_DIR  = "res/svg/";
+const string IMG_DIR  = "res/img/";
+const string RIG_DIR  = "res/rig/";
+const string SPRT_DIR = "res/sprt/";
+
 GLuint genVAO(geoInfo gI, JShader& shader){
 	GLuint VAO;
    glGenVertexArrays(1, &VAO);
@@ -48,17 +53,18 @@ GLuint genVAO(geoInfo gI, JShader& shader){
 
 //Bug with the way offset is being handled
 Rig initRigFromSVG(string fileName, JShader& shader){
-	Rig r(&shader);
-	string imageName, rigName;
-//	imageName = fileName.substr(0,fileName.length()-4)+".png";
-//	rigName
-	r.setCycles(getRigCycles("res/rig/"+fileName+".rig"));
+	string rigName = RIG_DIR+fileName+".rig";
+	Rig r = getRigFromSVG(rigName, shader);
+	//vec3 scale = r.setCycles(getRigCycles(RIG_DIR+fileName+".rig"));
+	//r.leftMultMV(scale);
 	geoInfo gI = SVGtoGeometry("res/svg/"+fileName+".svg",1);
    GLuint VAO = genVAO(gI, shader);
-//	string imageName = fileName.substr(0,fileName.length()-4)+".png";
-	r.leftMultMV(glm::translate(gI.offset));
+	//r.leftMultMV(glm::translate(gI.offset));
 	r.setVAO(VAO);
-   r.setTex(fromImage("res/img/"+fileName+".png"));//outlineTexture());
+
+	vector<string> imageFiles = getSprtFileList("res/sprt/"+fileName+".sprt");
+	for (int i=0;i<imageFiles.size();i++)
+      r.addTex(fromImage("res/img/"+imageFiles[i]));
    r.setNElements(3*gI.indices.size());
 
 	return r;
@@ -66,27 +72,36 @@ Rig initRigFromSVG(string fileName, JShader& shader){
 
 //assumes "x.svg" as input, as well as some "x.png" texture
 Drawable initPolyFromSVG(string fileName, JShader& shader){
-	Drawable dr(&shader,2);
+	Drawable dr(&shader, 0);
 
 	geoInfo gI = SVGtoGeometry("res/svg/"+fileName,0);
 	gI.weights = vector<vec3>();
 	GLuint VAO = genVAO(gI, shader);	
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
    dr.setVAO(VAO);
-   dr.setTex(fromImage("res/img/"+imageName));//outlineTexture());
+   dr.addTex(fromImage("res/img/"+imageName));//outlineTexture());
    dr.setNElements(3*gI.indices.size());
 
    return dr;
 }
 
+Drawable initSpriteSheet(string fileName, JShader& shader){
+	Drawable dr = initQuad(shader);
+	vector<string> files = getSprtFileList("res/sprt/"+fileName+".sprt");
+	for (int i=0;i<files.size();i++)
+		dr.addTex(fromImage("res/img/"+files[i]));//"res/img/"+imageName+".png"));
+	
+	return dr;
+}
+
 Drawable initTexQuad(string imageName, JShader& shader){
 	Drawable dr = initQuad(shader);
-	dr.setTex(fromImage("res/img/"+imageName+".png"));
+	dr.addTex(fromImage("res/img/"+imageName+".png"));
 	return dr;
 }
 
 Drawable initQuad(JShader& shader){
-	Drawable dr(&shader,1);
+	Drawable dr(&shader,-1);
 
 	vector<vec4> vertices={
 		{0,0,0,1}, {1,0,0,1},
@@ -114,7 +129,7 @@ Drawable initCube(JShader& shader){
    const int tStride = nVert*2*sizeof(GLfloat);
    const int iStride = nIndices*sizeof(GLuint);
 
-	Drawable dr(&shader,2);
+	Drawable dr(&shader);
 	int verticeCount = 24;
 	int faceCount = 12;
 
@@ -216,7 +231,7 @@ Drawable initCube(JShader& shader){
    glBindVertexArray(0);
 
 	dr.setVAO(tmpVAO);
-	dr.setTex(outlineTexture());
+	dr.addTex(outlineTexture());
 	dr.setNElements(faceCount*3);
 
    return dr;

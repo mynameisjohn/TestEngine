@@ -9,10 +9,12 @@ public:
    BoundBox(vec3 dim);
    BoundBox(vec3 pos, vec3 dim);
 	void translate(vec3 trans);
+	void moveTo(vec3 pos);
 	bool collidesWith(BoundBox& other);
 	bool collidesX(BoundBox& other);
 	bool collidesY(BoundBox& other);
 	bool collidesZ(BoundBox& other);
+
 /*
 	I'll re-inline these when the time comes
 //inline functions

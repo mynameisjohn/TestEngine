@@ -14,6 +14,10 @@ void BoundBox::translate(vec3 trans){
 	mPos += trans;
 }
 
+void BoundBox::moveTo(vec3 pos){
+	mPos = pos;
+}
+
 bool BoundBox::collidesWith(BoundBox& other){
 	return collidesX(other) && 
 			 collidesY(other) && 

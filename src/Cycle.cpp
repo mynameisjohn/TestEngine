@@ -5,21 +5,21 @@ Cycle::Cycle(){
 	poses = vector<Pose>();
 }
 
-Cycle::Cycle(vector<Pose> poseVec)
-: poses(poseVec){
-}
-
 Cycle::Cycle(vector<Pose> poseVec, unsigned int C)
 : poses(poseVec), C(C){
-	const float eps = 0.000001f;
-	DT.resize(poses.size());
+}
+
+Cycle::Cycle(vector<Pose> poseVec, unsigned int C, float dt)
+: poses(poseVec), C(C){
+	const float m = 0.01f, M=0.8f;
 	
+	//Centripetal DT calculation
 	for (int i=0;i<poses.size();i++){
 		int i2 = (i+1)%poses.size();
-		float dt = 10.f;
-		dt *= sqrt(poses[i].maxDiff(poses[i2]));
-		DT[i]=dt;//(max(dt, eps));
+		float DT = clamp(dt*sqrt(poses[i].maxDiff(poses[i2])), m, M);
+		poses[i].setDT(DT);
 	}
+	C = (poses.size() > C ? C : poses.size()-1);
 }
 
 void Cycle::setPoses(vector<Pose> poseVec){
@@ -38,6 +38,22 @@ void Cycle::addPose(vector<Pose> poseVec){
 			poses.push_back(poseVec[i]);
 }
 
+int Cycle::getNumPoses(){
+	return poses.size();
+}
+
+int Cycle::getNumJoints(){
+	int i=0;
+	int nJ = poses[i++].getNumJoints();
+	for (i;i<poses.size();i++){
+		if (nJ != poses[i].getNumJoints()){
+			cout << "Inconsistent number of Joints. Segfault iminent." << endl;
+			return 0;
+		}
+	}
+	return nJ;
+}
+
 Cycle Cycle::operator*(const float s){
 
 	Cycle ret(*this);
@@ -53,6 +69,13 @@ Cycle Cycle::operator+(const Cycle& other){
 	return ret;
 }
 
+Cycle Cycle::blend(const Cycle& other, float a){
+	vector<Pose> poseVec(poses.size());
+	for (int i=0;i<poseVec.size();i++)
+		poseVec[i] = poses[i].blend(other.poses[i], a);
+	return Cycle(poseVec, C);
+}
+
 Pose Cycle::blendPoses(unsigned int p1, unsigned int p2, float x){
 	return poses[p1].blend(poses[p2],x);
 }
@@ -61,9 +84,7 @@ Pose Cycle::blendPoses(unsigned int p1, unsigned int p2, float x){
 //I've read that float -> int is rather slow
 Pose Cycle::collapsePoses(float t){
 	int top, bottom, center;
-	bool red=true;
-	if (poses.size() <= C+1)
-		C = poses.size()-1;
+	bool red(true);
 
 	bottom = -(C/2);
    top = C/2+(C%2!=0);
@@ -92,9 +113,8 @@ Pose Cycle::collapsePoses(float t){
 
 //this is slow but works for now... just like everything else
 Pose Cycle::getCurrentPose(float& t){
-	C=3;
-	int center = (int)t;
-	Pose ret = collapsePoses(t);
+	Pose ret = (poses.size () > 1) ? collapsePoses(t) : poses[0];
+	t += ret.getDT();//0.1f;
 	//cout << DT[wrap(DT.size(),center)] << endl;
 	return ret;
 /*

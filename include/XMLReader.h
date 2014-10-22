@@ -8,7 +8,7 @@
 #include <tinyxml.h>
 #include <map>
 #include "Util.h"
-#include "Cycle.h"
+#include "Rig.h"
 
 typedef struct triangle{
    unsigned int A,B,C;
@@ -23,12 +23,12 @@ typedef struct geoInfo{
 } geoInfo;
 
 template <typename T>
-void fillIn(TiXmlElement * el, string id, T& v); 
+bool fillIn(TiXmlElement * el, string id, T& v); 
 vector<triangle> getConvexIndices(int n);
-vector<Cycle> getRigCycles(string svgFile);
+//vector<Cycle> getRigCycles(string svgFile);
+Rig getRigFromSVG(string svgFile, JShader& shader);
 map<string, string> getSVGPathMap(string svgFile);
 geoInfo SVGtoGeometry(string svgFile, bool rigged);
-
-void fillIn(string s, unsigned int v);
+vector<string> getSprtFileList(string sprtFile);
 
 #endif

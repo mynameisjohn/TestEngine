@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<Entity>
+	<Collider>
+		<box S=".5,1,1" T="0,0,0">
+			<rect S="1,1" T="0,0" />
+		</box>
+	</Collider>
+	<Skeleton>
+		<drawable name="body" fileName="body" type="r" S="1,1,1" T="0,.8,-.05">
+<!--				<drawable name="body" fileName="body" type="s" S=".35,1,1" T="-.125,.8,-.05">-->
+<!--			<drawable name="body" fileName="stand" type="t" S=".35,1,1" T="-.125,.8,-.05">-->
+				<drawable name="arm1" fileName="arm" type="r" S=".6,.7,1" T="0,.73,-.06">
+					<drawable name="forearm1" fileName="forearm" type="r" S=".3,.4,1" T="0,.74,-.08"/>
+				</drawable>
+				<drawable name="arm2" fileName="arm" type="r" S=".6,.7,1" T=".245,.73,.08">
+					<drawable name="forearm2" fileName="forearm" type="r" S=".3,.4,1" T=".245,.7,.06"/>
+				</drawable>
+			<drawable name="leg1" fileName="leg" type="r" S=".85,1,1" T=".02,0,0"/>
+			<drawable name="leg2" fileName="leg" type="r" S=".85,1,1" T=".1,0,.03"/>
+		</drawable>
+	</Skeleton>
+</Entity>

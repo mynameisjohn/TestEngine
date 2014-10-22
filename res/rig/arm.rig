@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<rig id="arm" C="1" S=".73,.7,1">
+	<cycle dt="0.01">
+		<pose>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+	</cycle>
+	<cycle dt="0.01">
+		<pose>
+			<trans T="0,0,0" R="-2,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="2,0,0,1"/>
+		</pose>
+	</cycle>
+	<cycle dt="0.0065">
+		<pose>
+			<trans T="0,0,0" R="-30,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="30,0,0,1"/>
+		</pose>
+	</cycle>	
+</rig>
 
+<!--
 <rig> 
 	<cycle id = "stand">
 		<pose>
@@ -25,18 +52,18 @@
 	</cycle>
 	<cycle id = "walk">
 		<pose>
-			<trans T="0,0,0" R="1,0,0,1"/>
+			<trans T="0,0,0" R="2,0,0,1"/>
+			<trans T="0,0,0" R="2,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="4,0,0,1"/>
+			<trans T="0,0,0" R="4,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 		<pose>
 			<trans T="0,0,0" R="2,0,0,1"/>
-			<trans T="0,0,0" R="0,0,0,1"/>
-			<trans T="0,0,0" R="0,0,0,1"/>
-		</pose>
-		<pose>
-			<trans T="0,0,0" R="1,0,0,1"/>
-			<trans T="0,0,0" R="0,0,0,1"/>
+			<trans T="0,0,0" R="2,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 		<pose>
@@ -47,24 +74,25 @@
 	</cycle>
 	<cycle id = "run">
 		<pose>
-			<trans T=".12,-.02,0" R="60,0,0,1"/>
-			<trans T="0,0,0" R="120,0,0,1"/>
+			<trans T="0,0,0" R="10,0,0,1"/>
+			<trans T="0,0,0" R="20,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 		<pose>
-			<trans T=".12,-.02,0" R="60,0,0,1"/>
-			<trans T="0,0,0" R="120,0,0,1"/>
+			<trans T="0,0,0" R="10,0,0,1"/>
+			<trans T="0,0,0" R="30,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 		<pose>
-			<trans T="0,0,0" R="-90,0,0,1"/>
-			<trans T="0,0,0" R="120,0,0,1"/>
+			<trans T="0,0,0" R="10,0,0,1"/>
+			<trans T="0,0,0" R="20,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 		<pose>
-			<trans T="0,0,0" R="-90,0,0,1"/>
-			<trans T="0,0,0" R="120,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>
 </rig>
+-->
