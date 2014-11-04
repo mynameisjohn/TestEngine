@@ -7,43 +7,45 @@
 #include "Ligament.h"
 #include <unordered_map>
 
-/*
-	See the Entity::Entity(Entity * f) constructor in Entity.cpp
-	for details regarding a bug involving this class. 
-*/
-
-//typedef std::map<std::string, std::unique_ptr<Drawable> > SceneGraph;
-
 class Skeleton{
 public:
 	Skeleton();
-//	Skeleton(const Skeleton& other);
-//	Skeleton(SceneGraph SG, Drawable * r);
-	Skeleton(map<string, Ligament>, string r);// Ligament * l);
+//	Skeleton(map<string, Ligament>, string r, mat4 mv=mat4(), QuatVec qv=QuatVec());
 	Skeleton(Drawable * r);
-	Skeleton(unordered_map<string, int> nM, vector<Ligament> lV);
-	Skeleton(const Drawable& dr);
-	//void setRoot(Ligament * l);
-	//void add(string, Ligament l);
+	Skeleton(unordered_map<string,int> nM, vector<Ligament> lV);
 	void print();
-//	void addToRoot(string, Ligament l);
+	void addToRoot(string, Ligament l, bool invert=true);
+	void draw(vec3 pos);
 	void draw(mat4 transform);
 	void update();
-	void applyTransform(mat4 m);
+	void reflect();
+//	void leftMultMV(mat4 m);
+	void scale(float s);
+	void applyTransform(QuatVec qv);
+	void resetTransform();
 	void resetLigaments();
+	void setColor(vec4 c);
+	void setColor(vec3 v);
+	void setColor(float r, float g, float b, float a=1.f);
+	bool flipped();
+	float getScale();
+	QuatVec getTransform();
+	mat4 getTransformAsMat4();
 	Ligament * getRoot();
 	Ligament * operator[](string idx);
+	vec3 getOrigin(string s="", int idx=0);
 private:
-	//SceneGraph sg;
-	map<string, Ligament> lMap;
-//	Drawable * root;
-	Ligament * root;
-	map<string, Ligament>::iterator itRoot;
+	//map<string, Ligament> lMap;
+	//Ligament * root;
+	//map<string, Ligament>::iterator itRoot;
 	mat4 MV;
-	string R;
-
+	vec4 mColor;
+	list<QuatVec> mTransform;
+	//string R;
 	unordered_map<string, int> nameMap;
 	vector<Ligament> lVec;
+	float S;
+	bool flip;
 };
 
 #endif

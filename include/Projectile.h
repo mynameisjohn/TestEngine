@@ -6,7 +6,7 @@
 class Projectile: public ActiveEnt{
 	public:
 		Projectile();
-		Projectile(Entity *);
+		Projectile(const Entity&);
 		Projectile(vec3 translate, vec3 scale);
 		void update();
 //		void move();

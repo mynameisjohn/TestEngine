@@ -2,13 +2,12 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Rig::Rig(JShader * shader)
-: Drawable(shader, 1), from(0), to(0), numPoses(0), u(0,0)
-{}
+Rig::Rig(JShader * shader, unordered_map<string, Cycle> cmap, vector<vec4> j)
+: Drawable(shader, 1), numPoses(0), cMap(move(cmap)){//, origins(move(j))
+	origins = j;
+	mMode = cMap.begin()->second.getNumJoints();
 
-Rig::~Rig(){
-	children.clear();
-	mVAO=0;
+//	cout << cMap.begin()->first << "\t" << cMap.begin()->second.getNumPoses() << "\t" << cMap.begin()->second.getNumJoints() << endl;
 }
 
 void Rig::setCycles(vector<Cycle> cycleVec){
@@ -26,11 +25,7 @@ void Rig::setCycles(vector<Cycle> cycleVec){
 	cycles=cycleVec;
 	mMode = cycles[0].getNumJoints();
 }
-/*
-void Rig::setTex(GLuint tex){
-	mTexVec[0] = tex;
-}
-*/
+
 void Rig::addCycle(Cycle c){
 	if (cycles.size() < 3)
 		cycles.push_back(c);
@@ -42,120 +37,87 @@ void Rig::addCycle(vector<Cycle> cycleVec){
 			cycles.push_back(cycleVec[i]);
 }
 
-//can't do this yet
-void Rig::shift(){
-	u.y += (float)(cycles[0].getNumPoses())/2.f;
+string Rig::getFirstCycle(){
+	return cMap.begin()->first;
 }
 
 float Rig::getShift(){
-	return (float)(cycles[0].getNumPoses())/2.f;
+	return (float)(cMap.begin()->second.getNumPoses())/2.f;
+//	return (float)(cycles[0].getNumPoses())/2.f;
 }
 
-//These two methods are useless and will be phased out asap
-void Rig::set_u(vec2 u){
-	this->u=u;//glm::clamp(u,vec2(-1,-1), vec2(1,1));
+Pose Rig::getCurrentPose(string from, string to, vec2& u){//unsigned int from, unsigned int to, vec2& u){
+//	cout << from << "\t" << to << endl;
+	unordered_map<string, Cycle>::iterator f(cMap.find(from)), t(cMap.find(to));
+	if (!(f == cMap.end() || t == cMap.end())){
+		if (f == t)
+			return f->second.getCurrentPose(u.y);//cycles[from].getCurrentPose(u.y);
+		else
+			return f->second.blend(t->second, u.x).getCurrentPose(u.y);//cycles[from].blend(cycles[to], u.x).getCurrentPose(u.y);
+	}
+	else 
+		return cMap.begin()->second.getCurrentPose(u.y);
 }
 
-void Rig::set_pose(float t){
-	u.y=t;
+void Rig::uploadRigMats(vector<mat4>& R){
+	glUniformMatrix4fv(mShader->getRigMatHandle(), (R.size() > 3 ? 3 : R.size()), GL_FALSE, (GLfloat *)R.data());
 }
 
-void Rig::set_to(unsigned int t){
-	if (t < cycles.size())
-		to = t;
-}
-/*
-//How do I get c where it needs to be?
-//only deal with DT Here
-void Rig::inc_u(float c){
-	const float dt = .1f;
-	float dx = dt*(c-u.x);
-//	set_u({clamp(u.x+dx,-1,1), u.y+.1f}); This line causes a bug where the run cycle gets chosen(only for arm?)
-	set_u({c, u.y+.1f});
-}
-*/
+//really no different from the Drawable draw
+void Rig::draw(string currentTex, bool rigged){
+	glUniform1i(mShader->getModeHandle(), rigged ? mMode : 0);
+	if (currentTex.length() && texMap.size()){
+		unordered_map<string, GLuint>::iterator it;
+      if ((it=texMap.find(currentTex)) != texMap.end())
+         glBindTexture(GL_TEXTURE_2D,it->second);
+      else
+         glBindTexture(GL_TEXTURE_2D,texMap.begin()->second);
+   }
 
-mat4 Rig::draw(mat4 parentMV, unsigned int curTex, vec2& u, unsigned int from, unsigned int to){
-	vector<mat4> rigData;
+   glBindVertexArray(mVAO); //Bind my VAO
+   glDrawElements(GL_TRIANGLE_STRIP, mElementCount, GL_UNSIGNED_INT, NULL);
+}
+
+mat4 Rig::draw(mat4 parentMV, vec2& u, unsigned int from, unsigned int to, string currentTex){//, vec4 color){
+/*	vector<mat4> rigData;
    if (from == to)
       rigData = cycles[from].getCurrentPose(u.y).getMats();
    else
       rigData = cycles[from].blend(cycles[to], u.x).getCurrentPose(u.y).getMats();
-
 	//Find inherited transform
-   mat4 transform = parentMV * MV;
+//   mat4 transform = parentMV;// * MV;
+	unordered_map<string, GLuint>::iterator it;
 	
-   glUniformMatrix4fv(mShader->getMVHandle(), 1, GL_FALSE, glm::value_ptr(transform));
 	glUniformMatrix4fv(mShader->getRigMatHandle(), numPoses, GL_FALSE, (GLfloat *)rigData.data());
-   glUniform4fv(mShader->getColorHandle(), 1, glm::value_ptr(mColor));
    glUniform1i(mShader->getModeHandle(), mMode);
+
+	if (texMap.size()){
+		if (currentTex.length() && ((it=texMap.find(currentTex)) != texMap.end()))
+			glBindTexture(GL_TEXTURE_2D,it->second);
+		else
+			glBindTexture(GL_TEXTURE_2D,texMap.begin()->second);
+	}
    
-   //Bind Texture/VAO and Draw
-	if (mTexVec.size())
-	   glBindTexture(GL_TEXTURE_2D, mTexVec[curTex]); //Make my texture active
    glBindVertexArray(mVAO); //Bind my VAO
    glDrawElements(GL_TRIANGLE_STRIP, mElementCount, GL_UNSIGNED_INT, NULL);
 
-	return transform * rigData.back();
+	return rigData.front();
+*/
+//	return transform * rigData.back();
 }
 
-mat4 Rig::draw(mat4 parentMV, unsigned int curTex){
-	if (!visible)
-		return mat4();
+void Rig::draw(string currentTex){//, vec4 color){
+	unordered_map<string, GLuint>::iterator it;
 
-//	cout << u << endl;
-
-	//Find inherited transform
-   mat4 transform = parentMV * MV;
-   //Upload data to device
-//	vector<mat4> rigData = getCurrentPose().getMats();
-   glUniformMatrix4fv(mShader->getMVHandle(), 1, GL_FALSE, glm::value_ptr(transform));
-//	glUniformMatrix4fv(mShader->getRigMatHandle(), numPoses, GL_FALSE, (GLfloat *)rigData.data());
-   glUniform4fv(mShader->getColorHandle(), 1, glm::value_ptr(mColor));
    glUniform1i(mShader->getModeHandle(), 0);//mMode);
-   
-   //Bind Texture/VAO and Draw
-	if (mTexVec.size())
-	   glBindTexture(GL_TEXTURE_2D, mTexVec[curTex]); //Make my texture active
+
+	if (currentTex.length() && texMap.size()){
+		if ((it=texMap.find(currentTex)) != texMap.end())
+			glBindTexture(GL_TEXTURE_2D,it->second);
+		else
+			glBindTexture(GL_TEXTURE_2D,texMap.begin()->second);
+	}
+
    glBindVertexArray(mVAO); //Bind my VAO
    glDrawElements(GL_TRIANGLE_STRIP, mElementCount, GL_UNSIGNED_INT, NULL);
-/*
-   //Recursively draw children
-   vector<Drawable *>::iterator childIt;
-   for (childIt=children.begin(); childIt!=children.end(); childIt++)
-      (*childIt)->draw(transform, *rigData.back(), curTex);
-*/
-	return transform;// * rigData.back();
 }
-
-
-Pose Rig::getCurrentPose(){
-//	cout << from << "\t" << to << endl;
-	const float eps = 0.001f;
-	const float dt = 0.1f;	
-	if (1.f-u.x < eps){
-		from = to;
-		u.x=0.f;
-	}
-	if (from == to)
-		return cycles[from].getCurrentPose(u.y);
-	else{
-		u.x += dt;
-		return cycles[from].blend(cycles[to], u.x).getCurrentPose(u.y);
-	}
-}
-
-/*
-//I'm going to phase this out...it was a nice idea but not worth it in the end
-//(I suspect it's incompatible with my interpolation
-Cycle Rig::getCurrentCycle(){
-	vec3 L = getLagrangeInterpolants(u.x);
-
-   return cycles[0]*L.x+cycles[1]*L.y+cycles[2]*L.z;
-}
-
-Pose Rig::getCurrentPose(){
-//	cout << u << endl;
-	return getCurrentCycle().getCurrentPose((u.y));
-}
-*/

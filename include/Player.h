@@ -12,7 +12,7 @@
 class Player: public ActiveEnt{
 	public:
 		Player();
-		Player(Entity *);
+		Player(const Entity&);
 		Player(vec3 translate, vec3 scale);
 		~Player();
 		int setChildren();
@@ -24,7 +24,7 @@ class Player: public ActiveEnt{
 		void updateMouse();
 		void updateSkeleton();
 		//void handleKey(int k);
-		void setProjectile(Projectile * p);
+		void setProjectile(Projectile p);
 		void addProjectile(Projectile p);
 		bool overlapsWith(Entity * e);
 		EventRegister * getRegPtr();

@@ -5,7 +5,9 @@
 #include "Player.h"
 #include "Wall.h"
 #include <unordered_map>
+#include "Population.h"
 
+/*
 //add fields for projectiles?
 typedef struct EntInfo{
 	string name;
@@ -16,29 +18,25 @@ typedef struct EntInfo{
 	string projFileName;
 	int numProj;
 } EntInfo;
-
+*/
 class Soup{
 public:
 	Soup(unordered_map<string, unique_ptr<Drawable> > * dMP = nullptr)
 	: dMapPtr(dMP){}
+
+	//This is some shit that I added
+	unique_ptr<Population> createPopulation(string levelFile, JShader& shader);
+/*
 	unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader);
 	Projectile initProjectile(string fileName, JShader& shader);
-	//unique_ptr<Projectile> initProjectile(string fileName, JShader& shader);
 	unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader);
 	unique_ptr<ActiveEnt> initAe(EntInfo eI, JShader& shader);
 	unique_ptr<Seeker> initSeeker(EntInfo eI, JShader& shader);
 	unique_ptr<Wall> initWall(EntInfo eI, char orientation, JShader& shader);
+*/
 private:
 	unordered_map<string, unique_ptr<Drawable> > * dMapPtr;
-	unique_ptr<Entity> loadEntFromFile(EntInfo eI, JShader& shader);
+//	Entity loadEntFromFile(EntInfo eI, JShader& shader);
 };
-/*
-unique_ptr<Player> initPlayer(EntInfo eI, JShader& shader);
-unique_ptr<Projectile> initProjectile(string fileName, JShader& shader);
-unique_ptr<Obstacle> initObstacle(EntInfo eI, JShader& shader);
-unique_ptr<ActiveEnt> initAe(EntInfo eI, JShader& shader);
-unique_ptr<Seeker> initSeeker(EntInfo eI, JShader& shader);
-unique_ptr<Wall> initWall(EntInfo eI, char orientation, JShader& shader);
-*/
 
 #endif

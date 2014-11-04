@@ -2,7 +2,8 @@
 #define COLLIDER_H
 
 #include <vector>
-#include <map>
+//#include <map>
+#include <unordered_map>
 #include "BoundBox.h"
 #include "BoundRect.h"
 #include "ColBuf.h"
@@ -24,6 +25,7 @@ class Collider{
       bool collidesY(Collider&);
 		bool collidesZ(Collider&);
 		bool overlapsWith(Collider&);
+		bool softCol(Collider& other);
 		float toLeft(Collider& c);
 		float toRight(Collider& c);
 		float toBottom(Collider& c);
@@ -34,11 +36,13 @@ class Collider{
 		vec3 getPos();
 		vec3 center();
 		vec3 getDim();
+		vector<BoundRect> getSubs();
 	private:
 		BoundBox mBB;
 		std::vector<BoundRect> mSubs;
+		vec2 soft;
 		vec3 W_min, W_max;
-		std::map<Collider *, ColBuf> cBufMap;
+		std::unordered_map<Collider *, ColBuf> cBufMap;
 	public:
 		/* 
 			I'll re-inline these when the time comes

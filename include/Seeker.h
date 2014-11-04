@@ -6,7 +6,7 @@
 class Seeker : public ActiveEnt{
 public:
 	Seeker();
-	Seeker(Entity *);
+	Seeker(const Entity& e);
 	Seeker(vec3, vec3);
 	void update(vec3);
 	void takeHit(HitEffect eff);

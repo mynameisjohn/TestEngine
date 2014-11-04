@@ -57,13 +57,16 @@ vector<triangle> getConvexIndices(int n){
 }
 
 Rig getRigFromSVG(string svgFile, JShader& shader){
-	Rig ret(&shader);
+//	Rig ret(&shader);
 	vector<Cycle> cycles;
 	vector<Pose> poses;
 	vector<QuatVec> Joints;
 	vec3 T, S;
 	vec4 R;
 	unsigned int C;
+
+	unordered_map<string,Cycle> cMap;
+	vector<vec4> jointPositions;
 
 	TiXmlDocument doc(svgFile);
    if (!doc.LoadFile()){
@@ -75,7 +78,7 @@ Rig getRigFromSVG(string svgFile, JShader& shader){
 
 	rig = mHandle.FirstChild("rig").ToElement();//.FirstChild("g").FirstChild("rig").ToElement();
 		if (!rig) 
-			return ret;
+			return Rig();
 
 	if (rig->Attribute("S")){
 		string inStr = rig->Attribute("S");
@@ -89,8 +92,6 @@ Rig getRigFromSVG(string svgFile, JShader& shader){
 	}
 	else
 		S = vec3(1);
-
-	ret.leftMultMV(glm::scale(S));
 
 	if (!fillIn(rig, "C", C))
 		C=1;
@@ -113,7 +114,7 @@ Rig getRigFromSVG(string svgFile, JShader& shader){
 					stringstream(inStr.substr(0,pos)) >> R[i];
 					inStr.erase(0,pos+d.length());
 				}
-				Joints.push_back((Joints.size() ? Joints.back() : QuatVec()) * QuatVec(T,getRQ(R)));
+				Joints.push_back(QuatVec(T,getRQ(R)));//(Joints.size() ? Joints.back() : QuatVec()) * QuatVec(T,getRQ(R)));
 			}
 			poses.emplace_back(Joints);//, t, dt);
 			Joints.clear();
@@ -121,12 +122,15 @@ Rig getRigFromSVG(string svgFile, JShader& shader){
 		float dt;
 		if (!fillIn(cycle,"dt",dt))
 			dt=0.02f;
-		cycles.emplace_back(poses, C, dt);
+//		cycles.emplace_back(poses, C, dt);
+//		cout << cycle->Attribute("id") << endl;
+		cMap.emplace(cycle->Attribute("id"),Cycle(poses,C,dt));
+//		cout << cMap.find(cycle->Attribute("id"))->first << endl;
 		poses.clear();
 	}
-
-	ret.setCycles(cycles);
-	return ret;
+//	Rig r(&shader,cMap); // return this one instead
+//	ret.setCycles(cycles);
+	return Rig(&shader, cMap);
 }
 
 map<string,string> getSVGPathMap(string svgFile){
@@ -197,6 +201,7 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
    vector<triangle> indices;
 	vector<vec3> weights;
 	vec3 offset;
+	vector<vec4> origins;
 
 	map<string,string> pathMap = getSVGPathMap(svgFile);
 
@@ -264,10 +269,18 @@ geoInfo SVGtoGeometry(string svgFile, bool rigged){
 				len=glm::length(BonePoints[i]);
 			}
 		}
+		origins.resize(BonePoints.size());
+		for (int i=0;i<BonePoints.size();i++)
+			origins[BonePoints.size()-1-i] = vec4(BonePoints[i],0,1);
+/*
+		//I need to get these BonePoints somewhere else
+		//put it in offset
 		for (int i=0;i<vertices.size();i++)
+			//origins.push_back(BonePoints[k]);
 			vertices[i] -= vec4(BonePoints[k],0,0);
 		offset = vec3(BonePoints[k],0);
+*/
 	}
 
-	return {vertices, texCoords, indices, weights, offset};
+	return {vertices, texCoords, indices, weights, offset, origins};
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<Entity dbg="0">
+<Entity dbg="1">
 	<Collider>
 		<box S=".4,1.5,1" T="0,0,0">
 			<rect S="1,1" T="0,0" />
@@ -9,10 +9,10 @@
 	<Projectile fileName="arrow" num="10" S="280,150"/>
 	<Skeleton T="0,0,0">
 		<drawable name="body" fileName="body" type="r" T=".2,.65,0">
-				<drawable name="arm1" fileName="arm" type="r" T=".11,1.13,-.01" />
-				<drawable name="arm2" fileName="arm" type="r" T=".25,1.13,.035" sh="1"/>
+			<drawable name="arm1" fileName="arm" type="r" T=".11,1.13,-.01" />
+			<drawable name="arm2" fileName="arm" type="r" T=".25,1.13,.035" shift="1"/>
 			<drawable name="leg1" fileName="leg" type="r" T=".13,.74,.01"/>
-			<drawable name="leg2" fileName="leg" type="r" T=".24,.74,.02" sh="1"/>
+			<drawable name="leg2" fileName="leg" type="r" shift="1" T=".24,.74,.02"/>
 		</drawable>
 	</Skeleton>
 </Entity>

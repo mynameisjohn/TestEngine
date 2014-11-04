@@ -42,11 +42,19 @@ float Pose::getDT(){
 	return dt;
 }
 
+//you need to collapse the two joint vectors and find the summed difference
 float Pose::maxDiff(const Pose& other){
+	float diff(0);
+	for (int i=0;i<joints.size(); i++)
+		diff = max(diff, 2.f*acos((glm::conjugate(joints[i].rot)*other.joints[i].rot).w));
+
+	return diff;
+/*
 	//s = cos(th/2)
 	float s = (glm::conjugate(joints.back().rot)*other.joints.back().rot).w;
 	
 	return radToDeg(2.f*acos(s));//(glm::conjugate(joints.back().rot)*other.joints.back().rot).w));
+*/
 }
 
 //Maybe I can upload the quaternion rather than a matrix

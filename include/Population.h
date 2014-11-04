@@ -14,6 +14,7 @@ using glm::vec4;
 class Population{
 	public:
 		Population();
+		Population(Player p, vector<Obstacle>, vector<Seeker>);
 		Population(unique_ptr<Player> p);
 		~Population();
 		void setPlayer(unique_ptr<Player> p);

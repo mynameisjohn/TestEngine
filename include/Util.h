@@ -27,6 +27,15 @@ float degToRad(float d);
 float radToDeg(float r);
 float lagrangeTime(float t0, float t1, float t);
 float lerp(float x, float y, float a);
+
+float min(vec3 v);
+float max(vec3 v);
+
+void printError(string name);
+void fillVec(vec2& v, string s);
+void fillVec(vec3& v, string s);
+void fillVec(vec4& v, string s);
+
 /*
 template <typename T>
 bool vecContains(vector<T>& vec, T v){

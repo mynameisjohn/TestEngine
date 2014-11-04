@@ -2,4 +2,5 @@
 
 <spritesheet>
 	<sprite fileName = "forearm.png" />
+	<sprite fileName = "forearm_draw.png" />
 </spritesheet>

@@ -11,13 +11,15 @@ Cycle::Cycle(vector<Pose> poseVec, unsigned int C)
 
 Cycle::Cycle(vector<Pose> poseVec, unsigned int C, float dt)
 : poses(poseVec), C(C){
-	const float m = 0.01f, M=0.8f;
+//	cout << poses.size() << endl;
+	const float m = 0.01f, M=0.1f;
 	
 	//Centripetal DT calculation
 	for (int i=0;i<poses.size();i++){
 		int i2 = (i+1)%poses.size();
 		float DT = clamp(dt*sqrt(poses[i].maxDiff(poses[i2])), m, M);
 		poses[i].setDT(DT);
+//		cout << DT << endl;
 	}
 	C = (poses.size() > C ? C : poses.size()-1);
 }
@@ -115,15 +117,5 @@ Pose Cycle::collapsePoses(float t){
 Pose Cycle::getCurrentPose(float& t){
 	Pose ret = (poses.size () > 1) ? collapsePoses(t) : poses[0];
 	t += ret.getDT();//0.1f;
-	//cout << DT[wrap(DT.size(),center)] << endl;
 	return ret;
-/*
-	int p1, p2;
-	p1 = (int)x;
-	p2 = (p1+1)%poses.size();
-	float s = x-(float)p1;
-	p1 %= poses.size();
-	return collapsePoses(x);
-	//return blendPoses(p1,p2,s);
-*/
 }

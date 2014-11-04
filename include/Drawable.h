@@ -5,47 +5,36 @@
 #include "Util.h"
 
 #include <vector>
+#include <unordered_map>
 
 class Drawable{
 	public:
-		Drawable(JShader * shader = nullptr, int mode=-1);
-		virtual ~Drawable();
-		void identity();
+		Drawable(JShader * shader = nullptr, int mode=-1, vec4 o = vec4());
 		void translate(GLfloat x, GLfloat y, GLfloat z);
-		void setMV(mat4 newMatrix);
 		void setVAO(GLuint VAO);
-//		virtual void setTex(GLuint tex);
-		void setCurTex(GLuint ct);
 		void setMode(int mode);
-		void setColor(float r, float g, float b, float a=1.f);
-		void setColor(vec3 color);
-		void leftMultMV(mat4 left);
+		void setOrigin(vec4 o);
+		void setOrigins(vector<vec4> vO);
 		void setNElements(int n);
-		//void uploadData(GLint MVHandle, GLint ColorHandle);
-		void addChild(Drawable * child);
-		virtual mat4 draw(mat4 parentMV, unsigned int curTex);//GLint MVHandle, GLint ColorHandle, mat4 parentMV);
 		bool isVisible();
 		void setVisibility(bool);
+		void addTex(string s, GLuint tex);
+		void addTex(vector<pair<string, GLuint> > texVec);
+		void uploadMV(mat4& MV);
+		void uploadColor(vec4& c);
 		int getNumElems();
-		int addTex(GLuint tex);
-		int addTex(vector<GLuint> texVec);
 		GLuint getVAO();
 		GLuint getTex();
-		GLfloat * getMVPtr();
-		GLfloat * getColorPtr();
-		mat4 getMVMat();
-		mat4 getMVInverse();
+		virtual void draw(string currentTex="");
+		vec4 getOrigin(mat4 MV = mat4());
+		vector<vec4> getOrigins(mat4 MV = mat4());
 	protected:
-		mat4 MV;
-		vec4 mColor; //probably phase this out
 		GLuint mVAO;//,mTex;
-		vector<GLuint> mTexVec;
-		GLuint cTex;
-		bool visible;
+		unordered_map<string, GLuint> texMap;
 		int mElementCount;
 		int mMode;
-		vector<Drawable *> children;
 		JShader * mShader;
+		vector<vec4> origins;
 };
 
 #endif

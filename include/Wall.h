@@ -6,7 +6,7 @@
 class Wall : public Obstacle{
 public:
 	Wall();
-	Wall(Entity *);
+	Wall(const Entity& e);
 	Wall(vec3 translate, vec3 scale, char o);
 	~Wall();
 	void update();

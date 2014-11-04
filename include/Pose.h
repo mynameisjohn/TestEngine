@@ -26,9 +26,9 @@ public:
 	float getDT();
 	float maxDiff(const Pose& other);
 	std::vector<glm::mat4> getMats();
-private:
 	std::vector<QuatVec> joints;
 	float T, dt;
+private:
 };
 
 #endif

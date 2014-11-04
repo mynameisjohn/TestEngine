@@ -2,47 +2,18 @@
 #include <glm/gtx/transform.hpp>
 
 Entity::Entity()
-: flip(false), sigmaSq(1.f){}
-
-
-//READ THIS
-//this is my most popular constructor, but there's a bug that I'm debating letting keep.
-//A new skeleton is created, but all of its contents (which are themselves unique pointers)
-//are copied from the old one, meaning all entities created from the Entity * f parameter
-//share the same Drawable object. This isn't necessarily a problem, so long as I make
-//sure not to touch any of the data inside drawable (apart from the initial scales and rotations.)
-//However, this more or less invalidates the usefulness of the Drawable's visible member. 
-Entity::Entity(Entity * f)
-: mCollider(f->mCollider), mSkeleton((f->mSkeleton)), flip(false), sigmaSq(1.f){}
+: sigmaSq(1.f){}
 
 Entity::Entity(vec3 translate, vec3 scale)
-: mCollider(BoundBox(scale)), flip(false)
+: mCollider(BoundBox(scale))//, flip(false)
 {
 	this->translate(translate);
 }
 
 Entity::Entity(Collider c, Skeleton s)
-: mCollider(c), mSkeleton(move(s)), flip(false){
+: mCollider(c), mSkeleton(move(s)){//flip(false){
 }
 
-void Entity::reflect(){
-	mSkeleton.applyTransform(glm::translate(vec3(mCollider.getDim().x,0,0))*glm::scale(vec3(-1,1,1)));
-   flip = !flip;
-}
-
-void Entity::takeHit(HitEffect hEff){
-
-}
-
-void Entity::draw(){
-	//mDrawables[0].get()->draw(glm::translate(getPos()));
-	mSkeleton.draw(glm::translate(getPos()));//getRoot()->draw(glm::translate(getPos()));
-}
-/*
-void Entity::addDrawable(unique_ptr<Drawable> dr){
-	mDrawables.push_back(std::move(dr));
-}
-*/
 void Entity::setCol(Collider c){
 	mCollider = c;
 }
@@ -54,15 +25,20 @@ void Entity::setBB(BoundBox bb){
 void Entity::setSkeleton(Skeleton s){
 	mSkeleton = move(s);
 }
-/*
-bool Entity::isVisible(){
-	return mSkeleton.getRoot()->isVisible();
+
+//come back to this
+void Entity::reflect(){
+	mSkeleton.reflect();
+//	mat4 refl = glm::translate(vec3(mCollider.getDim().x,0,0))*glm::scale(vec3(-1,1,1));
+ //	mSkeleton.getRoot()->leftMultMV(refl);
+//   flip = !flip;
 }
 
-void Entity::setVisible(bool b){
-	mSkeleton.getRoot()->setVisibility(b);
+void Entity::draw(){
+	mSkeleton.draw(getPos());
+//	mSkeleton.draw(glm::translate(getPos()));//getRoot()->draw(glm::translate(getPos()));
 }
-*/
+
 char Entity::collidesWith(Entity * e){
 	char last = mCollider.collidesWith(e->mCollider);
 	return last;
@@ -112,6 +88,11 @@ float Entity::toNear(Entity * e){
 float Entity::toFar(Entity * e){ 
 	return mCollider.toFar(e->mCollider); 
 } 
+
 vec3 Entity::center(){ 
 	return mCollider.center(); 
+}
+
+vec3 Entity::getOrigin(string s, int idx){
+	return getPos()+mSkeleton.getOrigin(s,idx);
 }

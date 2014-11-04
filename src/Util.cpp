@@ -1,6 +1,58 @@
 #include "Util.h"
-
+#include <sstream>
 #include <glm/gtx/transform.hpp>
+
+void printError(string name){
+	cout << "Unable to load file " << name << ". Segfault imminent" <<  endl;
+}
+
+void fillVec(vec2& v, string s){
+	size_t pos(0);
+	const string d(",");
+	for (int i=0;i<2;i++){
+      pos = s.find(d);
+      if (!(stringstream(s.substr(0,pos)) >> v[i]))
+         cout << "Invalid vector string " << s << endl;
+      s.erase(0,pos+d.length());
+   }
+}
+
+void fillVec(vec3& v, string s){
+	size_t pos(0);
+	const string d(",");
+	for (int i=0;i<3;i++){
+      pos = s.find(d);
+      if (!(stringstream(s.substr(0,pos)) >> v[i]))
+         cout << "Invalid vector string " << s << endl;
+      s.erase(0,pos+d.length());
+   }
+
+}void fillVec(vec4& v, string s){
+	size_t pos(0);
+	const string d(",");
+	for (int i=0;i<4;i++){
+      pos = s.find(d);
+      if (!(stringstream(s.substr(0,pos)) >> v[i]))
+         cout << "Invalid vector string " << s << endl;
+      s.erase(0,pos+d.length());
+   }
+}
+
+float min(vec3 v){
+	float m(v[0]);
+	for (int i=1;i<3;i++)
+		if (m > v[i])
+			m = v[i];
+	return m;
+}
+
+float max(vec3 v){
+	float M(v[0]);
+	for (int i=1;i<3;i++)
+		if (M < v[i])
+			M = v[i];
+	return M;
+}
 
 int wrap(int dim, int num){
 	return (dim+num)%dim;

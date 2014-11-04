@@ -4,10 +4,13 @@ Seeker::Seeker()
 : ActiveEnt()
 {}
 
+Seeker::Seeker(const Entity& e)
+: ActiveEnt(e) {}
+/*
 Seeker::Seeker(Entity * e)
 : ActiveEnt(e)
 {}
-
+*/
 Seeker::Seeker(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale)
 {}
@@ -22,10 +25,16 @@ void Seeker::update(vec3 goal){
    //jump
    if (grounded && fabs(goal.y) > 0.25f)
       mVel.y += mSpeed.y;
+/*
 	if (health > 0)
-		mSkeleton.getRoot()->setColor(health/100.f,health/100.f,health/100.f);
+		mSkeleton.setColor(health/100.f,health/100.f,health/100.f);
 	else
-		mSkeleton.getRoot()->setColor(0,0,0);//health/100.f,health/100.f,health/100.f)
+		mSkeleton.setColor(0,0,0);//health/100.f,health/100.f,health/100.f)
+
+	bool right = mVel.x < 0;
+	if ((!right && !flip) || (right && flip))
+      reflect();
+*/
 }
 
 void Seeker::takeHit(HitEffect hEff){

@@ -1,74 +1,45 @@
 #include "Ligament.h"
 #include "Util.h"
 #include <typeinfo>
-
+#include <glm/gtx/transform.hpp>
 #include "Rig.h"
 
-Ligament::Ligament()
-{
+Ligament::Ligament(){
 	resetTransform();
 }
 
-Ligament::Ligament(Drawable * dPtr, QuatVec qv)
-: mDrawable(dPtr), mQV(qv), curTex(), from(), to(), active(false){
+//To Do: change constructor so that the QuatVec list starts off empty,
+//since any initial transform goes in MV. yuck
+Ligament::Ligament(Drawable * dPtr, string ctex)
+: mDrawable(dPtr), from(""), to(""), active(false), cTex(ctex), state(L_CYCLIC){
    mTransform.clear();
-   mTransform.push_front(qv);
-}
-/*
-Ligament::Ligament(std::unique_ptr<Drawable> dPtr, QuatVec qv)
-: mDrawable(move(dPtr)), mQV(qv), curTex(), from(), to(), active(false){
-	mTransform.clear();
-	mTransform.push_front(qv);
-}
-*/
-/*
-Ligament::Ligament(Drawable d, QuatVec qv)
-: mDrawable(new Drawable(d)), mQV(qv), curTex(), from(), to(), active(false){
-	mTransform.clear();
-	mTransform.push_front(qv);
-}
-*/
-/*
-void Ligament::addChild(map<string, Ligament>::iterator it){
-	Ligament * child = (&it->second);
-	child->mTransform.push_front(getTransform().inverse() * (child->getTransform()));
-	child->resetTransform();
-	cVec.push_back(it);
-
-	cout << it->first << "\t" << &(it->second) << endl;
-}
-
-void Ligament::addChild(Ligament * child){
-	vector<Ligament *>::iterator childIt;
-	
-	for (childIt=child->children.begin(); childIt!=child->children.end(); childIt++){
-		if ((*childIt)->hasChild(this)){
-			cout << "Ligament: cycle created!" << endl;
-         return;
-		}
+	//origin = MV*mDrawable->getOrigin();
+	origins.clear();
+	if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
+		origins = r->getOrigins();
+		from = to = r->getFirstCycle();
 	}
-
-	//this makes setting things up a bit easier...feels gross
-//	child->leftMultMV(mDrawable->getMVInverse());
-	
-	child->mTransform.push_front(getTransform().inverse() * (child->getTransform()));
-	child->resetTransform();
-
-//	child->mQV = mQV.inverse() * child->mQV;
-	children.push_back(child);
+	else
+		origins.push_back(mDrawable->getOrigin());
 }
-*/
 
-void Ligament::addChild(int offset){
+void Ligament::setState(int state){
+	this->state = state;
+}
+
+int Ligament::addChild(int offset, bool invert){
 	//in future check if already exists
 	children.push_back(offset);
 
-	//here's where it gets weird
-	this[offset].mTransform.push_front(getTransform().inverse() * this[offset].getTransform());	
+	return children.back();
+}
+
+void Ligament::set_cycle(string s){
+	to = from = s;
 }
 
 void Ligament::resetTransform(){
-	mTransform.resize(1);
+	mTransform.clear();//resize(1);
 }
 
 QuatVec Ligament::getTransform(){
@@ -78,6 +49,32 @@ QuatVec Ligament::getTransform(){
 		transform = *it * transform;
 
 	return transform;
+}
+
+mat4 Ligament::getTransformAsMat4(){
+ // i don't like this
+	mat4 ret;
+	bool s(false);
+	QuatVec transform(mTransform.front());
+	list<QuatVec>::iterator it = mTransform.begin();
+
+	for (it++; it!=mTransform.end(); it++){
+		if (*it & transform)
+			transform = *it * transform;
+		else{
+			s=true;
+			ret = transform.toMat4();
+			break;
+		}
+	}
+
+	if (s){
+		for (it; it!=mTransform.end(); it++)
+			ret = ret * it->toMat4();
+	}
+	else ret = transform.toMat4();
+
+	return ret;
 }
 
 void Ligament::update(){
@@ -96,70 +93,140 @@ void Ligament::update(){
 }
 
 void Ligament::draw(glm::mat4 parent){
-//	cout << "who is " << mDrawable << endl;
-	parent = parent * getTransform().toMat4();//mQV.toMat4();// * parent;
+	//upload color here, for debugging purposes
+	mDrawable->uploadColor(mColor);
 
-//	if (Rig * r = dynamic_cast<Rig *>(mDrawable.get())){
+	if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
+		switch(state){
+			case L_CYCLIC:{
+				//get current pose
+				Pose p(r->getCurrentPose(from,to,u));
+				//get first joint's QV, plus whatever transform this ligament has
+				QuatVec qv(mTransform.empty() ? p.joints[0] : getTransform()*p.joints[0]);
+				//Translate to origin, rotate, translate out, then translate this ligament's transform
+				mat4 m(glm::translate(qv.trans+vec3(origins[0]))*
+						 glm::mat4_cast(qv.rot)*
+						 glm::translate(-vec3(origins[0])));
+
+				//this all seems rather expensive
+				vector<mat4> R(origins.size());
+				R[0] = m;//parent * m * MV;
+	
+				for (int i=1; i<R.size(); i++){
+					R[i] = R[i-1]*
+								  glm::translate(vec3(origins[i])+p.joints[i].trans)*
+								  glm::mat4_cast(p.joints[i].rot)*
+								  glm::translate(-vec3(origins[i]));
+				}
+				R.back() = parent*R.back();
+				for (vector<int>::iterator it = children.begin(); it!=children.end(); it++)
+					this[*it].draw(R.back());
+				R.back() = R.back()*MV;
+	
+				for (int i=0; i<R.size()-1; i++)
+					R[i]=parent*R[i]*MV;
+
+				r->uploadRigMats(R);
+				r->draw(cTex,true);
+
+
+				update();
+				break;
+			}
+			case L_ONCE:
+				break;
+			case L_ACTIVE:{
+				if (!mTransform.empty()){
+					QuatVec qv(getTransform());
+					parent = parent * glm::translate(qv.trans+vec3(origins[0]))*
+											glm::mat4_cast(qv.rot)*
+											glm::translate(-vec3(origins[0]));
+				}
+				mat4 m = parent*MV;
+				r->uploadMV(m);
+				r->draw(cTex, false);
+				for (vector<int>::iterator it = children.begin(); it!=children.end(); it++)
+					this[*it].draw(parent);
+			}
+			default:
+				break;
+		}
+	}
+	else{
+		if (!mTransform.empty()){
+//			parent = parent*getTransformAsMat4();
+			QuatVec qv(getTransform());
+			parent = parent * glm::translate(qv.trans+vec3(origins[0]))*
+									glm::mat4_cast(qv.rot)*
+									glm::translate(-vec3(origins[0]));
+		}
+		mat4 m = parent * MV;
+		mDrawable->uploadMV(m);
+		mDrawable->draw(cTex);
+		for (vector<int>::iterator it = children.begin(); it!=children.end(); it++)
+			this[*it].draw(parent);
+	}
+
+
+/*
+	if (!mTransform.empty())
+		parent=parent*getTransformAsMat4();
+	mat4 m = parent*MV;
+	mDrawable->uploadMV(m);
+*/
+/*
+	parent = mTransform.empty() ? parent * MV : parent * getTransformAsMat4() * MV;
+	mDrawable->uploadMV(parent * );
+*/
+/*
 	if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
 		if (active)
-				parent = r->draw(parent, curTex);
+				r->draw(cTex);
 		else{
-			parent = r->draw(parent, curTex, u, from, to);
+			mat4 back = r->draw(mat4(), u, from, to, cTex);
+			back = glm::translate(vec3(origin))*back*glm::translate(-vec3(origin));
+			parent = parent*back;//parent*r->draw(mat4(), u, from, to, cTex);
 			update();
 		}
 	}
 	else
-		parent = mDrawable->draw(parent, curTex);
-		//parent = mDrawable_x->draw(parent, curTex);
-	//mDrawable->draw(parent);
-/*
-	vector<Ligament *>::iterator childIt;
-	for (childIt=children.begin(); childIt!=children.end(); childIt++)
-		(*childIt)->draw(parent);
+		mDrawable->draw(cTex);//, color);//curTex);
+//		parent = mDrawable->draw(parent, curTex);
 */
 /*
-	//wow
-	vector<map<string, Ligament>::iterator>::iterator it;
-	for (it=cVec.begin(); it!=cVec.end(); it++)
-		(*it)->second.draw(parent);
+	//lambda
+	for_each(children.begin(), children.end(), [&](int idx){
+		this[idx].draw(parent);
+	});
 */
-	vector<int>::iterator it;
-	for (it=children.begin(); it!=children.end(); it++)
+/*
+	for (vector<int>::iterator it = children.begin(); it!=children.end(); it++)
 		this[*it].draw(parent);
+*/
 }
 
-//we don't want to be doing this kind of thing
-void Ligament::leftMultMV(mat4 m){
-	mDrawable->leftMultMV(m);
+void Ligament::setCurTex(string ct){
+	cTex = ct;
 }
-
+/*
 void Ligament::setCurTex(unsigned int ct){
 	curTex = ct;
 }
-
-void Ligament::set_u(vec2 U){
-	u=U;
+*/
+void Ligament::set_u(vec2 u){
+	this->u = u;
 }
 
-void Ligament::set_to(unsigned int t){
-	to = t;
+void Ligament::set_to(string s){//unsigned int t){
+	to = s;
 }
 
 void Ligament::setActive(bool b){
 	active = b;
 }
-//phase these out
-void Ligament::setColor(vec3 color){
-	mDrawable->setColor(color);
-}
-
-void Ligament::setColor(float r, float g, float b, float a){
-	mDrawable->setColor(r,g,b,a);
-}
 
 void Ligament::shift(){
-	Rig * r = dynamic_cast<Rig *>(mDrawable);
-	if (r)//typeid(*(mDrawable)) == typeid(Rig)){
+	if (Rig * r = dynamic_cast<Rig *>(mDrawable))
 		u.y += r->getShift();
 }
 
@@ -175,19 +242,19 @@ void Ligament::applyTransform(fquat q){
 	mTransform.emplace_back(vec3(),q);
 }
 
-void Ligament::setRotate(vec4 R){
-	mQV.rot = getRQ(R);
-}
-
-void Ligament::setTranslate(vec3 t){
-	mQV.trans = t;
-}
-
-void Ligament::setQuatVec(QuatVec qv){
-	mQV = qv;
+void Ligament::leftMultMV(mat4 m){
+	MV = m*MV;
+	origins.clear();
+	if (Rig * r = dynamic_cast<Rig *>(mDrawable))
+		origins = r->getOrigins(MV);
+	else
+		origins.push_back(mDrawable->getOrigin(MV));
 }
 
 bool Ligament::hasChild(Ligament * l){
+	for (vector<int>::iterator it = l->children.begin(); it!=l->children.end(); it++){
+		
+	}
 /*	if (children.size() == 0)
 		return false;
 	
@@ -200,4 +267,16 @@ bool Ligament::hasChild(Ligament * l){
 		return (*childIt)->hasChild(l);
 */
 	return false;
+}
+
+vec3 Ligament::getOrigin(int idx){
+	return vec3(origins[idx > origins.size()-1 ? origins.size()-1 : idx]);
+}
+
+mat4 Ligament::getMV(){
+	return MV;
+}
+
+Drawable * Ligament::getDrPtr(){
+	return mDrawable;
 }

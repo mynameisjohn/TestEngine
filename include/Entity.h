@@ -12,24 +12,17 @@ typedef struct HitEffect{
 class Entity{
 	public:
 		Entity();
-		Entity(Entity *);
 		Entity(vec3 translate, vec3 scale);
 		Entity(Collider c, Skeleton s);
 		Entity(Collider c);
+
 		void setCol(Collider c);
 		void setSkeleton(Skeleton s);
 		void setBB(BoundBox bb);
 		void translate(vec3);
 		void moveTo(vec3);
 		void reflect();
-		//void setVisible(bool b=true);
-		//bool isVisible();
-		virtual void takeHit(HitEffect hEff);
-
-//		void addDrawable(unique_ptr<Drawable> dr);
-		virtual void draw();//int MVHandle, int ColorHandle);
 		char collidesWith(Entity * e);
-		virtual bool overlapsWith(Entity * e); //make this virtual
 		float toLeft(Entity *);	
 		float toRight(Entity *);
 		float toBottom(Entity *);
@@ -38,19 +31,19 @@ class Entity{
 		float toFar(Entity *);
 		vec3 getPos();
 		vec3 center();
-		virtual vec3 getPotential(vec3 pos);
-		virtual void update(){}
 		Collider * getCollider(){return &mCollider;}
 		Skeleton * getSkeleton(){return &mSkeleton;}
+		vec3 getOrigin(string s="", int idx=0);
+		virtual void update(){}
+		virtual void takeHit(HitEffect hEff){}
+		virtual void draw();
+		virtual bool overlapsWith(Entity * e);
+		virtual vec3 getPotential(vec3 pos);
 	protected:
 		Collider mCollider;
-		//vector<unique_ptr<Drawable> > mDrawables;
 		Skeleton mSkeleton;
-//		SceneGraph mSkeleton;
-//		vec3 mTrans;
 		float sigmaSq, A;
-		bool flip;
-
+//		bool flip;
 		//friendly grandkids
 		//technically these are class declarations...is that bad?
 		friend class Player;

@@ -2,7 +2,20 @@
 
 Population::Population(){
 	obsVec.clear();
-	aeVec.clear();
+	//aeVec.clear();
+}
+
+Population::Population(Player p, vector<Obstacle> oV, vector<Seeker> sV)
+: Population(){
+	player = unique_ptr<Player>(new Player(p));
+	vector<Obstacle>::iterator obsIt;
+	vector<Seeker>::iterator seekIt;
+
+	for (obsIt=oV.begin(); obsIt!=oV.end(); obsIt++)
+		obsVec.emplace_back(new Obstacle(*obsIt));
+
+	for (seekIt=sV.begin(); seekIt!=sV.end(); seekIt++)
+		seekVec.emplace_back(new Seeker(*seekIt));
 }
 
 Population::~Population(){
@@ -11,7 +24,7 @@ Population::~Population(){
 
 Population::Population(unique_ptr<Player> p){
 	obsVec.clear();
-	aeVec.clear();
+	//aeVec.clear();
 //	aeVec.push_back(std::move(p));
 //	player = (Player *)aeVec[0].get();
 	player = std::move(p);
@@ -30,10 +43,10 @@ void Population::draw(){
 
 	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)
 		obsIt->get()->draw();
-	
+	/*
 	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++)
 		aeIt->get()->draw();
-
+*/
 	for (sIt=seekVec.begin(); sIt!=seekVec.end(); sIt++)
 		sIt->get()->draw();
 }
@@ -65,14 +78,14 @@ vec4 Population::move(){
 	player.get()->move();
 	for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++)
 		player.get()->moveWRT_ent(obsIt->get());
-
+/*
 	for (aeIt=aeVec.begin(); aeIt!=aeVec.end(); aeIt++){
 		aeIt->get()->move();
 		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
 			aeIt->get()->moveWRT_ent(obsIt->get());
 		}
 	}
-
+*/
 	for (sIt=seekVec.begin(); sIt!=seekVec.end(); sIt++){
 		sIt->get()->move();
 		for (obsIt=obsVec.begin(); obsIt!=obsVec.end(); obsIt++){
@@ -89,7 +102,7 @@ void Population::update(){//EventInfo evInfo){
 	ObsPtrVec::iterator obsIt;
 	AePtrVec::iterator aeIt_i, aeIt_j;
 	SeekPtrVec::iterator sIt_i, sIt_j;
-
+/*
 	//This detects active ent on active ent collision
 	bool hit;
 	for (aeIt_i=aeVec.begin(); aeIt_i!=aeVec.end(); aeIt_i++)
@@ -100,7 +113,7 @@ void Population::update(){//EventInfo evInfo){
 	
 	for (aeIt_i=aeVec.begin(); aeIt_i!=aeVec.end(); aeIt_i++)
 		bool playerHit = player.get()->overlapsWith(aeIt_i->get());
-
+*/
 	for (sIt_i=seekVec.begin(); sIt_i!=seekVec.end(); sIt_i++)
 		bool playerHit = player.get()->overlapsWith(sIt_i->get());
 

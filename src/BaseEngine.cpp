@@ -18,6 +18,35 @@ TODO
 
 BaseEngine::BaseEngine(){
 	//NYI
+/*
+	vec3 pos(5,5,5);
+	float s(2);
+	mat4 m({{s,0,0,0},{0,s,0,0},{0,0,s,0},vec4(pos,1)});
+	cout << m*vec4(1,0,0,1) << endl;
+*/
+/*
+	vec4 a(-0.5,-0.5,0,1), b(-0.5,0.5,0,1), c(0.5,0.5,0,1), d(0.5,-0.5,0,1);
+	mat4 m(glm::rotate(10.f,vec3(0,0,1))*glm::scale(vec3(1,2,1)));
+
+	cout << "Before " << endl;	
+	cout << "side 1: " << glm::length(a-b) << endl;	
+	cout << "side 2: " << glm::length(b-c) << endl;	
+	cout << "side 3: " << glm::length(c-d) << endl;	
+	cout << "side 5: " << glm::length(d-a) << endl;	
+	cout << endl;
+	
+	a = m*a;
+	b = m*b;
+	c = m*c;
+	d = m*d;
+
+	cout << "After " << endl;	
+	cout << "side 1: " << glm::length(a-b) << endl;	
+	cout << "side 2: " << glm::length(b-c) << endl;	
+	cout << "side 3: " << glm::length(c-d) << endl;	
+	cout << "side 5: " << glm::length(d-a) << endl;	
+	cout << endl;
+*/	
 }
 
 BaseEngine::~BaseEngine(){
@@ -49,8 +78,8 @@ void BaseEngine::update(){
 
 //figure out a better way to do this
 void BaseEngine::move(){
-	//cam.push(pop->move());
-	cam.push(level.move());
+//	level.move();
+	cam.push(level.move());//getPlayer());
 }
 //Try and get SDL out of the picture
 void BaseEngine::handleEvent(SDL_Event& e){

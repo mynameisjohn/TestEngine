@@ -20,6 +20,7 @@ typedef struct geoInfo{
 	vector<triangle> indices;
 	vector<vec3> weights;
 	vec3 offset;
+	vector<vec4> origins;
 } geoInfo;
 
 template <typename T>

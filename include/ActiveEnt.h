@@ -9,13 +9,14 @@
 class ActiveEnt: public Entity{
 	public:
 		ActiveEnt();
-		ActiveEnt(Entity *);
+		ActiveEnt(const Entity&);
 		ActiveEnt(vec3 translate, vec3 scale);
 		virtual void update();//vec3 a);//NYI
 		virtual char moveWRT_ent(Entity * e); //make this virtual
 		void moveToEdge(int, Entity *);
 		virtual void move();//Make this pure asap
 		vec3 getVel();
+		char isGrounded();
 	protected:
 		vec3 mVel; //Active velocity
 		vec3 mSpeed; //Individual speed

@@ -38,7 +38,7 @@ void main(){
 		for (int i=0;i<u_Mode && i<3;i++){
 			R = R + a_W[i]*u_RigMat[i];
 		}
-		gl_Position = u_Proj * u_MV * R * a_Position;
+		gl_Position = u_Proj *  R * a_Position;
       v_TexCoord = a_TexCoord;
       weightColor = vec4(a_W.x,a_W.y,a_W.z,1);
 	}

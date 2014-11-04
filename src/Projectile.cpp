@@ -9,12 +9,14 @@ const int DEAD(0), POISED(1), ACTIVE(2), LIFETIME(500);
 Projectile::Projectile()
 : ActiveEnt(), state(0), ticker(0){
 }
-
+/*
 Projectile::Projectile(Entity * e)
 : ActiveEnt(e), state(0), ticker(0){
-//	mSkeleton.setRoot(mSkeleton["root"]);
-	cout << (&mSkeleton) << "\t" << mSkeleton.getRoot() << "\t" <<mSkeleton.getRoot()->mDrawable << endl;
 }
+*/
+
+Projectile::Projectile(const Entity& e)
+: ActiveEnt(e), state(0), ticker(0) {}
 
 Projectile::Projectile(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale), state(0), ticker(0){
@@ -23,15 +25,17 @@ Projectile::Projectile(vec3 translate, vec3 scale)
 
 void Projectile::draw(){
 //	cout << &mSkeleton << "\t" << mSkeleton["root"] << endl;
-
-	if (state==ACTIVE)
-		mSkeleton.draw(glm::translate(getPos()) * getAlignMat(mVel, 'x'));
+	if (state==ACTIVE){//fix center of rotation
+		mSkeleton.getRoot()->applyTransform(getQuatFromVec2(vec2(mVel)));
+		mSkeleton.draw(getPos());//glm::translate(getPos()));// * getAlignMat(mVel, 'x'));
+	}
 	else if (state == POISED)
-		mSkeleton.draw(glm::translate(getPos()));
+		mSkeleton.draw(getPos());
 //	if (state)
 //		cout << (&mSkeleton) << "\t" << mSkeleton.getRoot() << "\t" <<mSkeleton.getRoot()->mDrawable << endl;
 	
-	mSkeleton.resetLigaments();
+	mSkeleton.resetTransform();
+
 }
 
 void Projectile::update(){
@@ -46,7 +50,7 @@ void Projectile::update(){
 
 char Projectile::moveWRT_ent(Entity * e){
 	char last = ActiveEnt::moveWRT_ent(e);
-//
+
 	switch (last){
 		case 'x':
 		case 'y':
@@ -67,7 +71,6 @@ void Projectile::kill(){
 	state=DEAD;
 	mVel=vec3();
 //	moveTo({0,0,0});
-//	cout << "projectile killed" << endl;
 }
 
 bool Projectile::overlapsWith(Entity * e){
@@ -83,7 +86,7 @@ bool Projectile::overlapsWith(Entity * e){
 
 void Projectile::launch(vec3 dir, float speed){
 	mVel = speed * glm::normalize(dir);//vec3(10,0,0);
-	mSkeleton.resetLigaments();
+//	mSkeleton.resetLigaments(); //not sure about this
 }
 
 void Projectile::launch(vec2 dir, float speed){

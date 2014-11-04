@@ -65,7 +65,7 @@ bool init(BaseEngine& engine){
    //Create Window
    gWindow = SDL_CreateWindow("3D Test",
                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                              SCREEN_WIDTH, SCREEN_HEIGHT,
+                              SCREEN_DIM.x, SCREEN_DIM.y, //SCREEN_WIDTH, SCREEN_HEIGHT,
                               SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
    if (gWindow == NULL){
       printf( "Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -99,7 +99,7 @@ bool init(BaseEngine& engine){
    }
 
 	//OpenGL settings
-	glClearColor(0.2f, 0.2f, 0.2f, 1.f);
+	glClearColor(1.f, 0.2f, 0.2f, 1.f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LESS);

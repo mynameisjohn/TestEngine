@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <rig id="arm" C="1" S=".73,.7,1">
-	<cycle dt="0.01">
+	<cycle id="stand" dt="0.01">
 		<pose>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
@@ -8,15 +8,15 @@
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>
-	<cycle dt="0.01">
+	<cycle id="walk" dt="0.1">
 		<pose>
 			<trans T="0,0,0" R="-2,0,0,1"/>
 		</pose>
 		<pose>
-			<trans T="0,0,0" R="2,0,0,1"/>
+			<trans T="0,0,0" R="5,0,0,1"/>
 		</pose>
 	</cycle>
-	<cycle dt="0.0065">
+	<cycle id="run" dt="0.05">
 		<pose>
 			<trans T="0,0,0" R="-30,0,0,1"/>
 		</pose>

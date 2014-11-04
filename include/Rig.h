@@ -6,28 +6,21 @@
 
 class Rig : public Drawable{
 public:
-	Rig(JShader * shader = nullptr);
-	~Rig();
+	Rig(JShader * shader = nullptr, unordered_map<string, Cycle> cmap=unordered_map<string, Cycle>(), vector<vec4> j = vector<vec4>());
 	void setCycles(vector<Cycle> cycleVec);
 	void addCycle(Cycle c);
 	void addCycle(vector<Cycle> cycleVec);
-	void inc_u(float c);
-	void set_u(vec2 u);
-	mat4 draw(mat4 parentMV, unsigned int curTex, vec2& u, unsigned int from, unsigned int to);
-	mat4 draw(mat4 parentMV, unsigned int curTex=0);
-//	void setTex(GLuint tex);
-	void set_to(unsigned int t);
-	void set_pose(float t);
-	void shift();
+	mat4 draw(mat4 parentMV, vec2& u, unsigned int from, unsigned int to, string currentTex="");//, vec4 color=vec4(1));
+	void draw(string currentTex="");//, vec4 color=vec4(1));//ex=0);
+	void draw(string currentTex, bool rigged);
 	float getShift();
-	Cycle getCurrentCycle();
-	Pose getCurrentPose();
+	Pose getCurrentPose(string from, string to, vec2& u);//unsigned int from, unsigned int to, vec2& u);
+	void uploadRigMats(vector<mat4>& R);
+	string getFirstCycle();
 private:
 	vector<Cycle> cycles;
-	vec2 u;
-//	float u, v;
+	unordered_map<string, Cycle> cMap;
 	unsigned int numPoses;
-	unsigned int from, to;
 };
 
 #endif

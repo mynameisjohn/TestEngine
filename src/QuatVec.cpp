@@ -1,45 +1,42 @@
 #include "QuatVec.h"
 #include <glm/gtx/transform.hpp>
 #include "Util.h"
-using glm::fquat;
-using glm::vec3;
-using glm::mat4;
-using glm::translate;
-using glm::normalize;
-using glm::slerp;
-using glm::mix;
 
 QuatVec::QuatVec()
-: trans(), rot() , RT(false){
+: trans(), rot(), mode(QV_TR){
 }
 
-QuatVec::QuatVec(vec3 t, fquat r)
-: trans(t), rot(normalize(r)), RT(false) {
+QuatVec::QuatVec(vec3 t, fquat r, char m)
+: trans(t), rot(glm::normalize(r)), mode(m) {
 }
 
-QuatVec::QuatVec(fquat r, vec3 t)
-: trans(t), rot(normalize(r)), RT(true) {
+QuatVec::QuatVec(fquat r, vec3 t, char m)
+: trans(t), rot(glm::normalize(r)), mode(m){
 }
 
 QuatVec QuatVec::operator * (const float s){
-	return QuatVec(s*trans, s*rot);
+	return QuatVec(s*trans, s*rot, mode);
 }
 
 //I suspect this will cause MASSIVE problems down the road...
 QuatVec QuatVec::operator * (const QuatVec& other){
-	bool rt = RT || other.RT; // this line in particular...
-	return (rt ? QuatVec(rot*other.rot, trans+other.trans) : QuatVec(trans+other.trans, rot*other.rot));
+	return QuatVec(trans+other.trans, rot*other.rot, mode);
 }
 
 QuatVec QuatVec::operator + (const QuatVec& other){
-	return QuatVec(trans+other.trans, rot+other.rot);
+	return QuatVec(trans+other.trans, rot+other.rot, mode);
 }
 
 void QuatVec::operator *= (const float s){
 	this->trans *= s;
 	this->rot *= s;
 }
-/*
+
+char QuatVec::operator &(const QuatVec& other){
+	return mode & other.mode;
+}
+
+/* // this had to be changed to accomodate |x| > 1
 QuatVec QuatVec::blend(const QuatVec& other, float x){
 	return QuatVec(mix(trans, other.trans, x), slerp(rot, other.rot, x));
 }
@@ -76,6 +73,16 @@ QuatVec QuatVec::inverse(){
 }
 
 mat4 QuatVec::toMat4(){
-	return (RT ? glm::mat4_cast(rot)*glm::translate(trans) : glm::translate(trans)*glm::mat4_cast(rot));
+	switch(mode){
+		case QV_RT:
+			return glm::mat4_cast(rot)*glm::translate(trans);
+		case QV_TRT:
+			return glm::translate(trans)*glm::mat4_cast(rot)*glm::translate(-trans);
+		case QV_TR:
+			default:
+			return glm::translate(trans)*glm::mat4_cast(rot);
+	}
+
+//	return (RT ? glm::mat4_cast(rot)*glm::translate(trans) : glm::translate(trans)*glm::mat4_cast(rot));
 }
 

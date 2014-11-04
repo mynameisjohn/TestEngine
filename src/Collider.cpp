@@ -53,8 +53,11 @@ void Collider::translate(vec3 trans){
 void Collider::scale(vec3 s){
 	mBB.scale(s);
 	vector<BoundRect>::iterator rectIt;
-   for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
+   for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++){
 		rectIt->scale(vec2(s));
+		vec2 diff(rectIt->getPos()-vec2(mBB.getPos()));
+		rectIt->moveTo(vec2(s)*diff);
+	}
 }
 
 //This whole thing should be inlined or something
@@ -69,17 +72,26 @@ bool Collider::collidesZ(Collider& other){
 	return mBB.collidesZ(other.mBB);
 }
 
+bool Collider::softCol(Collider& other){
+	return !(soft[0] < other.soft[1] || soft[1] > other.soft[0]);
+}
+
 char Collider::collidesWith(Collider& other){
 	bool colX, colY, colZ;
 	colX = mBB.collidesX(other.mBB);
 	colY = mBB.collidesY(other.mBB);
 	colZ = mBB.collidesZ(other.mBB);
+
+	//figger this out
+	soft += vec2(3);
 	
 	return cBufMap[&other].handleCollision(colX, colY, colZ);
 }
 
 //Checks to see if a) bounding boxes collided and b) one of the sub-rects overlap
+//I guess try to make this use a soft collision
 bool Collider::overlapsWith(Collider& other){
+//if (mBB.collidesX(other.mBB) && mBB.collidesY(other.mBB) && softCol(other)){
 	if (collidesWith(other)){
 		vector<BoundRect>::iterator rectIt1, rectIt2;
 		for (rectIt1=mSubs.begin(); rectIt1!=mSubs.end(); rectIt1++){
@@ -166,4 +178,8 @@ vec3 Collider::move(vec3 vel){
 
 	return T;
 */
+}
+
+vector<BoundRect> Collider::getSubs(){
+	return mSubs;
 }

@@ -4,9 +4,12 @@ Wall::Wall()
 : Obstacle(){
 	orientation='u';
 }
-
+/*
 Wall::Wall(Entity * f) : Obstacle(f){
 }
+*/
+Wall::Wall(const Entity& e)
+: Obstacle(e){}
 
 Wall::Wall(vec3 translate, vec3 scale, char o){
 	float tmp;

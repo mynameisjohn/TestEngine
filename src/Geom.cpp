@@ -54,17 +54,14 @@ GLuint genVAO(geoInfo gI, JShader& shader){
 //Bug with the way offset is being handled
 Rig initRigFromSVG(string fileName, JShader& shader){
 	string rigName = RIG_DIR+fileName+".rig";
-	Rig r = getRigFromSVG(rigName, shader);
-	//vec3 scale = r.setCycles(getRigCycles(RIG_DIR+fileName+".rig"));
-	//r.leftMultMV(scale);
+	Rig r(getRigFromSVG(rigName, shader));
 	geoInfo gI = SVGtoGeometry("res/svg/"+fileName+".svg",1);
+	r.setOrigins(gI.origins);
    GLuint VAO = genVAO(gI, shader);
-	//r.leftMultMV(glm::translate(gI.offset));
 	r.setVAO(VAO);
-
 	vector<string> imageFiles = getSprtFileList("res/sprt/"+fileName+".sprt");
 	for (int i=0;i<imageFiles.size();i++)
-      r.addTex(fromImage("res/img/"+imageFiles[i]));
+      r.addTex(imageFiles[i].substr(0,imageFiles[i].length()-4),fromImage("res/img/"+imageFiles[i]));
    r.setNElements(3*gI.indices.size());
 
 	return r;
@@ -79,7 +76,7 @@ Drawable initPolyFromSVG(string fileName, JShader& shader){
 	GLuint VAO = genVAO(gI, shader);	
 	string imageName = fileName.substr(0,fileName.length()-4)+".png";
    dr.setVAO(VAO);
-   dr.addTex(fromImage("res/img/"+imageName));//outlineTexture());
+   dr.addTex(imageName.substr(0,imageName.length()-4),fromImage("res/img/"+imageName));//outlineTexture());
    dr.setNElements(3*gI.indices.size());
 
    return dr;
@@ -89,19 +86,30 @@ Drawable initSpriteSheet(string fileName, JShader& shader){
 	Drawable dr = initQuad(shader);
 	vector<string> files = getSprtFileList("res/sprt/"+fileName+".sprt");
 	for (int i=0;i<files.size();i++)
-		dr.addTex(fromImage("res/img/"+files[i]));//"res/img/"+imageName+".png"));
+		dr.addTex(files[i].substr(0,files[i].length()-4),fromImage("res/img/"+files[i]));//"res/img/"+imageName+".png"));
 	
 	return dr;
 }
 
-Drawable initTexQuad(string imageName, JShader& shader){
+Drawable initTexQuad(JShader& shader, string imageName){
+	
 	Drawable dr = initQuad(shader);
-	dr.addTex(fromImage("res/img/"+imageName+".png"));
+/*
+	if (imageName.length())
+		dr.addTex(fromImage("res/img/"+imageName+".png"));
+	else
+		dr.addTex(outlineTexture());
+*/
+	if (imageName.length())
+		dr.addTex(imageName, fromImage("res/img/"+imageName+".png"));
+	else
+		dr.addTex("outline", outlineTexture());
+
 	return dr;
 }
 
 Drawable initQuad(JShader& shader){
-	Drawable dr(&shader,-1);
+	Drawable dr(&shader,-1, vec4(0.5,0.5,0,1));
 
 	vector<vec4> vertices={
 		{0,0,0,1}, {1,0,0,1},
@@ -118,6 +126,12 @@ Drawable initQuad(JShader& shader){
 	
 	dr.setVAO(VAO);
 	dr.setNElements(3*indices.size());
+
+	//THIS LINE SHIFTS THE QUAD ORIGIN TO (0.5,0.5) (aka the center)
+	//RATHER THAN (0,0) (aka the bottom left corner). 
+	//There were too many times where I needed the rotation to appear in place
+	//dr.leftMultMV(glm::translate(vec3(-.5,-.5,0)));
+	dr.setOrigin(vec4(0.5,0.5,0,1));
 
    return dr;
 }
@@ -231,8 +245,10 @@ Drawable initCube(JShader& shader){
    glBindVertexArray(0);
 
 	dr.setVAO(tmpVAO);
-	dr.addTex(outlineTexture());
+	//dr.addTex(outlineTexture());
+	dr.addTex("outline",outlineTexture());
 	dr.setNElements(faceCount*3);
+	dr.setOrigin(vec4(0.5,0.5,0.5,1));
 
    return dr;
 }

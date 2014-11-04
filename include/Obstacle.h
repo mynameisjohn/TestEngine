@@ -6,7 +6,7 @@
 class Obstacle : public Entity{
 public:
 	Obstacle();
-	Obstacle(Entity *);
+	Obstacle(const Entity&);
 	Obstacle(vec3 translate, vec3 scale);
 	void update();
 private:

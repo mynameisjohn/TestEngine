@@ -10,6 +10,16 @@ ActiveEnt::ActiveEnt() : Entity(), health(100.f), grounded(1), falling(-1){
    sigmaSq *= sigmaSq;
 }
 
+ActiveEnt::ActiveEnt(const Entity& e)
+: Entity(e), health(100.f), grounded(1), falling(-1){
+   mVel = vec3();
+   mSpeed = vec3(50.f, 40.f, 30.f);
+   speedOsc=0.f;
+   A = 50000.f;
+   sigmaSq = 200.f;
+   sigmaSq *= sigmaSq;
+}
+
 ActiveEnt::ActiveEnt(vec3 translate, vec3 scale)
 : Entity(translate, scale), health(100.f), grounded(1), falling(-1){
    mVel = vec3();
@@ -20,7 +30,7 @@ ActiveEnt::ActiveEnt(vec3 translate, vec3 scale)
    sigmaSq = 200.f;
    sigmaSq *= sigmaSq;
 }
-
+/*
 ActiveEnt::ActiveEnt(Entity * frame)
 : Entity(frame), health(100.f), grounded(1), falling(-1){
    mVel = vec3();
@@ -30,7 +40,7 @@ ActiveEnt::ActiveEnt(Entity * frame)
    sigmaSq = 200.f;
    sigmaSq *= sigmaSq;
 }
-
+*/
 void ActiveEnt::update(){//vec3 a){
 	if (grounded)
 		mVel.y=0;
@@ -96,4 +106,8 @@ char ActiveEnt::moveWRT_ent(Entity * e){
 	}
 //	grounded = false;
 	return last;
+}
+
+char ActiveEnt::isGrounded(){
+	return grounded;
 }
