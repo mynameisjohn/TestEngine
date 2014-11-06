@@ -30,25 +30,17 @@ Player::Player(const Entity& e)
    projList.clear();
 
 	//this crap
-	mSkeleton["body"]->set_cycle("stand");
-	mSkeleton["leg1"]->set_cycle("stand");
-	mSkeleton["leg2"]->set_cycle("stand");
-	mSkeleton["arm1"]->set_cycle("stand");
-	mSkeleton["arm2"]->set_cycle("stand");
-	mSkeleton["forearm1"]->set_cycle("stand");
-	mSkeleton["forearm2"]->set_cycle("stand");
+	mSkel["body"]->set_cycle("stand");
+	mSkel["leg1"]->set_cycle("stand");
+	mSkel["leg2"]->set_cycle("stand");
+	mSkel["arm1"]->set_cycle("stand");
+	mSkel["arm2"]->set_cycle("stand");
+	mSkel["forearm1"]->set_cycle("stand");
+	mSkel["forearm2"]->set_cycle("stand");
+
+	cout << mSkel.getOrigin("arm1") << "\t" << center()+offset << endl;
 }
-/*
-Player::Player(Entity * f) : ActiveEnt(f), jumping(false), activeProj(0){
-	mSpeed = speed;///vec3(40.f, 30.f, 10.f);
-	mDash = 1.5f;
-	A = 10000.f;	
-	sigmaSq = 5000.f;
-	sigmaSq *= sigmaSq;
-	projList.clear();	
-//	mSkeleton.print();
-}
-*/
+
 Player::Player(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale), jumping(false), activeProj(0){
 	mSpeed = speed;//vec3(20.f, 40.f, 20.12241f);
@@ -76,19 +68,11 @@ char Player::moveWRT_ent(Entity * e){
 
 void Player::move(){
 	ActiveEnt::move();
-/*
-	for_each(projList.begin(), projList.end(), [](Projectile& p)
-	Transform();//{
-		if (p.isPoised())
-			p.moveTo(center()+offset);
-		else if (p.isActive())
-			p.move();
-	});
-*/
+
 	list<Projectile>::iterator pIt;
 	for (pIt=projList.begin();pIt!=projList.end();pIt++){
 		if (pIt->isPoised())
-			pIt->moveTo(getOrigin("arm1")-pIt->mSkeleton.getOrigin()+vec3(0,0,-0.05));
+			pIt->moveTo(getOrigin("arm1")-pIt->mSkel.getOrigin()+vec3(0,0,pIt->getSkeleton()->getScale()/5));
 		else if (pIt->isActive())
 			pIt->move();
 	}
@@ -104,7 +88,7 @@ void Player::update(){//EventInfo evInfo){
 		mVel.y -= 2.f;//gravity?
 	}
 
-	mSkeleton.resetTransform();//Ligaments();	
+	mSkel.resetTransform();//Ligaments();	
 	
 	updateSkeleton();
 	updateKeys();
@@ -112,7 +96,7 @@ void Player::update(){//EventInfo evInfo){
 
 /*
 	static float th(0.f);
-	mSkeleton["bow"]->applyTransform(getRQ(vec4(th,vec3(0,0,1))));
+	mSkel["bow"]->applyTransform(getRQ(vec4(th,vec3(0,0,1))));
 	th += 1.f;
 */
 	list<Projectile>::iterator pIt;
@@ -131,118 +115,66 @@ void Player::updateMouse(){
 	bool right = dir.x > 0;
 
 	//this is about as good as it'll get for now
-   if ((!right && !mSkeleton.flipped()) || (right && mSkeleton.flipped()))
+   if ((!right && !mSkel.flipped()) || (right && mSkel.flipped()))
 		reflect();
 
 	//this is gonna need some work
-	vec2 launchOffset( (mSkeleton.flipped() ? -2 : 1) * 100,250);
+	vec2 launchOffset( (mSkel.flipped() ? -2 : 1) * 100,250);
 
 	//make non static
 	static float charge(0.f);
-	static bool charging(false);
+	static bool charging(false), notched(false);
+	const float dCharge(0.05f), chargeMax(1), notch(0.5);
 
 	if (eReg.lmb){
 		if (charging){
-			charge = min(150.f, charge+3.f);
-			vec2 r = eReg.worldMouse-(vec2(center()+offset));
-			vec3 t(-charge,0,0);
+			const float armDraw_m(420), armDraw_M(200);
 			const fquat r90(.707f, .707f*vec3(0,0,1));
-			fquat mouseRot(getQuatFromVec2(r));
+			const vec3 armOffset(-.035,.035,0);
 
-			Ligament * l = mSkeleton["arm1"];
-			l->setState(L_ACTIVE);
-			l->applyTransform(r90*mouseRot);
-			mSkeleton["arm2"]->applyTransform({
-			vec3(vec2(mSkeleton["arm1"]->getOrigin()-mSkeleton["arm2"]->getOrigin()),0)
-			,r90*mouseRot});
-		
-			float bullshit(charge/130.f);
-			l = projList.back().getSkeleton()->getRoot();
-			l->applyTransform(mouseRot);
+			charge = min(chargeMax, charge+dCharge);
+			vec2 r(glm::normalize(eReg.worldMouse - vec2(getOrigin("arm1"))));//mSkel.getOrigin("arm1"))));
+			vec2 armDif(mSkel["arm1"]->getOrigin()-mSkel["arm2"]->getOrigin());
+			fquat mouseRot(getQuatFromVec2(r)), armRot(cos(charge),sin(charge)*vec3(-1,0,0));
+			float aDo(1.5*mProj.getSkeleton()->getScale()), arrowDraw_M(-mProj.getSkeleton()->getScale());//*(1-charge));
 
-			projList.back().translate((430.f-charge)*vec3(glm::normalize(r),0));
-			mSkeleton["forearm1"]->applyTransform(vec3(0,charge,0)/mSkeleton.getScale());
-			mSkeleton["forearm1"]->setCurTex("forearm_draw");
-				
-/*
-			QuatVec qv(vec3(-220,30,0)-t,getQuatFromVec2(r),QV_TRT);
-			QuatVec trans(t,fquat());
-			projList.back().mSkeleton.applyTransform(trans);//QuatVec();
-			projList.back().mSkeleton.applyTransform(qv);
-		Ligament * l = projList.back().mSkeleton.getRoot();
-		QuatVec qv(vec3(l->getOrigin()),getQuatFromVec2(r),QV_TRT);
-		l->applyTransform(qv);
-*/
+			mSkel["arm1"]->setState(L_ACTIVE);
+			mSkel["arm1"]->applyTransform({armOffset,r90*mouseRot*armRot});
+			
+			mSkel["arm2"]->setState(L_ACTIVE);
+			mSkel["arm2"]->applyTransform({vec3(armDif,0), r90*mouseRot});
+			
+			mSkel["forearm1"]->setCurTex("forearm_draw");
+			mSkel["forearm1"]->applyTransform(glm::conjugate(armRot));
+
+			if (charge > notch){
+				if (!notched){
+					notched=true;
+					projList.emplace_back(mProj);//push_back(std::move(mProj));
+					projList.back().setState(1);
+				}
+				projList.back().getSkeleton()->getRoot()->applyTransform(mouseRot);
+				projList.back().translate(lerp(armDraw_m, armDraw_M,charge)*vec3(r,0));
+			}
 		}
-		else{
+		else
 			charging = true;
-			projList.emplace_back(mProj);//push_back(std::move(mProj));
-			projList.back().setState(1);
-
-		}
 	}
 	else if (charging){
-		//I need to make a moveTo cal to account for the "draw/pull back" 
-		//translation/rotation effect. I could either get the matrix and invert it's
-		//effect on a point to find the drawn position, or I could solve for it
-		//assuming rotation was handled correctly. The translation is just 
-		//a function of the charge, and the rotation should still be 
-		//the direction from the worldmouse to the center.
-		//either way, start drawing the collider so you can see what happens
-
 		projList.back().setState(2);
 		vec2 launchDir = eReg.worldMouse - vec2(offset + center());
-		float speed = 50.f+charge;
+		float speed(lerp(50, 200, charge));
 		projList.back().launch(launchDir, speed);
 		charge = 0.f;
-		charging = false;
-		mSkeleton["forearm1"]->setCurTex("forearm");
-		mSkeleton["arm1"]->setState(L_CYCLIC);
+		charging = notched = false;
+		mSkel["forearm1"]->setCurTex("forearm");
+		mSkel["arm1"]->setState(L_CYCLIC);
+		mSkel["arm2"]->setState(L_CYCLIC);
 	}
 }
 
 void Player::updateSkeleton(){
-	Ligament * l;
-	if (eReg.lmb){
-		vec2 r = eReg.worldMouse-(vec2(center()+offset));
-		if (r.x < 0)
-			r.x *= -1;
-
-/*
-		l = mSkeleton["body"];
-		l->setActive(true);
-		QuatVec qv(l->getOrigin(),fquat(.707f, .707f*vec3(0,0,1))*getQuatFromVec2(r),QV_TRT);
-		l->applyTransform(qv);
-		l = mSkeleton["body"];
-		QuatVec rot(l->getOrigin(), fquat(.707f, .707f*vec3(0,0,1))*getQuatFromVec2(r), QV_TRT);//fquat(s, (r.y>0?1:-1)*v*vec3(0,0,1)));
-
-		l = projList.back().mSkeleton.getRoot();
-		l->applyTransform(QuatVec(mSkeleton["arm1"]->getOrigin()-l->getOrigin(),getQuatFromVec2(r),QV_TRT));
-*/
-/*
-		l->setActive(true);
-		l->applyTransform(rot);
-		l->setCurTex("arm_draw");
-
-		mSkeleton["forearm"]->setCurTex("forearm_draw");
-		mSkeleton["forearm"]->applyTransform(QuatVec({0,.2,0},fquat()));
-
-		l = mSkeleton["arm2"];
-		l->setActive(true);
-		l->applyTransform(rot);// * QuatVec(vec3(-.25,0,0), fquat(.707f, .707f*vec3(0,0,1))));
-
-		l = mSkeleton["forearm2"];
-		l->applyTransform({0,.2,0});
-*/
-	}
-	else{
-		mSkeleton["arm1"]->setState(L_CYCLIC);
-/*
-		mSkeleton["arm1"]->setActive(false);
-		mSkeleton["arm2"]->setActive(false);
-		mSkeleton["forearm"]->setCurTex("forearm");
-*/
-	}
+	//I'm convinced I'll need this one day
 }
 
 void Player::draw(){
@@ -251,11 +183,6 @@ void Player::draw(){
 	list<Projectile>::iterator pIt;
 	for (pIt=projList.begin(); pIt!=projList.end(); pIt++)
 		pIt->draw();
-	/*
-	vector<unique_ptr<Projectile> >::iterator projIt;
-   for (projIt=mProjectiles.begin();projIt!=mProjectiles.end();projIt++)
-		(*projIt)->draw();
-	*/
 }
 
 bool Player::overlapsWith(Entity * e){
@@ -309,8 +236,8 @@ void Player::updateKeys(){
 	if (moving){
 		if (dash){
 			to = "run";//RUN;
-//			mSkeleton["arm1"]->setCurTex("arm_bent");
-//			mSkeleton["arm2"]->setCurTex("arm_bent");
+//			mSkel["arm1"]->setCurTex("arm_bent");
+//			mSkel["arm2"]->setCurTex("arm_bent");
 		}
 		else
 			to = "walk";//WALK;
@@ -318,23 +245,25 @@ void Player::updateKeys(){
 	else
 		to = "stand";//STAND;
 
-	mSkeleton["leg1"]->set_to(to);
-	mSkeleton["leg2"]->set_to(to);
-	mSkeleton["arm1"]->set_to(to);
-	mSkeleton["arm2"]->set_to(to);
-	mSkeleton["forearm1"]->set_to(to);
-	mSkeleton["forearm2"]->set_to(to);
-	mSkeleton["body"]->set_to(to);
+	if (jump) mSkel["leg1"]->set_to("jump", L_ONCE);
+	else mSkel["leg1"]->set_to(to);
+	if (jump) mSkel["leg2"]->set_to("jump", L_ONCE);
+	else mSkel["leg2"]->set_to(to);
+	mSkel["arm1"]->set_to(to);
+	mSkel["arm2"]->set_to(to);
+	mSkel["forearm1"]->set_to(to);
+	mSkel["forearm2"]->set_to(to);
+	mSkel["body"]->set_to(to);
 
 /*
 	if (grounded){
 		if (jumping){
-			((Rig *)(mSkeleton["leg1"]))->shift();
+			((Rig *)(mSkel["leg1"]))->shift();
 			jumping = false;
 		}
 		else if (jump){
-	      ((Rig *)(mSkeleton["leg1"]))->set_pose(2);
-	      ((Rig *)(mSkeleton["leg2"]))->set_pose(2);
+	      ((Rig *)(mSkel["leg1"]))->set_pose(2);
+	      ((Rig *)(mSkel["leg2"]))->set_pose(2);
 			to = JUMP;
 			jumping = true;
 		}
@@ -342,42 +271,42 @@ void Player::updateKeys(){
 */
 /*
 	//Automate this for all rigs in skeleton
-	r = (Rig *)mSkeleton["leg1"];
+	r = (Rig *)mSkel["leg1"];
 	r->set_to(to);
 
-	r = (Rig *)mSkeleton["leg2"];
+	r = (Rig *)mSkel["leg2"];
 	r->set_to(to);
 
-	r = (Rig *)mSkeleton["arm1"];
+	r = (Rig *)mSkel["arm1"];
 	r->set_to(to);
 
 	if (dash){
 		r->setCurTex(1);
-		r = (Rig *)mSkeleton["arm2"];
+		r = (Rig *)mSkel["arm2"];
 		r->setCurTex(1);
-		r = (Rig *)mSkeleton["forearm1"];
+		r = (Rig *)mSkel["forearm1"];
 		r->setVisibility(true);
-		r = (Rig *)mSkeleton["forearm2"];
+		r = (Rig *)mSkel["forearm2"];
 		r->setVisibility(true);
 	}
 	else{
 		r->setCurTex(0);
-		r = (Rig *)mSkeleton["arm2"];
+		r = (Rig *)mSkel["arm2"];
 		r->setCurTex(0);
-		r = (Rig *)mSkeleton["forearm1"];
+		r = (Rig *)mSkel["forearm1"];
 		r->setVisibility(false);
-		r = (Rig *)mSkeleton["forearm2"];
+		r = (Rig *)mSkel["forearm2"];
 		r->setVisibility(false);
 	}
 
-	r = (Rig *)mSkeleton["arm2"];
+	r = (Rig *)mSkel["arm2"];
 	r->set_to(to);
 	
-	r = (Rig *)mSkeleton["body"];
+	r = (Rig *)mSkel["body"];
 	r->set_to(to);
 */
 /*
-	Rig * r = (Rig *)mSkeleton["leg1"];
+	Rig * r = (Rig *)mSkel["leg1"];
 	float c;
 	if (eReg.getKeyState(SDLK_a) || eReg.getKeyState(SDLK_d) || eReg.getKeyState(SDLK_s) || eReg.getKeyState(SDLK_w)){
 		if (eReg.getKeyState(SDLK_LSHIFT))
@@ -389,11 +318,11 @@ void Player::updateKeys(){
 		c=-1.f;//r->set_u({-1,mod});
 	r->inc_u(c);
 
-	r = (Rig *)mSkeleton["leg2"];
+	r = (Rig *)mSkel["leg2"];
 	r->inc_u(c);
-	r = (Rig *)mSkeleton["arm1"];
+	r = (Rig *)mSkel["arm1"];
 	r->inc_u(c);
-	r = (Rig *)mSkeleton["arm2"];
+	r = (Rig *)mSkel["arm2"];
 	r->inc_u(c);
 */
 }
@@ -408,10 +337,10 @@ void Player::addProjectile(Projectile p){
 //	mProjectiles.push_back(std::move(q));
 
 	projList.emplace_back(p);
-	//projList.back().mSkeleton.print();
+	//projList.back().mSkel.print();
 /*
 	cout << "Projectile " << mProjectiles.size() << ": ";
-	mProjectiles.back()->mSkeleton.print();
+	mProjectiles.back()->mSkel.print();
 	cout << endl;
 */
 //	Projectile P(p);

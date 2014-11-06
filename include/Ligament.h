@@ -21,7 +21,7 @@ public:
 	void setCurTex(string ct);
 	void set_u(vec2 U);
 	void set_cycle(string s);
-	void set_to(string s);//unsigned int t);
+	void set_to(string t, int s=L_CYCLIC);//unsigned int t);
 	void setColor(vec4 c){mColor = c;};
 	void setState(int state);
 	void setActive(bool b=true);
@@ -33,6 +33,8 @@ public:
 	void applyTransform(fquat q);
 	void leftMultMV(mat4 m);
 	bool hasChild(Ligament * l);
+	bool isActive();
+	vec2 get_u();
 	vec3 getOrigin(int idx=0);
 	QuatVec getTransform();
 	mat4 getTransformAsMat4();
@@ -44,9 +46,9 @@ private:
 	mat4 MV;
 	list<QuatVec> mTransform;
 	vec2 u;
-	string cTex, from, to;
+	string cTex, from, to, old;
 	vec4 mColor;
-	bool active;
+	bool active, shifted;
 	vector<vec4> origins;
 	int state;
 };

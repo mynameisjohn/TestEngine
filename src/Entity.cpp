@@ -11,7 +11,7 @@ Entity::Entity(vec3 translate, vec3 scale)
 }
 
 Entity::Entity(Collider c, Skeleton s)
-: mCollider(c), mSkeleton(move(s)){//flip(false){
+: mCollider(c), mSkel(move(s)){//flip(false){
 }
 
 void Entity::setCol(Collider c){
@@ -23,20 +23,20 @@ void Entity::setBB(BoundBox bb){
 }
 
 void Entity::setSkeleton(Skeleton s){
-	mSkeleton = move(s);
+	mSkel = move(s);
 }
 
 //come back to this
 void Entity::reflect(){
-	mSkeleton.reflect();
+	mSkel.reflect();
 //	mat4 refl = glm::translate(vec3(mCollider.getDim().x,0,0))*glm::scale(vec3(-1,1,1));
- //	mSkeleton.getRoot()->leftMultMV(refl);
+ //	mSkel.getRoot()->leftMultMV(refl);
 //   flip = !flip;
 }
 
 void Entity::draw(){
-	mSkeleton.draw(getPos());
-//	mSkeleton.draw(glm::translate(getPos()));//getRoot()->draw(glm::translate(getPos()));
+	mSkel.draw(getPos());
+//	mSkel.draw(glm::translate(getPos()));//getRoot()->draw(glm::translate(getPos()));
 }
 
 char Entity::collidesWith(Entity * e){
@@ -94,5 +94,5 @@ vec3 Entity::center(){
 }
 
 vec3 Entity::getOrigin(string s, int idx){
-	return getPos()+mSkeleton.getOrigin(s,idx);
+	return getPos()+mSkel.getOrigin(s,idx);
 }

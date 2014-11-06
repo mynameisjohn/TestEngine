@@ -32,7 +32,7 @@ class Entity{
 		vec3 getPos();
 		vec3 center();
 		Collider * getCollider(){return &mCollider;}
-		Skeleton * getSkeleton(){return &mSkeleton;}
+		Skeleton * getSkeleton(){return &mSkel;}
 		vec3 getOrigin(string s="", int idx=0);
 		virtual void update(){}
 		virtual void takeHit(HitEffect hEff){}
@@ -41,7 +41,7 @@ class Entity{
 		virtual vec3 getPotential(vec3 pos);
 	protected:
 		Collider mCollider;
-		Skeleton mSkeleton;
+		Skeleton mSkel;
 		float sigmaSq, A;
 //		bool flip;
 		//friendly grandkids

@@ -27,9 +27,9 @@ void Seeker::update(vec3 goal){
       mVel.y += mSpeed.y;
 /*
 	if (health > 0)
-		mSkeleton.setColor(health/100.f,health/100.f,health/100.f);
+		mSkel.setColor(health/100.f,health/100.f,health/100.f);
 	else
-		mSkeleton.setColor(0,0,0);//health/100.f,health/100.f,health/100.f)
+		mSkel.setColor(0,0,0);//health/100.f,health/100.f,health/100.f)
 
 	bool right = mVel.x < 0;
 	if ((!right && !flip) || (right && flip))

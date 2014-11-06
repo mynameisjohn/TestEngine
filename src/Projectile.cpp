@@ -24,17 +24,17 @@ Projectile::Projectile(vec3 translate, vec3 scale)
 }
 
 void Projectile::draw(){
-//	cout << &mSkeleton << "\t" << mSkeleton["root"] << endl;
+//	cout << &mSkel << "\t" << mSkel["root"] << endl;
 	if (state==ACTIVE){//fix center of rotation
-		mSkeleton.getRoot()->applyTransform(getQuatFromVec2(vec2(mVel)));
-		mSkeleton.draw(getPos());//glm::translate(getPos()));// * getAlignMat(mVel, 'x'));
+		mSkel.getRoot()->applyTransform(getQuatFromVec2(vec2(mVel)));
+		mSkel.draw(getPos());//glm::translate(getPos()));// * getAlignMat(mVel, 'x'));
 	}
 	else if (state == POISED)
-		mSkeleton.draw(getPos());
+		mSkel.draw(getPos());
 //	if (state)
-//		cout << (&mSkeleton) << "\t" << mSkeleton.getRoot() << "\t" <<mSkeleton.getRoot()->mDrawable << endl;
+//		cout << (&mSkel) << "\t" << mSkel.getRoot() << "\t" <<mSkel.getRoot()->mDrawable << endl;
 	
-	mSkeleton.resetTransform();
+	mSkel.resetTransform();
 
 }
 
@@ -86,7 +86,7 @@ bool Projectile::overlapsWith(Entity * e){
 
 void Projectile::launch(vec3 dir, float speed){
 	mVel = speed * glm::normalize(dir);//vec3(10,0,0);
-//	mSkeleton.resetLigaments(); //not sure about this
+//	mSkel.resetLigaments(); //not sure about this
 }
 
 void Projectile::launch(vec2 dir, float speed){

@@ -11,9 +11,9 @@ Ligament::Ligament(){
 //To Do: change constructor so that the QuatVec list starts off empty,
 //since any initial transform goes in MV. yuck
 Ligament::Ligament(Drawable * dPtr, string ctex)
-: mDrawable(dPtr), from(""), to(""), active(false), cTex(ctex), state(L_CYCLIC){
+: mDrawable(dPtr), from(""), to(""), active(false), shifted(false), cTex(ctex), state(L_CYCLIC){
    mTransform.clear();
-	//origin = MV*mDrawable->getOrigin();
+
 	origins.clear();
 	if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
 		origins = r->getOrigins();
@@ -72,7 +72,7 @@ mat4 Ligament::getTransformAsMat4(){
 		for (it; it!=mTransform.end(); it++)
 			ret = ret * it->toMat4();
 	}
-	else ret = transform.toMat4();
+	else return transform.toMat4();
 
 	return ret;
 }
@@ -81,15 +81,32 @@ void Ligament::update(){
 	const float eps = 0.001f;
    const float dt = 0.1f;
 
-	active = false;
+	//active = false;
+	if (state == L_ONCE){
+		if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
+			float length(r->getShift()*2);
+			if (u.y > length){
+				state = L_CYCLIC;
+				from = to = old;
+				if (shifted)
+					shift();
+			}
+		}
+		return;
+	}
+	
 
    if (1.f-u.x < eps){
       from = to;
       u.x=0.f;
+		if (state == L_ACTIVE)
+			active=true;
    }
 
-	if (from != to)
+	if (from != to || state == L_ACTIVE)
 		u.x += dt;
+	else
+		active = false;
 }
 
 void Ligament::draw(glm::mat4 parent){
@@ -98,6 +115,7 @@ void Ligament::draw(glm::mat4 parent){
 
 	if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
 		switch(state){
+			case L_ONCE:
 			case L_CYCLIC:{
 				//get current pose
 				Pose p(r->getCurrentPose(from,to,u));
@@ -129,24 +147,55 @@ void Ligament::draw(glm::mat4 parent){
 				r->uploadRigMats(R);
 				r->draw(cTex,true);
 
-
 				update();
 				break;
 			}
-			case L_ONCE:
-				break;
 			case L_ACTIVE:{
-				if (!mTransform.empty()){
-					QuatVec qv(getTransform());
-					parent = parent * glm::translate(qv.trans+vec3(origins[0]))*
-											glm::mat4_cast(qv.rot)*
-											glm::translate(-vec3(origins[0]));
+				if (active){
+					if (!mTransform.empty()){
+						QuatVec qv(getTransform());
+						parent = parent * glm::translate(qv.trans+vec3(origins[0]))*
+												glm::mat4_cast(qv.rot)*
+												glm::translate(-vec3(origins[0]));
+					}
+					mat4 m = parent*MV;
+					r->uploadMV(m);
+					r->draw(cTex, false);
+					for (vector<int>::iterator it = children.begin(); it!=children.end(); it++)
+						this[*it].draw(parent);
+					break;
 				}
-				mat4 m = parent*MV;
-				r->uploadMV(m);
-				r->draw(cTex, false);
+				Pose p(r->getCurrentPose(from,from,u));
+				vector<QuatVec> qvVec(p.getNumJoints());
+				qvVec[0] = getTransform();
+				Pose q(qvVec);
+				p = p.blend(q, u.x);
+				
+				vector<mat4> R(origins.size());
+				R[0] = glm::translate(p.joints[0].trans+vec3(origins[0]))*
+						 glm::mat4_cast(p.joints[0].rot)*
+						 glm::translate(-vec3(origins[0]));
+
+				//draw children?
+				for (int i=1; i<R.size(); i++)
+               R[i] = R[i-1]*
+                          glm::translate(vec3(origins[i])+p.joints[i].trans)*
+                          glm::mat4_cast(p.joints[i].rot)*
+                          glm::translate(-vec3(origins[i]));
+
+				R.back() = parent*R.back();
 				for (vector<int>::iterator it = children.begin(); it!=children.end(); it++)
-					this[*it].draw(parent);
+					this[*it].draw(R.back());
+				R.back() = R.back()*MV;
+	
+				for (int i=0; i<R.size()-1; i++)
+					R[i]=parent*R[i]*MV;
+
+				r->uploadRigMats(R);
+				r->draw(cTex,true);
+
+				update();
+				break;
 			}
 			default:
 				break;
@@ -205,8 +254,16 @@ void Ligament::draw(glm::mat4 parent){
 */
 }
 
+bool Ligament::isActive(){
+	return active;
+}
+
 void Ligament::setCurTex(string ct){
 	cTex = ct;
+}
+
+vec2 Ligament::get_u(){
+	return u;
 }
 /*
 void Ligament::setCurTex(unsigned int ct){
@@ -217,8 +274,17 @@ void Ligament::set_u(vec2 u){
 	this->u = u;
 }
 
-void Ligament::set_to(string s){//unsigned int t){
-	to = s;
+void Ligament::set_to(string t, int s){//unsigned int t){
+	if (Rig * r = dynamic_cast<Rig *>(mDrawable)){
+		if (s==L_CYCLIC)
+			to = t;
+		if (s==L_ONCE && state != L_ONCE){
+			old = to;
+			from = to = t;
+			state = L_ONCE;
+			u.y=0;
+		}
+	}
 }
 
 void Ligament::setActive(bool b){
@@ -228,6 +294,7 @@ void Ligament::setActive(bool b){
 void Ligament::shift(){
 	if (Rig * r = dynamic_cast<Rig *>(mDrawable))
 		u.y += r->getShift();
+	shifted = true;
 }
 
 void Ligament::applyTransform(QuatVec qv){
