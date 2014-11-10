@@ -23,6 +23,7 @@ class Population{
 		void addObs(unique_ptr<Obstacle> obs);
 		void addActiveEnt(unique_ptr<ActiveEnt> aE);
 		void addSeeker(unique_ptr<Seeker> seek);
+		void predispose();
 		vec4 move();
 		vec3 getPlayerCenter();
 		Player * getPlayer();

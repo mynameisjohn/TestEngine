@@ -27,12 +27,20 @@
 	/>
 -->
 <Level>
+	<Seeker dbg="1"
+		dType="skeleton"
+		resource="monster.xml"
+		T="0,500,-2500"
+		R="0,0,0,1"
+		S="300,400,-2"
+		color="1,0,0,1"
+	/>
 	<Player name="girl" dbg="0"
 		dType="skeleton"
 		resource="girl.xml"
-		T="0,500,-2500"
+		T="800,500,-2500"
 		R="0,0,0,1"
-		S="600,600,-2"
+		S="600,600,-20"
 		color="1,1,1,1">
 		<Projectile dbg="0"
 			dType="texQuad"

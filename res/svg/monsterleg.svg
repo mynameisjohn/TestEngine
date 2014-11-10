@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -65,7 +65,7 @@
        inkscape:export-ydpi="180" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 378.8072,529.10316 -5.57614,72.30713 -2.50508,73.65992"
+       d="m 370.2209,660.92807 3.05076,-59.68022 3.01016,-72.14469"
        id="joints"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"

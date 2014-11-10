@@ -1,6 +1,7 @@
 #include "Util.h"
 #include <sstream>
 #include <glm/gtx/transform.hpp>
+#include <glm/glm.hpp>
 
 void printError(string name){
 	cout << "Unable to load file " << name << ". Segfault imminent" <<  endl;
@@ -121,9 +122,10 @@ mat4 getAlignMat(vec3 u, char o){
 //up with the given vec2 in x,y (meaning rotation is about z)
 fquat getQuatFromVec2(vec2 r){
 	r = glm::normalize(r);
-	float s = (float)(sqrt(.5f*(1.f+r.x)));
-	float v = (r.y>0?1:-1)*(float)(sqrt(.5f*(1.f-r.x)));
-	return fquat(s, v*vec3(0,0,1));
+	float s(sqrt((1-r.x)/2));
+	float c((r.y>0)?sqrt((1+r.x)/2):-sqrt((1+r.x)/2));
+	
+	return fquat(c,s*vec3(0,0,1));
 }
 
 fquat getRQ(vec4 rot){
@@ -131,32 +133,6 @@ fquat getRQ(vec4 rot){
    float angle = 0.5f*degToRad(rot.x);
 	
 	return fquat(cos(angle),sin(angle)*axis);
-}
-
-fdualquat createDQ_t(vec3 trans){
-	return fdualquat({1,0,0,0},{0,vec3(0.5f*trans)});
-}
-
-fdualquat createDQ_r(fquat rot){
-	vec3 axis = glm::normalize(vec3(rot.x, rot.y, rot.z));
-	float angle = 0.5f*degToRad(rot.w);
-	return fdualquat({cos(angle),sin(angle)*axis},{0,vec3()});
-}
-
-fdualquat createDQ_r(vec4 rot){
-	vec3 axis = glm::normalize(vec3(rot.y, rot.z, rot.w));
-	float angle = 0.5f*degToRad(rot.x);
-	//rot.w *= 0.5f;
-	return fdualquat({cos(angle),sin(angle)*axis},{0,vec3()});
-	//return fdualquat({cos(rot.w),sin(rot.w)*axis},{0,vec3()});
-}
-
-mat4 getDQMat(const fdualquat& Q){
-	return glm::translate(glm::axis(2.f*Q.dual*glm::conjugate(Q.real)))*glm::mat4_cast(Q.real);
-}
-
-fdualquat dslerp(const fdualquat& a, const fdualquat& b, float x){//const fdualquat& a, const fdualquat& b, float x){
-	return glm::normalize(fdualquat(glm::mix(a.real,b.real, x),glm::lerp(a.dual,b.dual, x)));
 }
 
 vec3 getLagrangeInterpolants(float x){
@@ -187,10 +163,5 @@ ostream& operator<<(ostream& os, const mat4& mat){
 
 ostream& operator<<(ostream& os, const fquat& quat){
   os << "{" << quat.w << ", " << quat.x << ", " << quat.y << ", " << quat.z << "}";
-  return os;
-}
-
-ostream& operator<<(ostream& os, const fdualquat& dualquat){
-  os << "{" << dualquat.real << ", " << dualquat.dual << "}";//mat[0] << ",\n" << mat[1] << ",\n" << mat[2] << ",\n" << mat[3] << ",\n}";
   return os;
 }

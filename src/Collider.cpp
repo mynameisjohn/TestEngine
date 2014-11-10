@@ -36,7 +36,11 @@ void Collider::clearSub(){
 
 void Collider::moveTo(vec3 pos){
 	mBB.moveTo(pos);
-
+/*
+	float x(soft.y-soft.x);
+	cout << x << endl;
+	soft = glm::vec2(getPos().z-(x-getDim().z)/2,getDim().z+(x-getDim().z)/2);
+*/
    vector<BoundRect>::iterator rectIt;
    for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
       rectIt->moveTo(vec2(pos));
@@ -45,6 +49,8 @@ void Collider::moveTo(vec3 pos){
 void Collider::translate(vec3 trans){
 	mBB.translate(trans);
 	
+	//soft += vec2(trans.z);
+
 	vector<BoundRect>::iterator rectIt;
 	for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
 		rectIt->translate(vec2(trans));//trans.x,trans.y);
@@ -58,6 +64,19 @@ void Collider::scale(vec3 s){
 		vec2 diff(rectIt->getPos()-vec2(mBB.getPos()));
 		rectIt->moveTo(vec2(s)*diff);
 	}
+/*
+	float x(300);
+	soft = glm::vec2(getPos().z-(x-getDim().z)/2,getDim().z+(x-getDim().z)/2);
+	cout << getDim() << "\t" << glm::vec2(getPos().z-(x-getDim().z)/2,getDim().z+(x-getDim().z)/2) << endl;
+*/
+}
+
+void Collider::print(){
+	cout << "Box: " << mBB.getPos() << "\t" << mBB.getDim() << endl;
+	cout << "Rects: \n";
+	vector<BoundRect>::iterator rectIt;
+	for (rectIt=mSubs.begin(); rectIt!=mSubs.end(); rectIt++)
+		cout << rectIt->getPos() << "\t" << rectIt->getDim() << endl;
 }
 
 //This whole thing should be inlined or something
@@ -73,7 +92,16 @@ bool Collider::collidesZ(Collider& other){
 }
 
 bool Collider::softCol(Collider& other){
-	return !(soft[0] < other.soft[1] || soft[1] > other.soft[0]);
+	soft = 300;
+	return fabs(other.center().z-center().z) < soft && mBB.collidesX(other.mBB) && mBB.collidesY(other.mBB);
+/*
+	float otherZ(other.center().z);
+	cout << otherZ-center().z << endl;
+	return mBB.collidesX(other.mBB) && mBB.collidesY(other.mBB) &&
+			(!(((center().z+soft/2)<(otherZ-soft/2)) || (((center().z-soft/2)>(otherZ+soft/2)))));
+*/
+//!(mBB.far()+soft/2 > other.mBB.near()-other.soft/2 || mBB.near()-soft/2 < other.mBB.far()+other.soft/2);
+//	return !(soft[0] < other.soft[1] || soft[1] > other.soft[0]);
 }
 
 char Collider::collidesWith(Collider& other){
@@ -81,26 +109,36 @@ char Collider::collidesWith(Collider& other){
 	colX = mBB.collidesX(other.mBB);
 	colY = mBB.collidesY(other.mBB);
 	colZ = mBB.collidesZ(other.mBB);
-
-	//figger this out
-	soft += vec2(3);
 	
 	return cBufMap[&other].handleCollision(colX, colY, colZ);
 }
+/*
+bool Collider::rectOverlap(vector<BoundRect> rVec){
+	vector<BoundRect>::iterator rectIt1, rectIt2;
+      for (rectIt1=mSubs.begin(); rectIt1!=mSubs.end(); rectIt1++){
+         for (rectIt2=mSubs.begin(); rectIt2!=mSubs.end(); rectIt2++){
+            if (rectIt1->collidesWith(*rectIt2))
+               return true;
+         }
+      }
+	return false;
+}
+*/
 
 //Checks to see if a) bounding boxes collided and b) one of the sub-rects overlap
 //I guess try to make this use a soft collision
 bool Collider::overlapsWith(Collider& other){
+//	return collidesWith(other);
 //if (mBB.collidesX(other.mBB) && mBB.collidesY(other.mBB) && softCol(other)){
-	if (collidesWith(other)){
+//	if (softCol(other)){
 		vector<BoundRect>::iterator rectIt1, rectIt2;
 		for (rectIt1=mSubs.begin(); rectIt1!=mSubs.end(); rectIt1++){
-			for (rectIt2=mSubs.begin(); rectIt2!=mSubs.end(); rectIt2++){
+			for (rectIt2=other.mSubs.begin(); rectIt2!=other.mSubs.end(); rectIt2++){
 				if (rectIt1->collidesWith(*rectIt2))
 					return true;
 			}
 		}
-	}
+//	}
 	return false;
 }
 

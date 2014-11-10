@@ -97,7 +97,6 @@ Entity loadEntity(TiXmlElement * el, unordered_map<string, unique_ptr<Drawable> 
 					drPtr->addTex(name, outlineTexture());
 				else
 					drPtr->addTex(name, fromImage("res/img/"+name));
-				
 			}
 		}
 		s = Skeleton(drPtr);
@@ -107,6 +106,7 @@ Entity loadEntity(TiXmlElement * el, unordered_map<string, unique_ptr<Drawable> 
 
 		BoundBox bb = BoundBox(scale);
 		col = Collider(bb);
+		col.addSub({vec2(col.getDim())});
 
 		S = max(glm::abs(scale));
 		s.scale(S);
@@ -142,9 +142,7 @@ Entity loadEntity(TiXmlElement * el, unordered_map<string, unique_ptr<Drawable> 
 			s = Skeleton(c.createSkeleton(skeleton, shader));
 			S = max(glm::abs(scale));
 			s.scale(S);
-			//scale /= S;
-//			MV = MV*glm::scale(scale);
-//			s.leftMultMV(MV);
+			s.leftMultMV(glm::translate(vec3(0,0,-scale.z/S)));
 			s.setColor(color);
 		}
 	}
@@ -156,14 +154,14 @@ Entity loadEntity(TiXmlElement * el, unordered_map<string, unique_ptr<Drawable> 
 		//strange, I know, but the hierarchy proved too annoying to deal with for collider boxes
 		if (collider_dbg){
 			vec3 cScale(col.getDim()/S);
+			cScale.z *= -1;
 			mat4 c_MV(glm::translate(vec3(0,0,0.05f))*glm::scale(cScale));
 
 			vector<BoundRect> subs(col.getSubs());
 			for (int i=0;i<subs.size();i++){
 				Ligament L_sub((*dMapPtr)["quad"].get());
 				vec2 dim(subs[i].getDim()/S);
-				vec2 pos(subs[i].getPos()/S);
-				cout << dim << pos << endl;
+				vec2 pos((subs[i].getPos()-vec2(col.getPos()))/S);
 				mat4 r_MV(glm::translate(vec3(pos,0))*glm::scale(vec3(dim,1)));
 				L_sub.leftMultMV(r_MV);
 				L_sub.setColor(vec4(.6,.5,.4,.7));
@@ -195,26 +193,10 @@ Collider getCollider(TiXmlElement * collider){
 			in.erase(0,pos+d.length());
 		}
 		fillVec(tr,box->Attribute("T"));
-		cout << tr << endl;
-/*
-		in = box->Attribute("T");
-		pos=0;
-		for (int i=0;i<3;i++){
-			pos=in.find(d);
-			stringstream(in.substr(0,pos)) >> tr[i];
-			in.erase(0,pos+d.length());
-		}
-*/
 		bb = BoundBox(dim);
 		for (TiXmlElement  * rect=box->FirstChildElement("rect"); rect; rect=rect->NextSiblingElement("rect")){
 			vec2 rDim, rTr;
-			pos=0;
-			in = rect->Attribute("S");
-			for (int i=0;i<2;i++){
-				pos=in.find(d);
-				stringstream(in.substr(0,pos)) >> rDim[i];
-				in.erase(0,pos+d.length());
-			}
+			fillVec(rDim,rect->Attribute("S"));
 			fillVec(rTr, rect->Attribute("T"));
 			recVec.emplace_back(rTr,rDim);
 		}

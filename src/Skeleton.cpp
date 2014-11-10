@@ -55,6 +55,9 @@ void Skeleton::addToRoot(string k, Ligament l, bool invert){//unique_ptr<Drawabl
 
 void Skeleton::setColor(vec3 v){
 	mColor = vec4(v,1);
+	vector<Ligament>::iterator lIt;
+	for (lIt=lVec.begin(); lIt!=lVec.end(); lIt++)
+		lIt->setColor(mColor);
 }
 
 void Skeleton::setColor(float r, float g, float b, float a){
@@ -78,16 +81,13 @@ void Skeleton::draw(mat4 transform){
 	lVec[0].getDrPtr()->uploadColor(mColor);
 	lVec.front().draw(transform);//mTransform.empty() ? transform : transform * getTransformAsMat4());
 }
-/*
-void Skeleton::leftMultMV(mat4 m){
-//	MV = m * MV;
-//	lVec[0].leftMultMV(m);
 
+void Skeleton::leftMultMV(mat4 m){
 	vector<Ligament>::iterator it;
 	for (it=lVec.begin();it!=lVec.end();it++)
 		it->leftMultMV(m);
 }
-*/
+
 void Skeleton::scale(float s){
 	S = s;
 }

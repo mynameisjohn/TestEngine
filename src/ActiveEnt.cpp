@@ -1,5 +1,6 @@
 #include "ActiveEnt.h"
 #include <glm/gtc/random.hpp>
+#include <glm/glm.hpp>
 
 ActiveEnt::ActiveEnt() : Entity(), health(100.f), grounded(1), falling(-1){
 	mVel = vec3();

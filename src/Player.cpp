@@ -37,8 +37,6 @@ Player::Player(const Entity& e)
 	mSkel["arm2"]->set_cycle("stand");
 	mSkel["forearm1"]->set_cycle("stand");
 	mSkel["forearm2"]->set_cycle("stand");
-
-	cout << mSkel.getOrigin("arm1") << "\t" << center()+offset << endl;
 }
 
 Player::Player(vec3 translate, vec3 scale)
@@ -126,6 +124,9 @@ void Player::updateMouse(){
 	static bool charging(false), notched(false);
 	const float dCharge(0.05f), chargeMax(1), notch(0.5);
 
+	//A NOTE ON REFLECTION:
+	//a fair armount of stuff has to be accounted for when the model is reflected about the y axis
+	//WRT mouse rotation x direction. I am leaving that off for now, though it is very annoying. 
 	if (eReg.lmb){
 		if (charging){
 			const float armDraw_m(420), armDraw_M(200);
@@ -135,6 +136,7 @@ void Player::updateMouse(){
 			charge = min(chargeMax, charge+dCharge);
 			vec2 r(glm::normalize(eReg.worldMouse - vec2(getOrigin("arm1"))));//mSkel.getOrigin("arm1"))));
 			vec2 armDif(mSkel["arm1"]->getOrigin()-mSkel["arm2"]->getOrigin());
+
 			fquat mouseRot(getQuatFromVec2(r)), armRot(cos(charge),sin(charge)*vec3(-1,0,0));
 			float aDo(1.5*mProj.getSkeleton()->getScale()), arrowDraw_M(-mProj.getSkeleton()->getScale());//*(1-charge));
 
@@ -190,12 +192,18 @@ bool Player::overlapsWith(Entity * e){
 	for (pIt=projList.begin(); pIt!=projList.end(); pIt++){
 		if (pIt->isActive()){
 			if (pIt->overlapsWith(e)){
-				pIt->kill();
-				pIt = projList.erase(pIt);
+				cout << "Projectile Hit" << endl;
+				//pIt->kill();
+				//pIt = projList.erase(pIt);
 			}
 		}
 	}
-	
+
+	float soft(100);/*
+	float pCenter = projList.back().center().z;
+	if (!(((center().z+soft/2)<(pCenter-soft/2)) || (((center().z-soft/2)>(pCenter+soft/2)))))
+		cout << "ass"  << endl;
+	*/
 	return Entity::overlapsWith(e);
 }
 

@@ -45,6 +45,7 @@ char Entity::collidesWith(Entity * e){
 }
 
 bool Entity::overlapsWith(Entity * e){
+//	if (mCollider.overlapsWith(e->mCollider)) cout << this << " hit " << e << endl;
 	return mCollider.overlapsWith(e->mCollider);
 }
 

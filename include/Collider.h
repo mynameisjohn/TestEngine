@@ -20,6 +20,7 @@ class Collider{
 		void translate(vec3 trans);
 		void moveTo(vec3 pos);
 		void scale(vec3 s);
+		void print();
 	   char collidesWith(Collider&);
 		bool collidesX(Collider&);
       bool collidesY(Collider&);
@@ -40,7 +41,7 @@ class Collider{
 	private:
 		BoundBox mBB;
 		std::vector<BoundRect> mSubs;
-		vec2 soft;
+		float soft;//		vec2 soft;
 		vec3 W_min, W_max;
 		std::unordered_map<Collider *, ColBuf> cBufMap;
 	public:

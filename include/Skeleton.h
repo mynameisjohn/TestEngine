@@ -19,7 +19,7 @@ public:
 	void draw(mat4 transform);
 	void update();
 	void reflect();
-//	void leftMultMV(mat4 m);
+	void leftMultMV(mat4 m);
 	void scale(float s);
 	void applyTransform(QuatVec qv);
 	void resetTransform();

@@ -5,13 +5,11 @@
 #define GLM_FORCE_RADIANS
 #endif
 
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <iostream>
-#include <glm/gtx/dual_quaternion.hpp>
 
-using glm::fdualquat;
 using glm::fquat;
-
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
@@ -36,18 +34,6 @@ void fillVec(vec2& v, string s);
 void fillVec(vec3& v, string s);
 void fillVec(vec4& v, string s);
 
-/*
-template <typename T>
-bool vecContains(vector<T>& vec, T v){
-	vector<T>::iterator it;
-	for (it=vec.begin();it!=vec.end();it++)
-		if (*it == v)
-			return true;
-	return false;
-}
-
-template bool vecContains(vector<int>&, int);
-*/
 mat4 getAlignMat(vec3 x, vec3 y, vec3 z);
 mat4 getAlignMat(vec3 u, char o);
 
@@ -65,12 +51,6 @@ template vec4 remap<vec4>(vec4,vec4,vec4,vec4,vec4);
 
 fquat getRQ(vec4 rot);
 
-fdualquat createDQ_t(glm::vec3 trans);
-fdualquat createDQ_r(glm::fquat rot);
-fdualquat createDQ_r(glm::vec4 trans);
-mat4 getDQMat(const fdualquat&);
-fdualquat dslerp(const fdualquat&, const fdualquat&, float);//const fdualquat& a, const fdualquat& b, float x);
-
 vec3 getLagrangeInterpolants(float x);
 
 ostream& operator<<(ostream& os, const vec2& vec);
@@ -78,6 +58,5 @@ ostream& operator<<(ostream& os, const vec3& vec);
 ostream& operator<<(ostream& os, const vec4& vec);
 ostream& operator<<(ostream& os, const mat4& mat);
 ostream& operator<<(ostream& os, const fquat& quat);
-ostream& operator<<(ostream& os, const fdualquat& dualquat);
 
 #endif

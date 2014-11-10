@@ -18,20 +18,20 @@
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>
-	<cycle id = "walk" dt="0.008">
-		<pose>
-			<trans T="0,0,0" R="-30,0,0,1"/>
-			<trans T="0,0,0" R="-10,0,0,1"/>
-			<trans T="0,0,0" R="0,0,0,1"/>
-		</pose>
-		<pose>
-			<trans T="0,0,0" R="0,0,0,1"/>
-			<trans T="0,0,0" R="0,0,0,1"/>
-			<trans T="0,0,0" R="0,0,0,1"/>
-		</pose>
+	<cycle id = "walk" dt="0.3">
 		<pose>
 			<trans T="0,0,0" R="30,0,0,1"/>
 			<trans T="0,0,0" R="-10,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="0,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="10,0,0,1"/>
+			<trans T="0,0,0" R="20,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>

@@ -10,7 +10,7 @@
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>
-	<cycle id="walk" dt="0.01">
+	<cycle id="walk" dt="0.1">
 		<pose>
 			<trans T="0,0,0" R="-2,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
@@ -20,13 +20,33 @@
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>
-	<cycle id="run" dt="0.0065">
+	<cycle id="run" dt="0.65">
 		<pose>
 			<trans T="0,0,0" R="-30,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 		<pose>
 			<trans T="0,0,0" R="30,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+	</cycle>	
+	<cycle id="pre_strike" dt="0.25">
+		<pose>
+			<trans T="0,0,0" R="-120,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="-75,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+	</cycle>	
+	<cycle id="strike" dt="0.65">
+		<pose>
+			<trans T="0,0,0" R="-120,0,0,1"/>
+			<trans T="0,0,0" R="0,0,0,1"/>
+		</pose>
+		<pose>
+			<trans T="0,0,0" R="-25,0,0,1"/>
 			<trans T="0,0,0" R="0,0,0,1"/>
 		</pose>
 	</cycle>	

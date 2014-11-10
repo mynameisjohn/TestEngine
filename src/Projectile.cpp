@@ -16,7 +16,8 @@ Projectile::Projectile(Entity * e)
 */
 
 Projectile::Projectile(const Entity& e)
-: ActiveEnt(e), state(0), ticker(0) {}
+: ActiveEnt(e), state(0), ticker(0) {
+}
 
 Projectile::Projectile(vec3 translate, vec3 scale)
 : ActiveEnt(translate, scale), state(0), ticker(0){
@@ -74,10 +75,11 @@ void Projectile::kill(){
 }
 
 bool Projectile::overlapsWith(Entity * e){
-	bool ret = Entity::collidesWith(e);
-
-	if (ret)
+	bool ret = Entity::overlapsWith(e);	
+	if (ret){
 		e->takeHit({10.f,{0,0,0}});
+		ticker = LIFETIME-1;
+	}
 
 
 	return ret;
